@@ -173,7 +173,7 @@ window.BT = window.BT || { Screens: {} };
 
       function goEnding() {
         if (envelope && !envelope.classList.contains("opened")) { openLetter(() => goEnding()); return; }
-        router.go("Ending", { season: (s.run && s.run.season) || 1 }, { replace: true });
+        router.go("Ending", { season: s.endSeason || (s.run && s.run.season) || 1 }, { replace: true });
       }
 
       function openLetter(after) {

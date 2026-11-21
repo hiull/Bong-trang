@@ -80,6 +80,8 @@ window.BT = window.BT || { Screens: {} };
       S.ms = S.msBySeason[sid] || { index: 1, progress: 0, cleared: 0, shifts: 0, best: {}, firstDone: {}, lastEvent: null };
       delete S.msBySeason[sid];
       S.season = sid;
+      // Hẹn truyện khách quen đang tính theo số ca của mùa cũ → tính lại từ đầu mùa mới
+      S.regularNext = {};
       if (sid === 2 && S.s2) S.s2.started = true;
       BT.Save.persist();
     },
@@ -239,7 +241,7 @@ window.BT = window.BT || { Screens: {} };
 
   const Daily = {
     dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); },
-    unlocked() { return BT.Save.state.ms.index >= CONFIG.daily.fromMilestone; },
+    unlocked() { const S = BT.Save.state; return (S.season || 1) > 1 || S.ms.index >= CONFIG.daily.fromMilestone; },
     playedToday(key) { return !!BT.Save.state.daily.played[key || this.dateKey()]; },
 
     challenge(key, level) {
@@ -312,7 +314,7 @@ window.BT = window.BT || { Screens: {} };
 
   // ---------------- Ca vô tận ----------------
   const Endless = {
-    unlocked() { return BT.Save.state.ms.index >= CONFIG.endless.fromMilestone; },
+    unlocked() { const S = BT.Save.state; return (S.season || 1) > 1 || S.ms.index >= CONFIG.endless.fromMilestone; },
     spawnRange(served, base) {
       const E = CONFIG.endless;
       const f = Math.pow(E.rampFactor, Math.floor(served / E.rampEvery));
@@ -370,6 +372,8 @@ window.BT = window.BT || { Screens: {} };
         R.owed = due.total - paid;
       }
       R.lastDay = due.day;
+      // Tiền nhà đã trả thì không được hoàn khi bỏ ca (điểm khôi phục đầu ca trừ theo)
+      if (paid && S.dayBackup && !S.dayBackup.finished) S.dayBackup.wallet -= paid;
       BT.Save.persist();
       return { paid, owed: R.owed };
     }

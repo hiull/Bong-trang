@@ -331,6 +331,8 @@ window.BT = window.BT || { Screens: {} };
       Object.keys(need).forEach((k) => delete need[k]);
     }
     (dish.reqs || []).forEach((q) => {
+      // Chè: bỏ/gấp đôi một LỚP đã xử lý ở trên (bỏ lớp phủ như "không đá" vẫn đi theo nhánh chung)
+      if (r.zone === "che" && (q.type === "double" || (q.type === "remove" && r.toppings.includes(q.ing)))) return;
       if (q.type === "remove") {
         delete need[q.ing];
         finishIngs = finishIngs.filter((x) => x !== q.ing);

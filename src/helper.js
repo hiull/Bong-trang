@@ -18,6 +18,7 @@ window.BT = window.BT || { Screens: {} };
     working(run) {
       if (!this.unlocked() || !run) return false;
       if (run.mode === "secret") return false;
+      if ((run.season || 1) < CONFIG.helper.fromSeason) return false;
       if (run.cfg && run.cfg.helperOff) return false;
       return BT.Save.state.helper.role !== "off";
     },

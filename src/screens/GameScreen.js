@@ -402,6 +402,7 @@ window.BT = window.BT || { Screens: {} };
       const r = req.r;
       const unlocked = (id) => UI.ing(id).openDay <= this.dayNum;
       const options = CONFIG.specialRequests.filter((q) => {
+        if (q.zone && q.zone !== r.zone) return false;
         const inLayers = !!(req.layers && req.layers.includes(q.ing));
         if (q.type === "remove") return req.need[q.ing] !== undefined || req.finishIngs.includes(q.ing) || (inLayers && req.layers.length > 1);
         if (q.type === "double") return req.need[q.ing] !== undefined || inLayers;
@@ -1106,7 +1107,7 @@ window.BT = window.BT || { Screens: {} };
       const ch = def.chapters[chapter];
       if (!ch) return;
       const S = this.S;
-      this.storyDialog(UI.t("regularTitle", { name: def.name, c: chapter + 1, t: def.chapters.length }), def.doodle || def.avatar, UI.fmt(ch.text), ch.choices.map((choice) => ({
+      this.storyDialog(UI.t("regularTitle", { name: def.name, c: chapter + 1, t: BT.MS.chaptersAt(id, this.dayNum) }), def.doodle || def.avatar, UI.fmt(ch.text), ch.choices.map((choice) => ({
         label: UI.fmt(choice.label),
         onPick: () => {
           S.regularCustomers[id] = chapter + 1;
@@ -1678,7 +1679,7 @@ window.BT = window.BT || { Screens: {} };
       S.today = null;
       BT.Save.persist();
       const summary = {
-        day: this.dayId, run: this.run, title: UI.runTitle(this.run), endless: true, passed: true, lostHearts: false, stars: 0,
+        day: this.dayId, run: this.run, title: UI.runTitle(this.run), endSeason: S.season || 1, endless: true, passed: true, lostHearts: false, stars: 0,
         served, best: S.endless.best, newBest: claim.newBest, coins: claim.coins, rewardMarks: claim.milestones,
         memory: newMemory, ending, minor, card2, memory2: newMemory2, helperChapter, units, progress, need: MS.need(progress.before.index), levelUp,
         income, kept: income, target: 0, revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
@@ -1761,7 +1762,7 @@ window.BT = window.BT || { Screens: {} };
       BT.Save.persist();
 
       const summary = {
-        day: this.dayId, run, title: UI.runTitle(run), passed, lostHearts, stars, secret: this.secret,
+        day: this.dayId, run, title: UI.runTitle(run), endSeason: S.season || 1, passed, lostHearts, stars, secret: this.secret,
         units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter,
         memory: newMemory, newGold, allGold, ending, levelUp,
         income, kept, target: d.target,

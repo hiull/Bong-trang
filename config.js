@@ -459,9 +459,9 @@ window.CONFIG = {
     { id: "it_da", type: "remove", ing: "da", text: "ít đá" },
     { id: "them_trung", type: "double", ing: "trung_cut", text: "thêm trứng cút" },
     { id: "nhieu_kho_bo", type: "double", ing: "kho_bo", text: "nhiều khô bò" },
-    { id: "no_nuoc_cot", type: "remove", ing: "nuoc_cot_dua", text: "không nước cốt dừa" },
-    { id: "nhieu_tran_chau", type: "double", ing: "tran_chau", text: "nhiều trân châu" },
-    { id: "nhieu_mit", type: "double", ing: "mit", text: "nhiều mít" },
+    { id: "no_nuoc_cot", type: "remove", ing: "nuoc_cot_dua", text: "không nước cốt dừa", zone: "che" },
+    { id: "nhieu_tran_chau", type: "double", ing: "tran_chau", text: "nhiều trân châu", zone: "che" },
+    { id: "nhieu_mit", type: "double", ing: "mit", text: "nhiều mít", zone: "che" },
     { id: "nuong_gion", type: "crispy", text: "nướng giòn" },
     { id: "cay", type: "spicy", text: "🌶️ x{n}" }
   ],
