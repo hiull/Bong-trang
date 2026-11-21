@@ -82,6 +82,15 @@ window.BT = window.BT || { Screens: {} };
     // Lên lịch khách đặc biệt: Hiếu (Tomortle), khách quen có cốt truyện, khách ruột
     planSpecials() {
       const G = CONFIG.gameplay;
+      // Lượt anh Hiếu ghé chỉ để thả thính: các mốc tiến độ ca (0–1)
+      const [w0, w1] = G.tomoFlirtWindow;
+      const nFlirt = this.secret ? G.tomoFlirtSecret : (this.dayNum >= G.tomoFlirtFromDay ? G.tomoFlirtPerDay : 0);
+      this.flirtAt = [];
+      for (let k = 0; k < nFlirt; k++) this.flirtAt.push(this.secret ? w0 + (k + 0.5) * (w1 - w0) / nFlirt : UI.rand(w0, w1));
+      this.flirtAt.sort((a, b) => a - b);
+      this.flirtDone = 0;
+      this.flirtActive = false;
+      this.flirtIndex = -1;
       this.plan = {};
       this.tomoCame = 0;
       this.tomoWanted = 0;
@@ -313,7 +322,11 @@ window.BT = window.BT || { Screens: {} };
 
       this.customers.slice().forEach((c) => c.update(dt, this.freezeLeft > 0 || !!this.tut));
       this.tickTutorial();
-      if (this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0) this.finish(false);
+      const allServed = this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0;
+      // Tới mốc thả thính (hoặc hết khách mà còn lượt chưa ghé) → anh Hiếu vào khi tiệm đang rảnh tay
+      const due = this.flirtDone < this.flirtAt.length && (allServed || this.done / this.total >= this.flirtAt[this.flirtDone]);
+      if (due && !this.flirtActive && !UI.modals.length && !this.shakeLayer && !this.tut) this.startFlirt();
+      if (allServed && this.flirtDone >= this.flirtAt.length && !this.flirtActive) this.finish(false);
     }
 
     countdown() {
@@ -773,6 +786,95 @@ window.BT = window.BT || { Screens: {} };
       UI.coach.show({ text: UI.t("tutDone"), target: null, hand: null });
       BT.Audio.play("star");
       this.scope.timeout(() => { UI.coach.hide(); this.tut = null; }, 1800);
+    }
+
+    // ---------------- Anh Hiếu ghé thả thính ----------------
+    startFlirt() {
+      const i = BT.Flirt.take();
+      this.flirtDone++;
+      if (i < 0) return;
+      const G = CONFIG.gameplay;
+      const M = CONFIG.money;
+      const item = BT.Flirt.list()[i];
+      this.flirtIndex = i;
+      this.flirtActive = true;
+      this.pauseReasons.add("flirt");
+
+      // Anh bước vào đứng trước quầy
+      const v = UI.el("div", "flirt-visitor");
+      v.appendChild(UI.el("div", "flirt-bubble", UI.t("flirtGreet")));
+      v.appendChild(UI.icon("tomortle", "flirt-avatar"));
+      v.appendChild(UI.icon("bouquet", "flirt-flower"));
+      this.front.appendChild(v);
+      void v.offsetWidth;
+      v.classList.add("in");
+      BT.Audio.play("heart");
+
+      const body = UI.el("div", "flirt");
+      const who = UI.el("div", "flirt-who");
+      who.appendChild(UI.icon("tomortle", "flirt-who-avatar"));
+      who.appendChild(UI.el("div", "flirt-who-greet", UI.t("flirtGreet")));
+      body.appendChild(who);
+      const lines = UI.el("div", "flirt-lines");
+      item.lines.forEach((l) => lines.appendChild(UI.el("div", "flirt-line", l)));
+      body.appendChild(lines);
+      const input = UI.el("textarea", "flirt-input");
+      input.rows = 2;
+      input.placeholder = UI.t("flirtPlaceholder");
+      body.appendChild(input);
+      const result = UI.el("div", "flirt-result");
+      body.appendChild(result);
+
+      let done = false;
+      const finish = (delay) => {
+        done = true;
+        m.el.querySelectorAll(".modal-buttons .btn").forEach((b) => { b.disabled = true; });
+        input.disabled = true;
+        this.scope.timeout(() => {
+          m.close(true);
+          this.pauseReasons.delete("flirt");
+          v.classList.add("out");
+          this.scope.timeout(() => { v.remove(); this.flirtActive = false; }, 600);
+        }, delay);
+      };
+      const submit = () => {
+        if (done) return;
+        if (!input.value.trim()) { UI.toast(UI.t("flirtEmpty")); input.focus(); return; }
+        if (!BT.Flirt.check(i, input.value)) {
+          UI.shake(input);
+          UI.toast(UI.t("flirtWrong"));
+          BT.Audio.play("wrong");
+          return;
+        }
+        BT.Flirt.mark(i, "self");
+        UI.setText(result, UI.t("flirtRight"));
+        result.className = "flirt-result right";
+        this.applyEffect({ tip: M.flirtRewardTip, heart: M.flirtRewardHearts });
+        UI.heartBurst(G.tomortleHearts, G.tomortleHeartsSec);
+        BT.Audio.play("win");
+        BT.Progress.questAdd("flirt", 1);
+        finish(1600);
+      };
+      const giveUp = () => {
+        if (done) return;
+        BT.Flirt.mark(i, "told");
+        UI.setText(result, UI.t("flirtReveal", { a: item.answers[0] }));
+        result.className = "flirt-result reveal";
+        this.applyEffect({ tip: M.flirtGiveUpTip });
+        BT.Audio.play("letter");
+        finish(2600);
+      };
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } });
+      const m = UI.modal({
+        title: UI.t("flirtTitle"),
+        body,
+        className: "modal-flirt",
+        buttons: [
+          { label: UI.t("flirtSubmit"), cls: "btn-pink flirt-submit", keepOpen: true, onClick: submit },
+          { label: UI.t("flirtGiveUp"), cls: "btn-white flirt-giveup", keepOpen: true, onClick: giveUp }
+        ]
+      });
+      this.scope.timeout(() => { try { input.focus({ preventScroll: true }); } catch (e) { /* bỏ qua */ } }, 350);
     }
 
     // ---------------- Sự cố: nước đổ ----------------
