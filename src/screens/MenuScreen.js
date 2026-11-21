@@ -57,6 +57,19 @@ window.BT = window.BT || { Screens: {} };
       main.appendChild(UI.button(UI.t("btnMemories"), "btn-purple big", () => router.go("Album")));
       el.appendChild(main);
 
+      // Thử thách hôm nay
+      const modes = UI.el("div", "menu-modes");
+      const dailyBtn = UI.button(UI.t("dailyBtn"), "btn-green small daily-btn", () => {
+        if (!BT.Daily.unlocked()) { UI.toast(UI.t("dailyLocked", { n: CONFIG.daily.fromMilestone })); return; }
+        openDaily();
+      });
+      if (!BT.Daily.unlocked()) {
+        dailyBtn.classList.add("locked");
+        dailyBtn.appendChild(UI.el("span", "mode-sub", UI.t("dailyLocked", { n: CONFIG.daily.fromMilestone })));
+      }
+      modes.appendChild(dailyBtn);
+      el.appendChild(modes);
+
       const small = UI.el("div", "menu-small");
       small.appendChild(UI.button(UI.t("btnReviews"), "btn-white small", () => router.go("Review")));
       const checkBtn = UI.button(UI.t("btnCheckin"), "btn-white small", () => openCheckin());
@@ -71,8 +84,48 @@ window.BT = window.BT || { Screens: {} };
       function refreshDots() {
         checkBtn.classList.toggle("has-dot", !Pr.checkinInfo().claimedToday);
         questBtn.classList.toggle("has-dot", Pr.questsClaimable() > 0);
+        dailyBtn.classList.toggle("has-dot", BT.Daily.unlocked() && !BT.Daily.playedToday());
       }
       refreshDots();
+
+      // ---------- Thử thách hôm nay ----------
+      function openDaily() {
+        const D = BT.Daily;
+        const key = D.dateKey();
+        const run = D.run(key);
+        const body = UI.el("div", "daily-body");
+        const w = CONFIG.weathers[run.event];
+        body.appendChild(UI.el("div", "info-line", UI.t("dailyEvent", { icon: w.icon, label: w.label })));
+        body.appendChild(UI.el("div", "info-line", UI.t("dailyFocus", { dish: UI.recipe(run.cfg.focus).name })));
+        const rule = CONFIG.daily.rules.find((r) => r.id === run.cfg.rule);
+        body.appendChild(UI.el("div", "info-note", UI.t("dailyRule", { rule: rule.label })));
+        const st = S.daily;
+        const alive = st.lastDate === key || st.lastDate === Pr.yesterday();
+        body.appendChild(UI.el("div", "daily-streak", alive && st.streak ? UI.t("dailyStreak", { n: st.streak }) : UI.t("dailyNoStreak")));
+        if (st.best[key]) body.appendChild(UI.el("div", "info-line", UI.t("dailyBest", { x: UI.money(st.best[key]) })));
+        body.appendChild(calendar(new Date(), st.played));
+        const played = D.playedToday(key);
+        UI.modal({ title: UI.t("dailyTitle"), body, className: "modal-daily", dismissable: true,
+          buttons: [{ label: played ? UI.t("dailyReplay") : UI.t("dailyPlay"), cls: "btn-pink", onClick: () => router.go("Prep", { run }) }] });
+      }
+
+      function calendar(now, played) {
+        const y = now.getFullYear(), m = now.getMonth();
+        const box = UI.el("div", "cal");
+        box.appendChild(UI.el("div", "cal-title", UI.t("calMonth", { m: m + 1, y })));
+        const grid = UI.el("div", "cal-grid");
+        CONFIG.texts.calWeek.forEach((d) => grid.appendChild(UI.el("span", "cal-head", d)));
+        const first = (new Date(y, m, 1).getDay() + 6) % 7;
+        for (let i = 0; i < first; i++) grid.appendChild(UI.el("span", "cal-cell empty"));
+        const days = new Date(y, m + 1, 0).getDate();
+        for (let d = 1; d <= days; d++) {
+          const key = BT.Daily.dateKey(new Date(y, m, d));
+          const c = UI.el("span", "cal-cell" + (played[key] ? " on" : "") + (d === now.getDate() ? " today" : ""), String(d));
+          grid.appendChild(c);
+        }
+        box.appendChild(grid);
+        return box;
+      }
 
       // ---------- Cài đặt ----------
       function openSettings() {

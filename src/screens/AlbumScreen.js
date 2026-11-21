@@ -47,6 +47,22 @@ window.BT = window.BT || { Screens: {} };
           buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
       });
       scroll.appendChild(fbook);
+      // Sổ lời nhắn (Thử thách hôm nay)
+      const notes = (P.dailyNotes || []);
+      const seen = [...new Set(S.daily.notesSeen)].sort((a, b) => a - b);
+      const nbook = UI.el("button", "flirt-book-card notes-book-card");
+      nbook.type = "button";
+      nbook.appendChild(UI.el("span", "fb-icon", "💌"));
+      nbook.appendChild(UI.el("span", "fb-label", UI.t("notesBookCount", { a: seen.length })));
+      nbook.addEventListener("click", () => {
+        BT.Audio.play("pop");
+        const list = UI.el("div", "fb-list");
+        if (!seen.length) list.appendChild(UI.el("div", "fb-locked", UI.t("notesBookEmpty")));
+        seen.forEach((i) => { if (notes[i]) list.appendChild(UI.el("div", "fb-item solved nb-item", UI.fmt(notes[i]))); });
+        UI.modal({ title: UI.t("notesBookTitle"), body: list, className: "modal-flirt-book modal-notes-book", dismissable: true,
+          buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+      });
+      scroll.appendChild(nbook);
       // Lời nhắn bí mật
       const bonus = UI.el("button", "bonus-card" + (S.goldHearts >= maxDay ? " open" : ""));
       bonus.type = "button";

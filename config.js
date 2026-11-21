@@ -407,6 +407,21 @@ window.CONFIG = {
     festival: { w: 1, fromLevel: 13, tipMult: 1.5 }
   },
 
+  // Thử thách mỗi ngày: mở từ mốc fromMilestone. Hạng theo thu/mục tiêu: [bạc, vàng]; thưởng đồng/bạc/vàng (k).
+  daily: {
+    fromMilestone: 5,
+    tierRatios: [0.8, 1.2],
+    tierCoins: [30, 60, 100],
+    focusWeight: 3,             // món chủ đạo được gọi nhiều gấp chừng này
+    rules: [
+      { id: "rush", label: "Khách vội", patienceMult: 0.8 },
+      { id: "regulars", label: "Toàn khách quen", friendMult: 5 },
+      { id: "hieu5", label: "Anh Hiếu ghé 5 lần", tomoVisits: 5 },
+      { id: "picky", label: "Tip gấp đôi nhưng khách khó tính", tipMult: 2, patienceMult: 0.85 },
+      { id: "crowd", label: "Đông khách", extraCustomers: 3 }
+    ]
+  },
+
   // 15 Ngày bán hàng + Ngày bí mật (Mục 10). target = mục tiêu doanh thu (k).
   days: [
     { day: 1,  customers: 8,  target: 60,  spawn: [6, 8],     patienceMult: 1.30, unlock: ["bt_tron_co_ban", "bt_tron_kho_bo"], weather: "sunny", tipMult: 1, hints: true,
@@ -779,13 +794,33 @@ window.CONFIG = {
     dayNames: { secret: "bí mật" },
     runMs: "Mốc {n}",
     runSecret: "Ca bí mật",
-    runDaily: "Thử thách hôm nay",
+    runDaily: "Thử thách",
     runEndless: "Ca vô tận",
     msGain: "+{u} ca",
     msProgress: "{a} / {b} ca",
     msCleared: "Qua {t}! 🎉",
     msMinorCoins: "Thưởng qua mốc: +{x}",
-    msTaleTitle: "Chuyện vặt 💬",
+    msTaleTitle: "Chuyện vặt",
+    dailyBtn: "Thử thách hôm nay",
+    dailyLocked: "Mở ở Mốc {n}",
+    dailyTitle: "Thử thách hôm nay",
+    dailyEvent: "Biến cố: {icon} {label}",
+    dailyFocus: "Món chủ đạo: {dish}",
+    dailyRule: "Luật vui: {rule}",
+    dailyStreak: "🔥 Chuỗi {n} ngày",
+    dailyNoStreak: "Chơi hôm nay để bắt đầu chuỗi 🔥",
+    dailyPlay: "Chơi",
+    dailyReplay: "Chơi lại (chỉ tính kỷ lục)",
+    dailyTiers: ["Hạng đồng ★", "Hạng bạc ★★", "Hạng vàng ★★★"],
+    dailyCoins: "+{x} vào ví",
+    dailyNoteTitle: "Lời nhắn hôm nay 💌",
+    dailyAgain: "Hôm nay nhận quà rồi, ca này chỉ tính kỷ lục nha",
+    dailyBest: "Kỷ lục hôm nay: {x}",
+    calWeek: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+    calMonth: "Tháng {m}/{y}",
+    notesBookTitle: "Sổ lời nhắn",
+    notesBookCount: "Sổ lời nhắn · {a} câu",
+    notesBookEmpty: "Chơi Thử thách hôm nay để mở lời nhắn đầu tiên nha",
     msMajorLabel: "Mốc lớn · cấp {k}",
     msMinorLabel: "Mốc nhỏ · cấp {k}",
     msCustomers: "Khoảng {c} khách",

@@ -26,6 +26,24 @@ window.BT = window.BT || { Screens: {} };
       else if (s.passed) UI.setText(head, UI.t("resultPassed"));
       else UI.setText(head, s.lostHearts ? UI.t("resultFailedHearts") : UI.t("resultFailedTarget", { x: UI.money(s.target) }));
       body.appendChild(head);
+      // Thử thách hôm nay: hạng, thưởng, lời nhắn
+      if (s.daily) {
+        const dbox = UI.el("div", "daily-box");
+        dbox.appendChild(UI.el("div", "daily-tier tier-" + s.daily.tier, CONFIG.texts.dailyTiers[s.daily.tier]));
+        if (s.daily.first) {
+          dbox.appendChild(UI.el("div", "daily-coins", UI.t("dailyCoins", { x: UI.money(s.daily.coins) }) + " · " + UI.t("dailyStreak", { n: s.daily.streak })));
+          if (s.daily.note) {
+            const note = UI.el("div", "daily-note");
+            note.appendChild(UI.el("div", "daily-note-title", UI.t("dailyNoteTitle")));
+            note.appendChild(UI.el("div", "daily-note-text", UI.fmt(s.daily.note.text)));
+            dbox.appendChild(note);
+          }
+        } else {
+          dbox.appendChild(UI.el("div", "daily-again", UI.t("dailyAgain")));
+        }
+        body.appendChild(dbox);
+      }
+
       if (s.newGold) body.appendChild(UI.el("div", "gold-get", UI.t("goldHeartGet") + " · " + UI.t("goldHearts", { a: S.goldHearts, b: CONFIG.build.maxPlayableDay })));
       if (!s.passed) {
         body.appendChild(UI.el("div", "result-cheer", UI.t("loseLines")));

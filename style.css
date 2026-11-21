@@ -1687,3 +1687,27 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .map-node.current::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: -14px; height: 6px; border-radius: 4px;
   background: linear-gradient(90deg, var(--pink) var(--pct, 0%), #EFE3DA var(--pct, 0%)); border: 1.5px solid var(--brown); }
 .map-node.minor.current::after { bottom: -12px; left: -10%; right: -10%; }
+
+/* ---------------- Thử thách hôm nay ---------------- */
+.menu-modes { display: flex; gap: 8px; padding: 0 24px 4px; flex: none; }
+.menu-modes .btn { flex: 1; display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.menu-modes .btn.locked { filter: grayscale(0.7); opacity: 0.8; }
+.mode-sub { font-size: 12px; font-weight: 700; opacity: 0.9; }
+.daily-body { display: flex; flex-direction: column; gap: 6px; }
+.daily-streak { font-weight: 800; color: var(--pink-dark); }
+.cal { margin-top: 4px; }
+.cal-title { font-weight: 800; text-align: center; margin-bottom: 4px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; font-size: 13px; }
+.cal-head { font-weight: 800; opacity: 0.7; }
+.cal-cell { padding: 3px 0; border-radius: 8px; background: #F4ECE6; }
+.cal-cell.empty { background: transparent; }
+.cal-cell.on { background: var(--pink); color: var(--white); font-weight: 800; }
+.cal-cell.today { outline: 2px solid var(--brown); }
+.daily-box { margin-top: 12px; padding: 10px 12px; border: var(--border) solid var(--brown); border-radius: 14px; background: var(--white); text-align: center; display: flex; flex-direction: column; gap: 6px; }
+.daily-tier { font-family: var(--font-title); font-size: calc(var(--fs) * 1.15); }
+.daily-tier.tier-0 { color: #B0703C; } .daily-tier.tier-1 { color: #8A8F99; } .daily-tier.tier-2 { color: #E0A800; }
+.daily-coins { font-weight: 800; }
+.daily-note { padding: 10px; border-radius: 12px; background: var(--pink-light); }
+.daily-note-title { font-weight: 800; color: var(--pink-dark); }
+.daily-note-text { margin-top: 4px; }
+.daily-again { font-size: var(--fs-s); opacity: 0.85; }

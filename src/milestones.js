@@ -169,4 +169,87 @@ window.BT = window.BT || { Screens: {} };
   };
 
   BT.MS = MS;
+
+  // ---------------- Thử thách mỗi ngày ----------------
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const pad = (n) => (n < 10 ? "0" : "") + n;
+  function prevKey(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    const dt = new Date(y, m - 1, d - 1);
+    return dt.getFullYear() + "-" + pad(dt.getMonth() + 1) + "-" + pad(dt.getDate());
+  }
+
+  const Daily = {
+    dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); },
+    unlocked() { return BT.Save.state.ms.index >= CONFIG.daily.fromMilestone; },
+    playedToday(key) { return !!BT.Save.state.daily.played[key || this.dateKey()]; },
+
+    challenge(key, level) {
+      const rng = mulberry32(Number(key.replace(/-/g, "")) * 7919 + 17);
+      rng(); rng();
+      const event = MS.pickEvent(level, null, rng);
+      const dishes = CONFIG.recipes.filter((r) => r.openDay <= level && !r.combo);
+      const focus = dishes[Math.floor(rng() * dishes.length)].id;
+      const rules = CONFIG.daily.rules;
+      const rule = rules[Math.floor(rng() * rules.length)];
+      return { event, focus, rule };
+    },
+
+    run(key) {
+      key = key || this.dateKey();
+      const S = BT.Save.state;
+      const i = S.ms.index;
+      const ms = MS.get(i);
+      const ch = this.challenge(key, ms.level);
+      const cfg = MS.shiftCfg(i, false, ch.event);
+      const r = ch.rule;
+      if (r.patienceMult) cfg.patienceMult = Math.round(cfg.patienceMult * r.patienceMult * 100) / 100;
+      if (r.tipMult) cfg.tipMult = (cfg.tipMult || 1) * r.tipMult;
+      if (r.extraCustomers) cfg.customers += r.extraCustomers;
+      if (r.friendMult) cfg.friendMult = r.friendMult;
+      if (r.tomoVisits) cfg.tomoVisits = r.tomoVisits;
+      cfg.focus = ch.focus;
+      cfg.focusWeight = CONFIG.daily.focusWeight;
+      cfg.rule = r.id;
+      return { mode: "daily", key: "daily", date: key, ms: i, level: ms.level, cfg, event: ch.event, scripted: false };
+    },
+
+    tier(income, target) {
+      const R = CONFIG.daily.tierRatios;
+      const x = target > 0 ? income / target : 0;
+      return x >= R[1] ? 2 : x >= R[0] ? 1 : 0;
+    },
+
+    complete(key, { income, target }) {
+      const S = BT.Save.state;
+      const D = S.daily;
+      const tier = this.tier(income, target);
+      D.best[key] = Math.max(D.best[key] || 0, income);
+      const first = !D.played[key] && (D.lastDate === null || key > D.lastDate);
+      if (!first) { BT.Save.persist(); return { first: false, note: null, units: 0, coins: 0, tier, streak: D.streak }; }
+      D.played[key] = true;
+      D.streak = D.lastDate === prevKey(key) ? D.streak + 1 : 1;
+      D.lastDate = key;
+      const notes = (window.PERSONAL && window.PERSONAL.dailyNotes) || [];
+      let note = null;
+      if (notes.length) {
+        const idx = D.noteNext % notes.length;
+        note = { index: idx, text: notes[idx] };
+        D.notesSeen.push(idx);
+        D.noteNext++;
+      }
+      const coins = CONFIG.daily.tierCoins[tier];
+      S.wallet += coins;
+      const progress = MS.addProgress(1);
+      return { first: true, note, units: 1, coins, tier, streak: D.streak, progress };
+    }
+  };
+  BT.Daily = Daily;
 })();

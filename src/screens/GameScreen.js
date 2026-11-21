@@ -106,7 +106,10 @@ window.BT = window.BT || { Screens: {} };
         for (let k = 0; k < this.tomoWanted; k++) this.plan[Math.floor((k + 0.5) * this.total / this.tomoWanted)] = { kind: "tomortle" };
         return;
       }
-      if (this.dayNum >= G.tomortleFromDay) {
+      if (this.dayCfg.tomoVisits) {
+        this.tomoWanted = this.dayCfg.tomoVisits;
+        for (let k = 0; k < this.tomoWanted; k++) this.plan[Math.floor((k + 0.5) * this.total / this.tomoWanted)] = { kind: "tomortle" };
+      } else if (this.dayNum >= G.tomortleFromDay) {
         this.tomoWanted = 1;
         this.plan[UI.randInt(1, Math.max(1, this.total - G.tomortleForceWhenLeft - 1))] = { kind: "tomortle" };
       }
@@ -356,6 +359,7 @@ window.BT = window.BT || { Screens: {} };
       let w = (d.unlock || []).includes(r.id) ? CONFIG.gameplay.newDishWeight : 1;
       if (d.drinkWeight && r.zone === "nuoc") w *= d.drinkWeight;
       if (d.grillWeight && r.zone === "nuong") w *= d.grillWeight;
+      if (d.focus === r.id) w *= d.focusWeight || 1;
       return w;
     }
 
@@ -429,7 +433,7 @@ window.BT = window.BT || { Screens: {} };
       if (special && special.kind === "tomortle" && this.tomoCame >= this.tomoWanted) special = null;
       if (special && special.kind === "tomortle") this.spawnTomortle(seat);
       else if (special && special.kind === "regular") this.spawnRegular(seat, special);
-      else if (this.secret || (this.groupPending === 0 && this.dayNum >= G.friendFromDay && Math.random() < G.friendWeight / (this.typePool.length + G.friendWeight))) this.spawnFriend(seat);
+      else if (this.secret || (this.groupPending === 0 && this.dayNum >= G.friendFromDay && Math.random() < G.friendWeight * (this.dayCfg.friendMult || 1) / (this.typePool.length + G.friendWeight * (this.dayCfg.friendMult || 1)))) this.spawnFriend(seat);
       else {
         let typeId = UI.pick(this.typePool);
         if (this.groupPending > 0) { typeId = "hoc_sinh"; this.groupPending--; }
@@ -1513,10 +1517,14 @@ window.BT = window.BT || { Screens: {} };
       const MS = BT.MS;
       const run = this.run;
       // Tiến độ mốc (ca bí mật không tính)
-      let units = 0, progress = null, newMemory = null, minor = null, ending = false;
+      let units = 0, progress = null, newMemory = null, minor = null, ending = false, daily = null;
       const goldBefore = S.goldHearts;
       S.ms.shifts++;
-      if (!this.secret) {
+      if (run.mode === "daily") {
+        daily = BT.Daily.complete(run.date, { income, target: d.target });
+        units = daily.units;
+        progress = daily.progress || null;
+      } else if (!this.secret) {
         const best = S.ms.best[run.ms] || { stars: 0, income: 0 };
         best.stars = Math.max(best.stars, stars);
         best.income = Math.max(best.income, income);
@@ -1525,22 +1533,22 @@ window.BT = window.BT || { Screens: {} };
         S.ms.lastEvent = run.event;
         units = MS.units({ passed, stars, income, target: d.target });
         progress = MS.addProgress(units, { replay: run.mode === "replay" });
-        if (progress.cleared) {
-          const m = MS.get(progress.cleared);
-          if (m.major) {
-            const mi = m.day - 1;
-            if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
-          } else {
-            const MC = CONFIG.milestones;
-            const coins = MC.minorCoinsBase + MC.minorCoinsPerLevel * m.level;
-            S.wallet += coins;
-            const tales = window.PERSONAL.minorTales || [];
-            let tale = null;
-            if (tales.length) { const ti = S.talesSeen.length % tales.length; tale = tales[ti]; S.talesSeen.push(ti); }
-            minor = { coins, tale };
-          }
-          ending = progress.cleared === MS.count() && !S.endingSeen;
+      }
+      if (progress && progress.cleared) {
+        const m = MS.get(progress.cleared);
+        if (m.major) {
+          const mi = m.day - 1;
+          if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
+        } else {
+          const MC = CONFIG.milestones;
+          const coins = MC.minorCoinsBase + MC.minorCoinsPerLevel * m.level;
+          S.wallet += coins;
+          const tales = window.PERSONAL.minorTales || [];
+          let tale = null;
+          if (tales.length) { const ti = S.talesSeen.length % tales.length; tale = tales[ti]; S.talesSeen.push(ti); }
+          minor = { coins, tale };
         }
+        ending = progress.cleared === MS.count() && !S.endingSeen;
       }
       S.goldHearts = MS.goldHearts();
       const newGold = S.goldHearts > goldBefore;
@@ -1565,7 +1573,7 @@ window.BT = window.BT || { Screens: {} };
 
       const summary = {
         day: this.dayId, run, title: UI.runTitle(run), passed, lostHearts, stars, secret: this.secret,
-        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor,
+        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily,
         memory: newMemory, newGold, allGold, ending, levelUp,
         income, kept, target: d.target,
         revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
