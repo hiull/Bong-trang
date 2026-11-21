@@ -5,12 +5,14 @@ window.BT = window.BT || { Screens: {} };
 (function () {
   const UI = BT.UI;
 
+  const homeOf = (s) => (s.endless || (s.run && s.run.mode === "daily") ? "Menu" : "Map");
+
   BT.Screens.Result = {
     mount(root, s, router) {
       const scope = UI.scope();
       const S = BT.Save.state;
       const el = UI.el("div", "screen result");
-      el.appendChild(UI.topbar(UI.t("resultTitle", { n: s.title || UI.dayName(s.day) }), () => router.backTo("Map")));
+      el.appendChild(UI.topbar(UI.t("resultTitle", { n: s.title || UI.dayName(s.day) }), () => router.backTo(homeOf(s))));
       const body = UI.el("div", "result-body");
 
       const starRow = UI.el("div", "result-stars" + (s.endless ? " hidden" : ""));
@@ -42,7 +44,7 @@ window.BT = window.BT || { Screens: {} };
           dbox.appendChild(UI.el("div", "daily-coins", UI.t("dailyCoins", { x: UI.money(s.daily.coins) }) + " · " + UI.t("dailyStreak", { n: s.daily.streak })));
           if (s.daily.note) {
             const note = UI.el("div", "daily-note");
-            note.appendChild(UI.el("div", "daily-note-title", UI.t("dailyNoteTitle")));
+            note.appendChild(UI.el("div", "daily-note-title", UI.t("dailyNoteTitle") + (s.daily.note.reread ? " · " + UI.t("dailyReread") : "")));
             note.appendChild(UI.el("div", "daily-note-text", UI.fmt(s.daily.note.text)));
             dbox.appendChild(note);
           }
@@ -181,7 +183,7 @@ window.BT = window.BT || { Screens: {} };
 
       return {
         destroy() { scope.clear(); UI.closeAllModals(); },
-        onBack() { if (UI.modals.length) return false; router.backTo("Map"); return true; }
+        onBack() { if (UI.modals.length) return false; router.backTo(homeOf(s)); return true; }
       };
     }
   };

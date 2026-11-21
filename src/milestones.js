@@ -140,7 +140,7 @@ window.BT = window.BT || { Screens: {} };
       ms.shifts = Object.keys(days).filter((k) => Number(k)).length;
       st.goldHearts = this.list().filter((m) => m.major && ms.best[m.index] && ms.best[m.index].stars >= 3).length;
       st.regularNext = {};
-      (st.reviews || []).forEach((r) => { const k = Number(r.day); if (k) r.day = this.majorIndex(k); });
+      (st.reviews || []).forEach((r) => { const k = Number(r.day); r.day = k ? this.majorIndex(k) : CONFIG.texts.runSecret; });
       const b = st.dayBackup;
       if (b && !b.finished) { st.wallet = b.wallet; st.inventory = JSON.parse(JSON.stringify(b.inventory || {})); st.today = null; }
       st.dayBackup = null;
@@ -242,7 +242,7 @@ window.BT = window.BT || { Screens: {} };
       let note = null;
       if (notes.length) {
         const idx = D.noteNext % notes.length;
-        note = { index: idx, text: notes[idx] };
+        note = { index: idx, text: notes[idx], reread: D.noteNext >= notes.length };
         D.notesSeen.push(idx);
         D.noteNext++;
       }

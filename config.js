@@ -415,7 +415,7 @@ window.CONFIG = {
     focusWeight: 3,             // món chủ đạo được gọi nhiều gấp chừng này
     rules: [
       { id: "rush", label: "Khách vội", patienceMult: 0.8 },
-      { id: "regulars", label: "Toàn khách quen", friendMult: 5 },
+      { id: "regulars", label: "Bạn bè rủ nhau ghé", friendMult: 5 },
       { id: "hieu5", label: "Anh Hiếu ghé 5 lần", tomoVisits: 5 },
       { id: "picky", label: "Tip gấp đôi nhưng khách khó tính", tipMult: 2, patienceMult: 0.85 },
       { id: "crowd", label: "Đông khách", extraCustomers: 3 }
@@ -823,6 +823,9 @@ window.CONFIG = {
     hudEndless: "Khách: {d}",
     endlessEvent: "Đổi không khí: {icon} {label}",
     endlessOver: "Hết tim rồi, nghỉ tay thôi!",
+    endlessStop: "Chốt ca! Nghỉ tay thôi!",
+    btnEndShift: "Chốt ca",
+    dailyReread: "đọc lại",
     endlessResult: "Phục vụ {n} khách!",
     endlessNewBest: "Kỷ lục mới! 🎉",
     endlessReward: "Thưởng mốc {m} khách: +{x}",

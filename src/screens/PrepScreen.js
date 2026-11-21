@@ -89,7 +89,9 @@ window.BT = window.BT || { Screens: {} };
       el.appendChild(body);
 
       const foot = UI.el("div", "prep-foot");
+      let started = false;
       foot.appendChild(UI.button(UI.t("btnOpenDay"), "btn-pink big", () => {
+        started = true;
         router.go("Game", { run }, { replace: true });
       }));
       el.appendChild(foot);
@@ -107,7 +109,8 @@ window.BT = window.BT || { Screens: {} };
       }
       refresh();
 
-      return { destroy() {} };
+      // Rời màn Chuẩn bị mà không mở ca: giữ nguyên tiền & kho hiện tại (lần sau vào lại chụp điểm khôi phục mới)
+      return { destroy() { if (!started && S.dayBackup && S.dayBackup.day === day) { S.dayBackup.finished = true; S.today = null; BT.Save.persist(); } } };
     }
   };
 })();

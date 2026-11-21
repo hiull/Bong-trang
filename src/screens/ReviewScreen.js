@@ -37,7 +37,7 @@ window.BT = window.BT || { Screens: {} };
           top.appendChild(UI.el("span", "review-avatar", r.doodle ? UI.icon(r.doodle) : r.avatar || "🙂"));
           const who = UI.el("div", "review-who");
           who.appendChild(UI.el("div", "review-name", r.name));
-          who.appendChild(UI.el("div", "review-day", UI.t("reviewDay", { n: r.day }) + (r.weight > 1 ? " · 📝 x" + r.weight : "")));
+          who.appendChild(UI.el("div", "review-day", (typeof r.day === "number" ? UI.t("reviewDay", { n: r.day }) : String(r.day)) + (r.weight > 1 ? " · 📝 x" + r.weight : "")));
           top.appendChild(who);
           top.appendChild(UI.el("span", "review-card-stars", stars(shown)));
           card.appendChild(top);

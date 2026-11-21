@@ -473,10 +473,16 @@ window.BT = window.BT || { Screens: {} };
 
     // Ca vô tận: món làm được khi mọi nguyên liệu còn hàng hoặc đủ tiền nhập
     canMake(r) {
-      if (r.combo) return r.combo.every((id) => this.canMake(UI.recipe(id)));
+      if (r.combo) {
+        const all = [];
+        r.combo.forEach((id) => { const x = UI.recipe(id); all.push(x.base, ...(x.toppings || []), ...(x.finish || []).map((f) => String(f).replace(/^rot:/, ""))); });
+        const miss = [...new Set(all.filter((id) => id && CONFIG.ingredients[id] && BT.Save.stock(id) <= 0))];
+        return miss.reduce((sum, id) => sum + UI.ing(id).price, 0) <= this.S.wallet;
+      }
       const ids = [r.base].concat(r.toppings || [], (r.finish || []).map((f) => String(f).replace(/^rot:/, "")))
         .filter((id) => id && CONFIG.ingredients[id]);
-      return ids.every((id) => BT.Save.stock(id) > 0 || this.S.wallet >= UI.ing(id).price);
+      const missing = [...new Set(ids)].filter((id) => BT.Save.stock(id) <= 0);
+      return missing.reduce((sum, id) => sum + UI.ing(id).price, 0) <= this.S.wallet;
     }
 
     // Ca vô tận: đổi biến cố
@@ -604,7 +610,7 @@ window.BT = window.BT || { Screens: {} };
       const weight = c && c.reviewer ? this.dayCfg.ratingWeight || 1 : 1;
       this.stats.ratings.push(stars);
       this.stats.weights.push(weight);
-      if (c) BT.Progress.addReview({ day: this.run.ms, name: c.tag || c.type.name, avatar: c.avatar, doodle: c.doodle, stars, weight });
+      if (c) BT.Progress.addReview({ day: this.run.mode === "story" || this.run.mode === "replay" ? this.run.ms : UI.runTitle(this.run), name: c.tag || c.type.name, avatar: c.avatar, doodle: c.doodle, stars, weight });
       if (stars === 5) this.q.five++;
     }
 
@@ -1538,8 +1544,8 @@ window.BT = window.BT || { Screens: {} };
         onClose: resume,
         buttons: [
           { label: UI.t("btnContinue"), cls: "btn-pink", onClick: resume },
-          { label: UI.t("btnRetry"), cls: "btn-orange", onClick: () => { resume(); this.abandon("retry"); } },
-          { label: UI.t("btnToMap"), cls: "btn-white", onClick: () => { resume(); this.abandon("map"); } }
+          ...(this.endless ? [] : [{ label: UI.t("btnRetry"), cls: "btn-orange", onClick: () => { resume(); this.abandon("retry"); } }]),
+          { label: UI.t(this.endless ? "btnEndShift" : (this.run.mode === "daily" ? "btnToMenu" : "btnToMap")), cls: "btn-white", onClick: () => { resume(); this.abandon("map"); } }
         ]
       });
     }
@@ -1550,7 +1556,7 @@ window.BT = window.BT || { Screens: {} };
       BT.Save.restoreDay();
       BT.Save.persist();
       if (where === "retry") this.router.go("Prep", { run: BT.MS.again(this.run) }, { replace: true });
-      else this.router.backTo("Map");
+      else this.router.backTo(this.run.mode === "daily" ? "Menu" : "Map");
     }
 
     // Qua mốc: kỷ niệm (mốc lớn) hoặc tiền + chuyện vặt (mốc nhỏ); qua mốc cuối → đoạn kết
@@ -1588,7 +1594,10 @@ window.BT = window.BT || { Screens: {} };
       const progress = MS.addProgress(units);
       const { newMemory, minor, ending } = this.applyCleared(progress);
       const avg = this.avgRating();
-      this.S.xp += Math.round(income / 10);
+      const lvBefore = BT.Progress.level(S.xp).level;
+      S.xp += Math.round(income / 10);
+      const lv = BT.Progress.level(S.xp);
+      const levelUp = lv.level > lvBefore ? lv : null;
       Object.keys(this.q).forEach((k) => BT.Progress.questAdd(k, this.q[k]));
       BT.Progress.questAdd("income", Math.round(income));
       if (S.dayBackup) S.dayBackup.finished = true;
@@ -1597,11 +1606,11 @@ window.BT = window.BT || { Screens: {} };
       const summary = {
         day: this.dayId, run: this.run, title: UI.runTitle(this.run), endless: true, passed: true, lostHearts: false, stars: 0,
         served, best: S.endless.best, newBest: claim.newBest, coins: claim.coins, rewardMarks: claim.milestones,
-        memory: newMemory, ending, minor, units, progress, need: MS.need(progress.before.index),
+        memory: newMemory, ending, minor, units, progress, need: MS.need(progress.before.index), levelUp,
         income, kept: income, target: 0, revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
         net: income - this.stats.expense, total: served, walkouts: this.stats.walkouts, avgRating: avg
       };
-      this.el.appendChild(UI.el("div", "end-banner", UI.t("endlessOver")));
+      this.el.appendChild(UI.el("div", "end-banner", UI.t(this.hearts <= 0 ? "endlessOver" : "endlessStop")));
       BT.Audio.play("win");
       this.scope.timeout(() => this.router.go("Result", summary, { replace: true }), CONFIG.gameplay.endBannerSec * 1000);
     }
