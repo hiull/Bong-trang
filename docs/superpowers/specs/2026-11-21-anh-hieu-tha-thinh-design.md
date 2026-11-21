@@ -22,7 +22,7 @@ giải hết bộ câu. **Bắt buộc:** đưa đủ tất cả các câu chơi
   Anh bước vào đứng trước quầy → game tạm dừng → bong bóng câu thính (câu nhiều dòng hiện đủ các dòng) → ô nhập chữ.
 - **Chấm:** bỏ qua hoa/thường, dấu câu, khoảng trắng thừa; chấp nhận gõ không dấu; mỗi câu có thể có nhiều đáp án.
 - **Đúng:** +20k tip, +1 tim tiệm, anh phản ứng vui + thả tim, câu được lưu vào **"Sổ thính của anh Hiếu"**.
-  **Sai:** báo nhẹ, cho gõ lại. Nút **"Chịu, anh nói đi"**: anh lộ đáp án, không thưởng.
+  **Sai:** báo nhẹ, cho gõ lại. Nút **"Chịu, anh nói đi"**: anh lộ đáp án, vẫn thưởng **+10k** (không có tim); câu vẫn vào Sổ thính (đánh dấu "anh nói").
 - **Thứ tự câu:** đi lần lượt qua toàn bộ danh sách, câu đã giải không lặp lại cho đến khi giải hết; tiến độ được lưu.
 - **Sổ thính** (trong Album): "Đã giải N/tổng", xem lại các câu đã giải kèm đáp án; câu chưa gặp hiện khoá.
 - Lượt anh ghé **mua hàng** giữ nguyên (câu gọi món lnlk, kiên nhẫn vô hạn, tip, hỏi kỷ niệm).
