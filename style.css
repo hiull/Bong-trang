@@ -71,7 +71,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 
 /* Máy tính: cột giữa tối đa 460px, tỉ lệ 9:16, đổ bóng mềm */
 @media (min-width: 501px) {
-  #app {
+  html:not(.phone) #app {
     width: min(460px, calc(min(100vh, 818px) * 9 / 16));
     height: min(100vh, 818px);
     border-radius: 22px;
@@ -243,7 +243,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px;
+  padding: max(18px, env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) max(18px, env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
   animation: fade-in 0.16s ease-out;
 }
 .modal-layer.closing { opacity: 0; transition: opacity 0.16s; }
@@ -932,7 +932,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px;
+  padding: 10px 10px max(10px, env(safe-area-inset-bottom, 0px));
   animation: fade-in 0.15s;
 }
 .shake-title { font-family: var(--font-title); font-weight: 800; font-size: max(22px, calc(var(--u) * 40)); color: var(--pink-dark); }
