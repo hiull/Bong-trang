@@ -382,6 +382,31 @@ window.CONFIG = {
     secret:   { icon: "★", label: "Ngày bí mật", note: "Không thể thua" }
   },
 
+  // Mùa & mốc: 15 ngày bên dưới là 15 mốc lớn; giữa các mốc lớn có mốc nhỏ (minorPerMajor).
+  seasons: [
+    { id: 1, name: "Mùa 1 · Tiệm nhỏ đầu hẻm", majorDays: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], minorPerMajor: 1 }
+  ],
+  milestones: {
+    shiftsBase: 2,            // số "ca chuẩn" cần cho mốc đầu tiên
+    shiftsGrowth: 0.04,       // mỗi mốc sau cần thêm chừng này ca chuẩn
+    replayProgressRate: 0.5,  // chơi lại mốc cũ: tiến độ cho mốc hiện tại nhân hệ số này
+    carryMax: 0.5,            // phần dư mang sang mốc kế tối đa
+    unitsPass: 1, unitsThreeStar: 1.25, unitsFailMin: 0.25, unitsFailRatio: 0.6,
+    afterLast: { customers: 1, targetMult: 1.08 },   // mốc nhỏ sau mốc lớn cuối
+    minorCoinsBase: 40, minorCoinsPerLevel: 10       // thưởng qua mốc nhỏ (k)
+  },
+  // Biến cố ngẫu nhiên mỗi ca (không phải ca kịch bản). w = trọng số, fromLevel = cấp mốc bắt đầu có.
+  shiftEvents: {
+    sunny:    { w: 3, fromLevel: 1 },
+    windy:    { w: 2, fromLevel: 3 },
+    payday:   { w: 1, fromLevel: 5, tipMult: 2 },
+    hot:      { w: 2, fromLevel: 8, drinkWeight: 2 },
+    reviewer: { w: 1, fromLevel: 9, ratingWeight: 3 },
+    rain:     { w: 1, fromLevel: 10, grillWeight: 2 },
+    school:   { w: 1, fromLevel: 12, groupOf: 3 },
+    festival: { w: 1, fromLevel: 13, tipMult: 1.5 }
+  },
+
   // 15 Ngày bán hàng + Ngày bí mật (Mục 10). target = mục tiêu doanh thu (k).
   days: [
     { day: 1,  customers: 8,  target: 60,  spawn: [6, 8],     patienceMult: 1.30, unlock: ["bt_tron_co_ban", "bt_tron_kho_bo"], weather: "sunny", tipMult: 1, hints: true,

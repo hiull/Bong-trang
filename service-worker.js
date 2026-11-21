@@ -14,6 +14,7 @@ const PRECACHE = [
   "manifest.json",
   "src/main.js",
   "src/save.js",
+  "src/milestones.js",
   "src/audio.js",
   "src/components/UI.js",
   "src/components/Tray.js",
