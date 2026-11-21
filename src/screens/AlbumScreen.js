@@ -21,6 +21,32 @@ window.BT = window.BT || { Screens: {} };
       el.appendChild(info);
 
       const scroll = UI.el("div", "album-scroll");
+      // Sổ thính của anh Hiếu
+      const fc = BT.Flirt.count();
+      const fbook = UI.el("button", "flirt-book-card");
+      fbook.type = "button";
+      fbook.appendChild(UI.el("span", "fb-icon", "😈"));
+      fbook.appendChild(UI.el("span", "fb-label", UI.t("flirtBookCount", { a: fc.solved, b: fc.total })));
+      fbook.addEventListener("click", () => {
+        BT.Audio.play("pop");
+        const list = UI.el("div", "fb-list");
+        BT.Flirt.list().forEach((it, i) => {
+          const how = S.flirt.solved[i];
+          const row = UI.el("div", "fb-item " + (how ? "solved" : "locked"));
+          if (!how) {
+            row.appendChild(UI.el("div", "fb-locked", "🔒 " + UI.t("flirtLocked")));
+          } else {
+            it.lines.forEach((l) => row.appendChild(UI.el("div", "fb-line", l)));
+            const ans = UI.el("div", "fb-answer", "→ " + it.answers[0]);
+            if (how === "told") ans.appendChild(UI.el("span", "fb-told", UI.t("flirtByHim")));
+            row.appendChild(ans);
+          }
+          list.appendChild(row);
+        });
+        UI.modal({ title: UI.t("flirtBookTitle"), body: list, className: "modal-flirt-book", dismissable: true,
+          buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+      });
+      scroll.appendChild(fbook);
       // Lời nhắn bí mật
       const bonus = UI.el("button", "bonus-card" + (S.goldHearts >= maxDay ? " open" : ""));
       bonus.type = "button";

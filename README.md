@@ -199,5 +199,12 @@ CREDITS.md          Nguồn tài nguyên & giấy phép
 Mọi hình trong game (nguyên liệu, món ăn, khách, thú cưng, trang trí, nút bấm, mặt cảm xúc…) là hình **vẽ tay kiểu doodle** nằm trong `assets/img/doodles.js`.
 Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (ví dụ 💕 ❤️ ✨): khi hiển thị, game tự đổi emoji sang hình doodle tương ứng. Emoji nào chưa có hình thì vẫn hiện như emoji.
 
-## 9. Sao lưu tiến trình
+## 9. Anh Hiếu thả thính 😈 & Sổ thính
+- Từ **Ngày 3**, mỗi ngày anh Hiếu ghé **3 lần** chỉ để thả thính (Ngày bí mật **10 lần**), ngoài lần ghé mua hàng như cũ. Tiệm tạm dừng, khách đứng chờ không mất kiên nhẫn.
+- Anh buông một câu **nói lái / chuyển vế đổi dấu**, Bống gõ "ý thật" vào ô chữ: gõ không dấu, viết hoa đều được. **Đúng: +20k và +1 tim.** Bấm **"Chịu, anh nói đi"**: anh nói đáp án, vẫn **+10k**.
+- Câu đi lần lượt qua cả danh sách, hết mới quay lại. **Album → Sổ thính** xem các câu đã giải (đã giải N/83).
+- **Sửa câu & đáp án:** mở `personal.js`, tìm `flirtLines`. Mỗi câu có `lines` (các dòng) và `answers` (các đáp án được chấp nhận). Câu nào có `note: "CẦN KIỂM TRA"` là đáp án Claude đoán — sửa lại cho đúng ý rồi xoá chữ `note: …` đi. Muốn thêm câu mới, chép một dòng `{ lines: [...], answers: [...] },` rồi sửa.
+- Số lần ghé và mức thưởng chỉnh trong `config.js` (`tomoFlirtPerDay`, `tomoFlirtSecret`, `flirtRewardTip`, `flirtGiveUpTip`).
+
+## 10. Sao lưu tiến trình
 Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao lưu**. Cất mã vào app Ghi chú hoặc gửi qua email (đừng gửi qua Messenger/Zalo vì tin nhắn dài có thể bị cắt). Đổi máy thì dán mã vào ô **Dán mã để khôi phục**.
