@@ -422,6 +422,20 @@ window.CONFIG = {
     ]
   },
 
+  // Ca vô tận: khách đến mãi, nhanh dần; 3 tim. rewards: số khách → thưởng một lần (k).
+  endless: {
+    fromMilestone: 7,
+    minSpawn: [1.8, 2.6],       // khoảng cách khách đến nhanh nhất (giây)
+    rampEvery: 5,               // cứ chừng này khách thì nhanh thêm một nấc
+    rampFactor: 0.92,
+    eventEvery: 15,             // đổi biến cố sau chừng này khách
+    unitsPer: 12,               // chừng này khách = 1 ca chuẩn tiến độ mốc
+    unitsMax: 2,
+    flirtEvery: 12,             // anh Hiếu ghé thả thính sau mỗi chừng này khách
+    tomoEvery: 20,              // anh Hiếu ghé mua sau mỗi chừng này khách
+    rewards: { 50: 100, 100: 200, 200: 400 }
+  },
+
   // 15 Ngày bán hàng + Ngày bí mật (Mục 10). target = mục tiêu doanh thu (k).
   days: [
     { day: 1,  customers: 8,  target: 60,  spawn: [6, 8],     patienceMult: 1.30, unlock: ["bt_tron_co_ban", "bt_tron_kho_bo"], weather: "sunny", tipMult: 1, hints: true,
@@ -616,7 +630,7 @@ window.CONFIG = {
     btnOpenDay: "Mở cửa bán",
     btnQuickBuy: "Nhập nhanh",
     quickBuyPrice: "(+{q} · {x})",
-    btnRetry: "Làm lại ngày",
+    btnRetry: "Làm lại ca",
     btnContinue: "Chơi tiếp",
     btnNextDay: "Ca tiếp",
     btnToMap: "Về bản đồ",
@@ -801,6 +815,16 @@ window.CONFIG = {
     msCleared: "Qua {t}! 🎉",
     msMinorCoins: "Thưởng qua mốc: +{x}",
     msTaleTitle: "Chuyện vặt",
+    endlessBtn: "Ca vô tận",
+    endlessBest: "Kỷ lục: {n} khách",
+    hudEndless: "Khách: {d}",
+    endlessEvent: "Đổi không khí: {icon} {label}",
+    endlessOver: "Hết tim rồi, nghỉ tay thôi!",
+    endlessResult: "Phục vụ {n} khách!",
+    endlessNewBest: "Kỷ lục mới! 🎉",
+    endlessReward: "Thưởng mốc {m} khách: +{x}",
+    btnPlayAgain: "Chơi lại",
+    btnToMenu: "Về tiệm",
     dailyBtn: "Thử thách hôm nay",
     dailyLocked: "Mở ở Mốc {n}",
     dailyTitle: "Thử thách hôm nay",

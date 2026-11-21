@@ -18,13 +18,14 @@ window.BT = window.BT || { Screens: {} };
       this.dayId = run.key;                    // "ms13" | "secret" | "daily" | "endless"
       this.dayNum = run.level;                 // cấp mốc: so với ngày mở món
       this.secret = run.mode === "secret";
+      this.endless = run.mode === "endless";
       this.dayCfg = run.cfg;
       this.scope = UI.scope();
       this.pauseReasons = new Set();
       this.started = false;
       this.over = false;
 
-      this.total = this.dayCfg.customers + (this.S.bonusCustomers || 0);
+      this.total = this.endless ? Infinity : this.dayCfg.customers + (this.S.bonusCustomers || 0);
       this.spawned = 0;
       this.done = 0;
       this.hearts = G.hearts;
@@ -35,7 +36,7 @@ window.BT = window.BT || { Screens: {} };
       this.eggInHand = false;
       this.groupDone = false;
       this.groupPending = 0;
-      this.reviewerAt = this.dayCfg.ratingWeight ? UI.randInt(1, Math.max(1, this.total - 2)) : -1;
+      this.reviewerAt = this.dayCfg.ratingWeight && !this.endless ? UI.randInt(1, Math.max(1, this.total - 2)) : -1;
       const today = this.S.today && this.S.today.day === this.dayId ? this.S.today : { day: this.dayId, expense: 0 };
       this.S.today = today;
       this.stats = { revenue: 0, tips: 0, expense: today.expense, served: 0, walkouts: 0, ratings: [], weights: [] };
@@ -59,7 +60,7 @@ window.BT = window.BT || { Screens: {} };
       this.openZones = C.zones.filter((z) => z.openDay <= this.dayNum && C.build.playableZones.includes(z.id));
       this.zone = this.openZones[0].id;
       const zoneIds = this.openZones.map((z) => z.id);
-      this.dishPool = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))));
+      this.dishPool = this.dishPoolAll = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))));
       this.typePool = Object.keys(C.customerTypes).filter((id) => {
         const t = C.customerTypes[id];
         return t.kind === "normal" && t.openDay <= this.dayNum;
@@ -71,7 +72,7 @@ window.BT = window.BT || { Screens: {} };
       const I = CONFIG.incidents;
       this.spillAt = -1;
       this.spillLeft = 0;
-      if (!this.secret && this.dayNum >= I.fromDay && Math.random() < I.spillRate) {
+      if (!this.secret && !this.endless && this.dayNum >= I.fromDay && Math.random() < I.spillRate) {
         this.spillAt = Math.max(1, Math.round(this.total * UI.rand(I.spillAtProgress[0], I.spillAtProgress[1])));
         this.catsToday = G.catMaxPerDay;
       }
@@ -101,6 +102,11 @@ window.BT = window.BT || { Screens: {} };
         for (let i = 0; i < this.total; i++) if (!this.plan[i]) slots.push(i);
         return slots;
       };
+      if (this.endless) {
+        this.flirtAt = [];
+        this.tomoWanted = Infinity;
+        return;
+      }
       if (this.secret) {
         this.tomoWanted = G.secretTomortleVisits;
         for (let k = 0; k < this.tomoWanted; k++) this.plan[Math.floor((k + 0.5) * this.total / this.tomoWanted)] = { kind: "tomortle" };
@@ -329,7 +335,9 @@ window.BT = window.BT || { Screens: {} };
       this.tickTutorial();
       const allServed = this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0;
       // Tới mốc thả thính (hoặc hết khách mà còn lượt chưa ghé) → anh Hiếu vào khi tiệm đang rảnh tay
-      const due = this.flirtDone < this.flirtAt.length && (allServed || this.done / this.total >= this.flirtAt[this.flirtDone]);
+      const due = this.endless
+        ? this.dayNum >= G.tomoFlirtFromDay && this.stats.served >= (this.flirtDone + 1) * CONFIG.endless.flirtEvery
+        : this.flirtDone < this.flirtAt.length && (allServed || this.done / this.total >= this.flirtAt[this.flirtDone]);
       if (due && !this.flirtActive && !this.storyPending && !UI.modals.length && !this.shakeLayer && !this.tut) this.startFlirt();
       if (allServed && this.flirtDone >= this.flirtAt.length && !this.flirtActive) this.finish(false);
     }
@@ -412,12 +420,18 @@ window.BT = window.BT || { Screens: {} };
     spawnNext(seat) {
       const G = CONFIG.gameplay;
       const d = this.dayCfg;
+      if (this.endless) {
+        // Chỉ gọi món còn làm được (còn hàng hoặc đủ tiền nhập); hết món làm được → kết thúc ca
+        this.dishPool = this.dishPoolAll.filter((r) => this.canMake(r));
+        if (!this.dishPool.length) { this.dishPool = this.dishPoolAll; if (!this.customers.some((c) => !c.isCat)) this.finish(false); else this.spawnTimer = 1; return; }
+        if (this.spawned > 0 && this.spawned % CONFIG.endless.eventEvery === 0 && this.lastEventAt !== this.spawned) { this.lastEventAt = this.spawned; this.switchEvent(); }
+      }
       // Mèo hoang hiếm (không tính vào số khách của ngày)
       const cat = CONFIG.customerTypes.meo_hoang;
       if (!this.secret && this.groupPending === 0 && this.dayNum >= cat.openDay && this.catsToday < G.catMaxPerDay && Math.random() < cat.rareRate) {
         this.catsToday++;
         this.spawn(seat, "meo_hoang", { items: [] });
-        this.spawnTimer = UI.rand(d.spawn[0], d.spawn[1]);
+        this.spawnTimer = this.nextGap();
         return;
       }
       // Học sinh tan trường: giữa ca có nhóm học sinh đến cùng lúc
@@ -430,6 +444,7 @@ window.BT = window.BT || { Screens: {} };
       let special = this.groupPending > 0 ? null : this.plan[this.spawned];
       // Anh Hiếu chưa ghé mà chỉ còn vài khách cuối → ép anh tới ở lượt này
       if (!special && this.groupPending === 0 && this.tomoCame < this.tomoWanted && left <= G.tomortleForceWhenLeft) special = { kind: "tomortle" };
+      if (this.endless && !special && this.dayNum >= G.tomortleFromDay && this.spawned > 0 && this.spawned % CONFIG.endless.tomoEvery === 0) special = { kind: "tomortle" };
       if (special && special.kind === "tomortle" && this.tomoCame >= this.tomoWanted) special = null;
       if (special && special.kind === "tomortle") this.spawnTomortle(seat);
       else if (special && special.kind === "regular") this.spawnRegular(seat, special);
@@ -443,7 +458,46 @@ window.BT = window.BT || { Screens: {} };
       }
       this.spawned++;
       if (this.spawned === this.spillAt) this.showSpill();
-      this.spawnTimer = this.groupPending > 0 ? G.groupSpawnGapSec : UI.rand(d.spawn[0], d.spawn[1]);
+      this.spawnTimer = this.groupPending > 0 ? G.groupSpawnGapSec : this.nextGap();
+    }
+
+    nextGap() {
+      const sp = this.endless ? BT.Endless.spawnRange(this.stats.served, this.run.cfg.spawn) : this.dayCfg.spawn;
+      return UI.rand(sp[0], sp[1]);
+    }
+
+    // Ca vô tận: món làm được khi mọi nguyên liệu còn hàng hoặc đủ tiền nhập
+    canMake(r) {
+      if (r.combo) return r.combo.every((id) => this.canMake(UI.recipe(id)));
+      const ids = [r.base].concat(r.toppings || [], (r.finish || []).map((f) => String(f).replace(/^rot:/, "")))
+        .filter((id) => id && CONFIG.ingredients[id]);
+      return ids.every((id) => BT.Save.stock(id) > 0 || this.S.wallet >= UI.ing(id).price);
+    }
+
+    // Ca vô tận: đổi biến cố
+    switchEvent() {
+      const d = this.dayCfg;
+      const ev = BT.MS.pickEvent(this.dayNum, d.weather);
+      ["tipMult", "drinkWeight", "ratingWeight", "grillWeight", "groupOf"].forEach((k) => { delete d[k]; });
+      d.tipMult = 1;
+      const E = CONFIG.shiftEvents[ev] || {};
+      Object.keys(E).forEach((k) => { if (k !== "w" && k !== "fromLevel") d[k] = E[k]; });
+      if (this.el) { this.el.classList.remove("weather-" + d.weather); this.el.classList.add("weather-" + ev); }
+      d.weather = ev;
+      const w = CONFIG.weathers[ev];
+      UI.toast(UI.t("endlessEvent", { icon: w.icon, label: w.label }));
+    }
+
+    // Ca vô tận: hết hàng thì tự nhập một gói giá thường
+    autoRestock(ingId) {
+      const ing = UI.ing(ingId);
+      if (this.S.wallet < ing.price) return false;
+      this.S.wallet -= ing.price;
+      this.S.inventory[ingId] = BT.Save.stock(ingId) + CONFIG.money.buyPackQty;
+      this.stats.expense += ing.price;
+      this.S.today.expense = this.stats.expense;
+      if (this.grid) this.grid.refresh();
+      return true;
     }
 
     // Hiếu (Tomortle): 1 món bánh tráng + 1 ly nước, kiên nhẫn vô hạn
@@ -1151,6 +1205,7 @@ window.BT = window.BT || { Screens: {} };
 
     onStationTap(ingId, cell, fromHold) {
       if (this.isPaused()) return;
+      if (this.endless && BT.Save.stock(ingId) <= 0) this.autoRestock(ingId);
       if (BT.Save.stock(ingId) <= 0) { UI.toast(UI.t("outOfStock", { ing: UI.ing(ingId).short })); if (cell) UI.shake(cell); return; }
       if (!fromHold && CONFIG.gameplay.holdSec[ingId] !== undefined) { UI.toast(UI.t("holdToPour")); return; }
       const { tray, auto } = this.targetFor(ingId);
@@ -1392,11 +1447,11 @@ window.BT = window.BT || { Screens: {} };
     income() { return this.stats.revenue + this.stats.tips; }
 
     updateHud() {
-      UI.setText(this.hudCust, UI.t("hudCustomers", { d: this.done, t: this.total }));
+      UI.setText(this.hudCust, this.endless ? UI.t("hudEndless", { d: this.stats.served }) : UI.t("hudCustomers", { d: this.done, t: this.total }));
       const avg = this.avgRating();
       UI.setText(this.hudRate, "⭐ " + (avg ? UI.rating(avg) : "–"));
-      UI.setText(this.hudMoney, "🪙 " + UI.money(this.income()) + (this.secret ? "" : " / " + UI.money(this.dayCfg.target)));
-      this.hudMoney.classList.toggle("reached", !this.secret && this.income() >= this.dayCfg.target);
+      UI.setText(this.hudMoney, "🪙 " + UI.money(this.income()) + (this.secret || this.endless ? "" : " / " + UI.money(this.dayCfg.target)));
+      this.hudMoney.classList.toggle("reached", !this.secret && !this.endless && this.income() >= this.dayCfg.target);
       UI.setText(this.hudCombo, UI.t("comboLabel", { n: this.combo }));
       this.hudCombo.style.display = this.combo >= 2 ? "" : "none";
       let h = "";
@@ -1484,11 +1539,65 @@ window.BT = window.BT || { Screens: {} };
     }
 
     abandon(where) {
+      if (this.endless && !this.over) { this.finish(false); return; }
       this.over = true;
       BT.Save.restoreDay();
       BT.Save.persist();
       if (where === "retry") this.router.go("Prep", { run: BT.MS.again(this.run) }, { replace: true });
       else this.router.backTo("Map");
+    }
+
+    // Qua mốc: kỷ niệm (mốc lớn) hoặc tiền + chuyện vặt (mốc nhỏ); qua mốc cuối → đoạn kết
+    applyCleared(progress) {
+      const S = this.S;
+      const MS = BT.MS;
+      let newMemory = null, minor = null, ending = false;
+      if (progress && progress.cleared) {
+        const m = MS.get(progress.cleared);
+        if (m.major) {
+          const mi = m.day - 1;
+          if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
+        } else {
+          const MC = CONFIG.milestones;
+          const coins = MC.minorCoinsBase + MC.minorCoinsPerLevel * m.level;
+          S.wallet += coins;
+          const tales = window.PERSONAL.minorTales || [];
+          let tale = null;
+          if (tales.length) { const ti = S.talesSeen.length % tales.length; tale = tales[ti]; S.talesSeen.push(ti); }
+          minor = { coins, tale };
+        }
+        ending = progress.cleared === MS.count() && !S.endingSeen;
+      }
+      return { newMemory, minor, ending };
+    }
+
+    // Kết thúc Ca vô tận: không có mục tiêu, giữ toàn bộ tiền, cộng tiến độ theo số khách
+    finishEndless(income) {
+      const S = this.S;
+      const MS = BT.MS;
+      const served = this.stats.served;
+      const claim = BT.Endless.claim(served, income);
+      const units = BT.Endless.units(served);
+      S.ms.shifts++;
+      const progress = MS.addProgress(units);
+      const { newMemory, minor, ending } = this.applyCleared(progress);
+      const avg = this.avgRating();
+      this.S.xp += Math.round(income / 10);
+      Object.keys(this.q).forEach((k) => BT.Progress.questAdd(k, this.q[k]));
+      BT.Progress.questAdd("income", Math.round(income));
+      if (S.dayBackup) S.dayBackup.finished = true;
+      S.today = null;
+      BT.Save.persist();
+      const summary = {
+        day: this.dayId, run: this.run, title: UI.runTitle(this.run), endless: true, passed: true, lostHearts: false, stars: 0,
+        served, best: S.endless.best, newBest: claim.newBest, coins: claim.coins, rewardMarks: claim.milestones,
+        memory: newMemory, ending, minor, units, progress, need: MS.need(progress.before.index),
+        income, kept: income, target: 0, revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
+        net: income - this.stats.expense, total: served, walkouts: this.stats.walkouts, avgRating: avg
+      };
+      this.el.appendChild(UI.el("div", "end-banner", UI.t("endlessOver")));
+      BT.Audio.play("win");
+      this.scope.timeout(() => this.router.go("Result", summary, { replace: true }), CONFIG.gameplay.endBannerSec * 1000);
     }
 
     // ---------------- Kết ca ----------------
@@ -1499,6 +1608,7 @@ window.BT = window.BT || { Screens: {} };
       const M = CONFIG.money;
       const d = this.dayCfg;
       const income = this.income();
+      if (this.endless) { this.finishEndless(income); return; }
       const passed = this.secret || (!lostHearts && income >= d.target);
       let stars = 0;
       if (this.secret) stars = 3;
@@ -1534,22 +1644,7 @@ window.BT = window.BT || { Screens: {} };
         units = MS.units({ passed, stars, income, target: d.target });
         progress = MS.addProgress(units, { replay: run.mode === "replay" });
       }
-      if (progress && progress.cleared) {
-        const m = MS.get(progress.cleared);
-        if (m.major) {
-          const mi = m.day - 1;
-          if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
-        } else {
-          const MC = CONFIG.milestones;
-          const coins = MC.minorCoinsBase + MC.minorCoinsPerLevel * m.level;
-          S.wallet += coins;
-          const tales = window.PERSONAL.minorTales || [];
-          let tale = null;
-          if (tales.length) { const ti = S.talesSeen.length % tales.length; tale = tales[ti]; S.talesSeen.push(ti); }
-          minor = { coins, tale };
-        }
-        ending = progress.cleared === MS.count() && !S.endingSeen;
-      }
+      ({ newMemory, minor, ending } = this.applyCleared(progress));
       S.goldHearts = MS.goldHearts();
       const newGold = S.goldHearts > goldBefore;
       const allGold = S.goldHearts >= CONFIG.build.maxPlayableDay && !S.bonusSeen;

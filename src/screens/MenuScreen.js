@@ -68,6 +68,14 @@ window.BT = window.BT || { Screens: {} };
         dailyBtn.appendChild(UI.el("span", "mode-sub", UI.t("dailyLocked", { n: CONFIG.daily.fromMilestone })));
       }
       modes.appendChild(dailyBtn);
+      // Ca vô tận
+      const endlessBtn = UI.button(UI.t("endlessBtn"), "btn-purple small endless-btn", () => {
+        if (!BT.Endless.unlocked()) { UI.toast(UI.t("dailyLocked", { n: CONFIG.endless.fromMilestone })); return; }
+        BT.startEndless(router);
+      });
+      endlessBtn.appendChild(UI.el("span", "mode-sub", BT.Endless.unlocked() ? UI.t("endlessBest", { n: S.endless.best }) : UI.t("dailyLocked", { n: CONFIG.endless.fromMilestone })));
+      if (!BT.Endless.unlocked()) endlessBtn.classList.add("locked");
+      modes.appendChild(endlessBtn);
       el.appendChild(modes);
 
       const small = UI.el("div", "menu-small");

@@ -252,4 +252,48 @@ window.BT = window.BT || { Screens: {} };
     }
   };
   BT.Daily = Daily;
+
+  // ---------------- Ca vô tận ----------------
+  const Endless = {
+    unlocked() { return BT.Save.state.ms.index >= CONFIG.endless.fromMilestone; },
+    spawnRange(served, base) {
+      const E = CONFIG.endless;
+      const f = Math.pow(E.rampFactor, Math.floor(served / E.rampEvery));
+      return [0, 1].map((k) => Math.max(E.minSpawn[k], Math.round(base[k] * f * 100) / 100));
+    },
+    units(served) { const E = CONFIG.endless; return Math.round(Math.min(E.unitsMax, served / E.unitsPer) * 100) / 100; },
+    claim(served, income) {
+      const S = BT.Save.state;
+      const st = S.endless;
+      const newBest = served > st.best;
+      if (newBest) st.best = served;
+      st.bestIncome = Math.max(st.bestIncome, income);
+      let coins = 0;
+      const milestones = [];
+      Object.keys(CONFIG.endless.rewards).map(Number).sort((a, b) => a - b).forEach((m) => {
+        if (served >= m && !st.rewards[m]) { st.rewards[m] = true; coins += CONFIG.endless.rewards[m]; milestones.push(m); }
+      });
+      S.wallet += coins;
+      BT.Save.persist();
+      return { newBest, coins, milestones };
+    },
+    run() {
+      const S = BT.Save.state;
+      const i = S.ms.index;
+      const ms = MS.get(i);
+      const event = MS.pickEvent(ms.level, null);
+      return { mode: "endless", key: "endless", ms: i, level: ms.level, cfg: MS.shiftCfg(i, false, event), event, scripted: false };
+    }
+  };
+  BT.Endless = Endless;
+
+  // Vào Ca vô tận (không qua Chuẩn bị): ghi điểm khôi phục như ca thường rồi vào màn bán hàng
+  BT.startEndless = function (router, opts) {
+    const S = BT.Save.state;
+    const run = Endless.run();
+    BT.Save.snapshotDay(run.key);
+    S.today = { day: run.key, expense: 0 };
+    BT.Save.persist();
+    router.go("Game", { run }, opts);
+  };
 })();

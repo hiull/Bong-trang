@@ -13,7 +13,7 @@ window.BT = window.BT || { Screens: {} };
       el.appendChild(UI.topbar(UI.t("resultTitle", { n: s.title || UI.dayName(s.day) }), () => router.backTo("Map")));
       const body = UI.el("div", "result-body");
 
-      const starRow = UI.el("div", "result-stars");
+      const starRow = UI.el("div", "result-stars" + (s.endless ? " hidden" : ""));
       const starEls = [0, 1, 2].map(() => {
         const st = UI.el("span", "rstar", "★");
         starRow.appendChild(st);
@@ -22,10 +22,18 @@ window.BT = window.BT || { Screens: {} };
       body.appendChild(starRow);
 
       const head = UI.el("div", "result-head" + (s.passed ? " win" : " lose"));
-      if (s.secret) UI.setText(head, UI.t("secretResult"));
+      if (s.endless) UI.setText(head, UI.t("endlessResult", { n: s.served }));
+      else if (s.secret) UI.setText(head, UI.t("secretResult"));
       else if (s.passed) UI.setText(head, UI.t("resultPassed"));
       else UI.setText(head, s.lostHearts ? UI.t("resultFailedHearts") : UI.t("resultFailedTarget", { x: UI.money(s.target) }));
       body.appendChild(head);
+      if (s.endless) {
+        const eb = UI.el("div", "daily-box endless-box");
+        eb.appendChild(UI.el("div", "daily-tier tier-2", s.newBest ? UI.t("endlessNewBest") : UI.t("endlessBest", { n: s.best })));
+        if (s.newBest) eb.appendChild(UI.el("div", "daily-coins", UI.t("endlessBest", { n: s.best })));
+        (s.rewardMarks || []).forEach((m) => eb.appendChild(UI.el("div", "daily-coins", UI.t("endlessReward", { m, x: UI.money(CONFIG.endless.rewards[m]) }))));
+        body.appendChild(eb);
+      }
       // Thử thách hôm nay: hạng, thưởng, lời nhắn
       if (s.daily) {
         const dbox = UI.el("div", "daily-box");
@@ -68,12 +76,12 @@ window.BT = window.BT || { Screens: {} };
         r.appendChild(UI.el("b", "", value));
         table.appendChild(r);
       };
-      if (!s.secret) row(UI.t("statIncome"), UI.money(s.income) + " / " + UI.money(s.target), s.income >= s.target ? "good" : "");
+      if (!s.secret && !s.endless) row(UI.t("statIncome"), UI.money(s.income) + " / " + UI.money(s.target), s.income >= s.target ? "good" : "");
       row(UI.t("statRevenue"), UI.money(s.revenue));
       row(UI.t("statTips"), UI.money(s.tips));
       row(UI.t("statExpense"), (s.expense > 0 ? "−" : "") + UI.money(s.expense));
       row(UI.t("statNet"), (s.net >= 0 ? "" : "−") + UI.money(Math.abs(s.net)), s.net >= 0 ? "good" : "bad");
-      row(UI.t("statServed"), s.served + " / " + s.total);
+      row(UI.t("statServed"), s.endless ? String(s.served) : s.served + " / " + s.total);
       row(UI.t("statRating"), s.avgRating ? "⭐ " + UI.rating(s.avgRating) : "–");
       body.appendChild(table);
 
@@ -111,11 +119,14 @@ window.BT = window.BT || { Screens: {} };
       const foot = UI.el("div", "result-foot");
       if (s.ending) {
         foot.appendChild(UI.button(UI.t("btnSurprise"), "btn-pink pulse", () => goEnding()));
+      } else if (s.endless) {
+        foot.appendChild(UI.button(UI.t("btnPlayAgain"), "btn-pink", () => BT.startEndless(router, { replace: true })));
       } else if (!s.secret) {
         foot.appendChild(UI.button(UI.t("btnNextDay"), "btn-pink", () => router.go("Prep", { run: BT.MS.run(S.ms.index) }, { replace: true })));
       }
       const row2 = UI.el("div", "foot-row");
-      row2.appendChild(UI.button(UI.t("btnToMap"), "btn-white", () => router.backTo("Map")));
+      if (s.endless || (s.run && s.run.mode === "daily")) row2.appendChild(UI.button(UI.t("btnToMenu"), "btn-white", () => router.backTo("Menu")));
+      else row2.appendChild(UI.button(UI.t("btnToMap"), "btn-white", () => router.backTo("Map")));
       foot.appendChild(row2);
       el.appendChild(foot);
       root.appendChild(el);

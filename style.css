@@ -1711,3 +1711,5 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .daily-note-title { font-weight: 800; color: var(--pink-dark); }
 .daily-note-text { margin-top: 4px; }
 .daily-again { font-size: var(--fs-s); opacity: 0.85; }
+
+.result-stars.hidden { display: none; }
