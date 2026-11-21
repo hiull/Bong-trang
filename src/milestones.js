@@ -120,6 +120,34 @@ window.BT = window.BT || { Screens: {} };
       return { mode: replay ? "replay" : "story", key: "ms" + i, ms: i, level: ms.level, cfg: this.shiftCfg(i, scripted, event), event, scripted };
     },
 
+    // Chuyển bản lưu theo ngày (version 1) sang mốc. Trả true nếu có chuyển.
+    migrate(st) {
+      if (!st || (st.version || 1) >= 2) return false;
+      const n = this.count();
+      const d = st.unlockedDay || 1;
+      const ms = st.ms;
+      if (d <= 15) { ms.index = this.majorIndex(d); ms.cleared = ms.index - 1; }
+      else { ms.index = n; ms.cleared = n - 1; }
+      ms.progress = 0;
+      const days = st.days || {};
+      Object.keys(days).forEach((k) => {
+        const kn = Number(k);
+        if (!kn) return;
+        const i = this.majorIndex(kn);
+        ms.best[i] = { stars: days[k].stars || 0, income: days[k].bestRevenue || 0 };
+      });
+      for (let k = 1; k < Math.min(d, 16); k++) ms.firstDone[this.majorIndex(k)] = true;
+      ms.shifts = Object.keys(days).filter((k) => Number(k)).length;
+      st.goldHearts = this.list().filter((m) => m.major && ms.best[m.index] && ms.best[m.index].stars >= 3).length;
+      st.regularNext = {};
+      const b = st.dayBackup;
+      if (b && !b.finished) { st.wallet = b.wallet; st.inventory = JSON.parse(JSON.stringify(b.inventory || {})); st.today = null; }
+      st.dayBackup = null;
+      st.loseStreak = null;
+      st.version = 2;
+      return true;
+    },
+
     goldHearts() {
       const best = BT.Save.state.ms.best;
       return this.list().filter((m) => m.major && best[m.index] && best[m.index].stars >= 3).length;
