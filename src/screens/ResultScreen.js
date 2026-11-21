@@ -10,7 +10,7 @@ window.BT = window.BT || { Screens: {} };
       const scope = UI.scope();
       const S = BT.Save.state;
       const el = UI.el("div", "screen result");
-      el.appendChild(UI.topbar(UI.t("resultTitle", { n: UI.dayName(s.day) }), () => router.backTo("Map")));
+      el.appendChild(UI.topbar(UI.t("resultTitle", { n: s.title || UI.dayName(s.day) }), () => router.backTo("Map")));
       const body = UI.el("div", "result-body");
 
       const starRow = UI.el("div", "result-stars");
@@ -58,25 +58,45 @@ window.BT = window.BT || { Screens: {} };
       row(UI.t("statServed"), s.served + " / " + s.total);
       row(UI.t("statRating"), s.avgRating ? "⭐ " + UI.rating(s.avgRating) : "–");
       body.appendChild(table);
+
+      // Tiến độ mốc
+      let msFill = null, msTarget = 0;
+      if (s.progress) {
+        const p = s.progress;
+        const box = UI.el("div", "ms-box");
+        const head2 = UI.el("div", "ms-head");
+        head2.appendChild(UI.el("span", "ms-name", UI.t("runMs", { n: p.before.index })));
+        head2.appendChild(UI.el("b", "ms-gain", UI.t("msGain", { u: UI.num1(s.units) })));
+        box.appendChild(head2);
+        const bar = UI.el("div", "ms-bar");
+        msFill = UI.el("div", "ms-fill");
+        msFill.style.width = Math.min(100, p.before.progress / s.need * 100) + "%";
+        bar.appendChild(msFill);
+        box.appendChild(bar);
+        msTarget = p.cleared ? 100 : Math.min(100, p.after.progress / s.need * 100);
+        box.appendChild(UI.el("div", "ms-count", p.cleared ? UI.t("msCleared", { t: UI.t("runMs", { n: p.cleared }) })
+          : UI.t("msProgress", { a: UI.num1(p.after.progress), b: UI.num1(s.need) })));
+        if (p.cleared) box.classList.add("cleared");
+        if (s.minor) {
+          box.appendChild(UI.el("div", "ms-reward", UI.t("msMinorCoins", { x: UI.money(s.minor.coins) })));
+          if (s.minor.tale) {
+            const tale = UI.el("div", "ms-tale");
+            tale.appendChild(UI.el("div", "ms-tale-who", UI.t("msTaleTitle") + " · " + UI.fmt(s.minor.tale.who)));
+            tale.appendChild(UI.el("div", "ms-tale-text", UI.fmt(s.minor.tale.text)));
+            box.appendChild(tale);
+          }
+        }
+        body.appendChild(box);
+      }
       el.appendChild(body);
 
       const foot = UI.el("div", "result-foot");
-      const next = typeof s.day === "number" ? s.day + 1 : null;
-      const lastDay = CONFIG.build.maxPlayableDay;
       if (s.ending) {
         foot.appendChild(UI.button(UI.t("btnSurprise"), "btn-pink pulse", () => goEnding()));
-      } else {
-        const nextPlayable = s.passed && next && next <= lastDay;
-        const nextBtn = UI.button(UI.t("btnNextDay"), "btn-pink", () => router.go("Prep", { day: next }, { replace: true }));
-        if (!nextPlayable) nextBtn.disabled = true;
-        foot.appendChild(nextBtn);
+      } else if (!s.secret) {
+        foot.appendChild(UI.button(UI.t("btnNextDay"), "btn-pink", () => router.go("Prep", { run: BT.MS.run(S.ms.index) }, { replace: true })));
       }
       const row2 = UI.el("div", "foot-row");
-      row2.appendChild(UI.button(UI.t("btnRetry"), "btn-orange", () => {
-        BT.Save.restoreDay();
-        BT.Save.persist();
-        router.go("Prep", { day: s.day }, { replace: true });
-      }));
       row2.appendChild(UI.button(UI.t("btnToMap"), "btn-white", () => router.backTo("Map")));
       foot.appendChild(row2);
       el.appendChild(foot);
@@ -123,6 +143,10 @@ window.BT = window.BT || { Screens: {} };
       const after = 400 + 3 * 450;
       if (s.levelUp) scope.timeout(() => { UI.toast(UI.t("levelUp", { n: s.levelUp.level, title: UI.fmt(s.levelUp.title) }), 3000); BT.Audio.play("win"); }, after + 100);
       if (s.stars === 3) scope.timeout(() => UI.confetti(80), after);
+      if (msFill) scope.timeout(() => {
+        msFill.style.width = msTarget + "%";
+        if (s.progress.cleared) { BT.Audio.play("win"); UI.confetti(60); }
+      }, after + 150);
       if (envelope) scope.timeout(() => { envelope.classList.add("drop"); BT.Audio.play("pop"); }, after + 200);
       else if (s.allGold && !S.bonusSeen) scope.timeout(() => showBonus(), after + 400);
 

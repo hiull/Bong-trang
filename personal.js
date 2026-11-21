@@ -140,6 +140,30 @@ window.PERSONAL = {
     "Ngày 7: Quà đặc biệt cuối tuần dành cho bà chủ nhỏ của anh Hiếu! Yêu em nhất trên đời 💖"
   ],
 
+  // Chuyện vặt: hiện khi qua một mốc nhỏ (lần lượt, hết thì quay lại). Thêm câu mới thì thêm vào cuối.
+  minorTales: [
+    { who: "Chị Lan Kế Toán", text: "Chị vừa cân đối sổ sách xong, lệch đúng 5 nghìn. Hoá ra là tiền chị ăn bánh tráng hôm qua chưa ghi 😅" },
+    { who: "Chú Tư Xe Ôm", text: "Hôm nay chú chở một ông khách, ổng hỏi đường tới tiệm {shop}. Chú nói: lên xe, chú chở miễn phí!" },
+    { who: "Bé Na Lớp 10", text: "Chị ơi, em được 9 điểm Văn! Cô khen em tả món bánh tráng cuốn hay quá trời 📝" },
+    { who: "Anh shipper", text: "Anh giao 40 đơn hôm nay, đơn nào khách cũng hỏi: tiệm bánh tráng đầu hẻm còn mở không anh?" },
+    { who: "Bà cụ", text: "Hồi bà còn con gái, bà cũng bán bánh tráng nè. Nhìn con là bà nhớ thời đó ghê." },
+    { who: "Học sinh", text: "Tụi em lập nhóm chat tên 'Hội ăn bánh tráng chị chủ' rồi đó chị, 37 thành viên!" },
+    { who: "Chị Lan Kế Toán", text: "Sếp chị mới hỏi sao dạo này chị vui vậy. Chị nói: tại tan làm có chỗ ghé ăn đó anh." },
+    { who: "Chú Tư Xe Ôm", text: "Bé Út cháu chú vẽ cái tiệm của con lên bài tập mỹ thuật, được điểm 10 luôn!" },
+    { who: "Bé Na Lớp 10", text: "Em tập làm bánh tráng trộn ở nhà, mẹ ăn xong nói: thôi mai ra tiệm chị chủ mua cho rồi 😂" },
+    { who: "Anh shipper", text: "Mưa quá trời mà nhìn đèn tiệm còn sáng là anh thấy ấm bụng liền." },
+    { who: "Bà cụ", text: "Bà kể chuyện con cho mấy bà hàng xóm nghe, giờ cả xóm đòi ghé thử." },
+    { who: "Học sinh", text: "Thầy chủ nhiệm bắt gặp tụi em ăn bánh tráng, thầy… xin một miếng rồi đi luôn." },
+    { who: "Chị Lan Kế Toán", text: "Hôm nay chị được tăng lương nè! Mai chị bao cả phòng ăn bánh tráng của em." },
+    { who: "Chú Tư Xe Ôm", text: "Chú mới thay cái yên xe mới, khách khen êm. Chú nói: êm như bánh tráng phơi sương tiệm con đó!" },
+    { who: "Bé Na Lớp 10", text: "Chị ơi, sau này lớn em muốn mở tiệm giống chị. Chị nhận em làm học trò nha!" },
+    { who: "Anh shipper", text: "Có khách đặt 'bánh tráng như hôm qua', anh hỏi hôm qua là món gì, khách nói: món làm em vui á anh." },
+    { who: "Bà cụ", text: "Bà mang cho con mấy trái tắc nhà bà trồng nè, vắt vô ly trà là thơm phức." },
+    { who: "Học sinh", text: "Tụi em thi xong rồi chị ơi! Ăn mừng bằng bánh tráng là chuẩn bài." },
+    { who: "Chị Lan Kế Toán", text: "Chị tính rồi: một tuần chị ghé tiệm em 5 lần. Thôi coi như đây là… chi phí hạnh phúc." },
+    { who: "Bé Na Lớp 10", text: "Hôm nay em không đói đâu, em ghé chỉ để chào chị thôi đó 👋" }
+  ],
+
   // Câu thả thính dễ thương (nói lái / chơi chữ) — anh Hiếu ghé tiệm buông câu, Bống gõ "ý thật".
   // lines: các dòng của câu · answers: cả câu "ý thật". Bống phải gõ cả câu (gõ không dấu, viết hoa cũng được).
   // Thêm câu mới thì chép một dòng { lines: [...], answers: [...] }, và luôn THÊM VÀO CUỐI danh sách.

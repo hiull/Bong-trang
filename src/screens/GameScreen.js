@@ -12,11 +12,13 @@ window.BT = window.BT || { Screens: {} };
       const C = CONFIG;
       const G = C.gameplay;
       this.router = router;
-      this.dayId = params.day;                 // 1..15 hoặc "secret"
-      this.dayNum = UI.dayLevel(params.day);   // dạng số để so với ngày mở món
-      this.secret = this.dayId === "secret";
-      this.dayCfg = UI.dayCfg(params.day);
       this.S = BT.Save.state;
+      const run = params.run || BT.MS.run(this.S.ms.index);
+      this.run = run;
+      this.dayId = run.key;                    // "ms13" | "secret" | "daily" | "endless"
+      this.dayNum = run.level;                 // cấp mốc: so với ngày mở món
+      this.secret = run.mode === "secret";
+      this.dayCfg = run.cfg;
       this.scope = UI.scope();
       this.pauseReasons = new Set();
       this.started = false;
@@ -116,7 +118,7 @@ window.BT = window.BT || { Screens: {} };
         const done = S.regularCustomers[id] || 0;
         const dishOk = this.dishPool.some((r) => r.id === def.dish);
         let entry = null;
-        if (done < G.regularChapters && this.dayNum >= def.startDay && this.dayNum >= (S.regularNext[id] || 0) && dishOk) {
+        if (done < G.regularChapters && this.dayNum >= def.startDay && S.ms.shifts >= (S.regularNext[id] || 0) && dishOk) {
           entry = { kind: "regular", id, chapter: done };
         } else if (done >= G.regularChapters && Math.random() < G.regularLoyalRate) {
           entry = { kind: "regular", id, chapter: -1 };
@@ -538,7 +540,7 @@ window.BT = window.BT || { Screens: {} };
       const weight = c && c.reviewer ? this.dayCfg.ratingWeight || 1 : 1;
       this.stats.ratings.push(stars);
       this.stats.weights.push(weight);
-      if (c) BT.Progress.addReview({ day: UI.dayName(this.dayId), name: c.tag || c.type.name, avatar: c.avatar, doodle: c.doodle, stars, weight });
+      if (c) BT.Progress.addReview({ day: this.run.ms, name: c.tag || c.type.name, avatar: c.avatar, doodle: c.doodle, stars, weight });
       if (stars === 5) this.q.five++;
     }
 
@@ -688,7 +690,7 @@ window.BT = window.BT || { Screens: {} };
     // ---------------- Hướng dẫn tương tác (Ngày 1, 2, 4, 7) ----------------
     tickTutorial() {
       if (this.tut) { this.stepTutorial(); return; }
-      const T = CONFIG.tutorials[this.dayId];
+      const T = this.run.scripted && this.run.mode === "story" ? CONFIG.tutorials[this.run.cfg.day] : null;
       if (!T || this.tutDone || this.S.tutorialDone[T.key]) return;
       const c = this.customers.find((x) => x.state === "waiting" && !x.isCat && x.pending().some((it) => UI.recipe(it.id).zone === T.zone));
       if (c) this.startTutorial(T, c);
@@ -978,7 +980,7 @@ window.BT = window.BT || { Screens: {} };
         onPick: () => {
           S.regularCustomers[id] = chapter + 1;
           S.regularNext = S.regularNext || {};
-          S.regularNext[id] = this.dayNum + def.gap;
+          S.regularNext[id] = S.ms.shifts + def.gap;
           this.applyEffect(choice.effect);
           if (chapter + 1 >= G.regularChapters) this.scope.timeout(() => UI.toast(UI.t("regularLoyal", { name: def.name }), 2800), 900);
         }
@@ -1481,7 +1483,7 @@ window.BT = window.BT || { Screens: {} };
       this.over = true;
       BT.Save.restoreDay();
       BT.Save.persist();
-      if (where === "retry") this.router.go("Prep", { day: this.dayId }, { replace: true });
+      if (where === "retry") this.router.go("Prep", { run: BT.MS.again(this.run) }, { replace: true });
       else this.router.backTo("Map");
     }
 
@@ -1507,30 +1509,45 @@ window.BT = window.BT || { Screens: {} };
         this.S.wallet -= income - kept;
       }
       const avg = this.avgRating();
-      const prev = this.S.days[this.dayId];
-      const firstClear = passed && !(prev && prev.stars > 0);
-
-      const rec = prev || { stars: 0, bestRevenue: 0, avgRating: 0 };
-      rec.stars = Math.max(rec.stars, stars);
-      rec.bestRevenue = Math.max(rec.bestRevenue, income);
-      if (avg > rec.avgRating) rec.avgRating = Math.round(avg * 10) / 10;
-      this.S.days[this.dayId] = rec;
-      const goldBefore = this.S.goldHearts;
-      this.S.goldHearts = Object.keys(this.S.days).filter((k) => k !== "secret" && this.S.days[k].stars === 3).length;
-      const newGold = this.S.goldHearts > goldBefore;
-      const allGold = this.S.goldHearts >= CONFIG.build.maxPlayableDay && !this.S.bonusSeen;
-      // Qua ngày lần đầu → mở 1 thẻ kỷ niệm
-      let newMemory = null;
-      const mi = this.dayNum - 1;
-      if (passed && !this.secret && window.PERSONAL.memories[mi] && !this.S.memoriesUnlocked.includes(mi)) {
-        this.S.memoriesUnlocked.push(mi);
-        newMemory = mi;
+      const S = this.S;
+      const MS = BT.MS;
+      const run = this.run;
+      // Tiến độ mốc (ca bí mật không tính)
+      let units = 0, progress = null, newMemory = null, minor = null, ending = false;
+      const goldBefore = S.goldHearts;
+      S.ms.shifts++;
+      if (!this.secret) {
+        const best = S.ms.best[run.ms] || { stars: 0, income: 0 };
+        best.stars = Math.max(best.stars, stars);
+        best.income = Math.max(best.income, income);
+        S.ms.best[run.ms] = best;
+        S.ms.firstDone[run.ms] = true;
+        S.ms.lastEvent = run.event;
+        units = MS.units({ passed, stars, income, target: d.target });
+        progress = MS.addProgress(units, { replay: run.mode === "replay" });
+        if (progress.cleared) {
+          const m = MS.get(progress.cleared);
+          if (m.major) {
+            const mi = m.day - 1;
+            if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
+          } else {
+            const MC = CONFIG.milestones;
+            const coins = MC.minorCoinsBase + MC.minorCoinsPerLevel * m.level;
+            S.wallet += coins;
+            const tales = window.PERSONAL.minorTales || [];
+            let tale = null;
+            if (tales.length) { const ti = S.talesSeen.length % tales.length; tale = tales[ti]; S.talesSeen.push(ti); }
+            minor = { coins, tale };
+          }
+          ending = progress.cleared === MS.count() && !S.endingSeen;
+        }
       }
-      const ending = passed && this.dayId === CONFIG.build.maxPlayableDay && !this.S.endingSeen;
+      S.goldHearts = MS.goldHearts();
+      const newGold = S.goldHearts > goldBefore;
+      const allGold = S.goldHearts >= CONFIG.build.maxPlayableDay && !S.bonusSeen;
       // Khách thêm từ cốt truyện: dùng cho ngày kế tiếp
       this.S.bonusCustomers = this.S.bonusNext || 0;
       this.S.bonusNext = 0;
-      if (passed && !this.secret) this.S.unlockedDay = Math.max(this.S.unlockedDay, this.dayNum + 1);
       // Đếm số lần thua liên tiếp ở cùng một ngày
       if (passed) this.S.loseStreak = null;
       else if (this.S.loseStreak && this.S.loseStreak.day === this.dayId) this.S.loseStreak.n++;
@@ -1547,7 +1564,8 @@ window.BT = window.BT || { Screens: {} };
       BT.Save.persist();
 
       const summary = {
-        day: this.dayId, passed, lostHearts, stars, firstClear, secret: this.secret,
+        day: this.dayId, run, title: UI.runTitle(run), passed, lostHearts, stars, secret: this.secret,
+        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor,
         memory: newMemory, newGold, allGold, ending, levelUp,
         income, kept, target: d.target,
         revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,

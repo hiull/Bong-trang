@@ -7,7 +7,7 @@ window.BT = window.BT || { Screens: {} };
   function isPlayable(day) {
     const S = BT.Save.state;
     if (day === "secret") return CONFIG.build.secretPlayable && S.endingSeen;
-    return day <= S.unlockedDay && day <= CONFIG.build.maxPlayableDay;
+    return BT.MS.majorIndex(day) <= S.ms.index;
   }
 
   function dayInfo(dc) {
@@ -39,7 +39,7 @@ window.BT = window.BT || { Screens: {} };
         node.type = "button";
         node.style.setProperty("--offset", (i % 2 === 0 ? -1 : 1) * (i % 4 < 2 ? 22 : 12) + "%");
         const playable = isPlayable(d);
-        const rec = S.days[d];
+        const rec = secret ? null : S.ms.best[BT.MS.majorIndex(d)];
         if (!playable) node.classList.add("locked");
         if (rec && rec.stars > 0) node.classList.add("cleared");
         node.appendChild(UI.el("span", "node-weather", CONFIG.weathers[dc.weather].icon));
@@ -52,8 +52,7 @@ window.BT = window.BT || { Screens: {} };
         node.addEventListener("click", () => {
           if (!playable) {
             if (secret) UI.toast(UI.t("secretLocked"));
-            else if (d > S.unlockedDay) UI.toast(UI.t("dayLockedPrev", { p: d - 1 }));
-            else UI.toast(UI.t("dayLockedBuild", { n: d }));
+            else UI.toast(UI.t("dayLockedPrev", { p: d - 1 }));
             return;
           }
           BT.Audio.play("tap");
@@ -61,7 +60,7 @@ window.BT = window.BT || { Screens: {} };
             title: secret ? UI.t("secretDay") : UI.t("dayN", { n: d }),
             body: dayInfo(dc),
             dismissable: true,
-            buttons: [{ label: UI.t("btnPrepare"), cls: "btn-pink", onClick: () => router.go("Prep", { day: d }) }]
+            buttons: [{ label: UI.t("btnPrepare"), cls: "btn-pink", onClick: () => router.go("Prep", { run: secret ? BT.MS.secretRun() : (BT.MS.majorIndex(d) === S.ms.index ? BT.MS.run(S.ms.index) : BT.MS.run(BT.MS.majorIndex(d), { replay: true })) }) }]
           });
         });
         path.appendChild(node);

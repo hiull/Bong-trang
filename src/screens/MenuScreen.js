@@ -271,7 +271,7 @@ window.BT = window.BT || { Screens: {} };
               UI.howTo(() => {
                 S.tutorialDone.cards = true;
                 BT.Save.persist();
-                router.go("Prep", { day: 1 });
+                router.go("Prep", { run: BT.MS.run(BT.Save.state.ms.index) });
               });
             }
           }]

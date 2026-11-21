@@ -325,6 +325,14 @@ window.BT = window.BT || { Screens: {} };
   // Tên ngày dùng trong câu: 5 → "5", "secret" → "bí mật"
   UI.dayName = (day) => (typeof day === "number" ? String(day) : CONFIG.texts.dayNames[day] || String(day));
   // Ngày dạng số để so với openDay (Ngày bí mật = sau Ngày 15)
+  UI.num1 = (x) => String(Math.round(x * 100) / 100).replace(".", ",");
+  UI.runTitle = (run) => {
+    if (!run) return "";
+    if (run.mode === "secret") return UI.t("runSecret");
+    if (run.mode === "daily") return UI.t("runDaily");
+    if (run.mode === "endless") return UI.t("runEndless");
+    return UI.t("runMs", { n: run.ms });
+  };
   UI.dayLevel = (day) => (typeof day === "number" ? day : CONFIG.build.maxPlayableDay + 1);
 
   // Chữ hiện từng ký tự; chạm để hiện hết ngay

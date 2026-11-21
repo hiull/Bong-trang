@@ -8,9 +8,10 @@ window.BT = window.BT || { Screens: {} };
     mount(root, params, router) {
       const S = BT.Save.state;
       const M = CONFIG.money;
-      const day = params.day;
-      const dc = UI.dayCfg(day);
-      const lv = UI.dayLevel(day);
+      const run = params.run || BT.MS.run(S.ms.index);
+      const day = run.key;
+      const dc = run.cfg;
+      const lv = run.level;
 
       // Điểm khôi phục đầu ngày (vào lại màn này thì quay về đúng đầu ngày)
       if (S.dayBackup && S.dayBackup.day === day && !S.dayBackup.finished) BT.Save.restoreDay();
@@ -22,7 +23,7 @@ window.BT = window.BT || { Screens: {} };
         const ing = CONFIG.ingredients[id];
         return ing.openDay <= lv && ing.zones.some((z) => CONFIG.build.playableZones.includes(z));
       });
-      const gift = M.freeStockDays.includes(day);
+      const gift = run.mode === "story" && run.ms === 1 && S.ms.shifts === 0;
       if (gift) ids.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.freeStockQty); });
       // Quỹ cứu trợ: không đủ tiền nhập hàng tối thiểu → tặng miễn phí phần còn thiếu
       const low = ids.filter((id) => BT.Save.stock(id) < M.rescueMinStock);
@@ -39,7 +40,7 @@ window.BT = window.BT || { Screens: {} };
       }).filter((g) => g.list.length);
 
       const el = UI.el("div", "screen prep");
-      el.appendChild(UI.topbar(UI.t("prepTitle", { n: UI.dayName(day) }), () => router.back()));
+      el.appendChild(UI.topbar(UI.t("prepTitle", { n: UI.runTitle(run) }), () => router.back()));
       const body = UI.el("div", "prep-body");
 
       const card = UI.el("div", "card forecast");
@@ -88,8 +89,8 @@ window.BT = window.BT || { Screens: {} };
       el.appendChild(body);
 
       const foot = UI.el("div", "prep-foot");
-      foot.appendChild(UI.button(UI.t("btnOpenDay", { n: UI.dayName(day) }), "btn-pink big", () => {
-        router.go("Game", { day }, { replace: true });
+      foot.appendChild(UI.button(UI.t("btnOpenDay"), "btn-pink big", () => {
+        router.go("Game", { run }, { replace: true });
       }));
       el.appendChild(foot);
       root.appendChild(el);

@@ -148,6 +148,20 @@ window.BT = window.BT || { Screens: {} };
       return true;
     },
 
+    secretRun() {
+      const cfg = JSON.parse(JSON.stringify(CONFIG.days.find((d) => d.day === "secret")));
+      return { mode: "secret", key: "secret", ms: BT.Save.state.ms.index, level: CONFIG.build.maxPlayableDay + 1, cfg, event: cfg.weather, scripted: true };
+    },
+
+    // Ca mới cùng kiểu với run (dùng cho "Chơi lại" trong menu tạm dừng)
+    again(run) {
+      if (run.mode === "story" || run.mode === "replay") return this.run(run.ms, { replay: run.mode === "replay" });
+      if (run.mode === "secret") return this.secretRun();
+      if (run.mode === "daily" && BT.Daily) return BT.Daily.run(run.date);
+      if (run.mode === "endless" && BT.Endless) return BT.Endless.run();
+      return run;
+    },
+
     goldHearts() {
       const best = BT.Save.state.ms.best;
       return this.list().filter((m) => m.major && best[m.index] && best[m.index].stars >= 3).length;

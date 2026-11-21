@@ -43,6 +43,7 @@ window.BT = window.BT || { Screens: {} };
       bonusNext: 0,
       bonusSeen: false,   // đã xem lời nhắn bí mật (đủ 15 tim vàng)
       ms: { index: 1, progress: 0, cleared: 0, shifts: 0, best: {}, firstDone: {}, lastEvent: null }, // mốc hiện tại & tiến độ
+      talesSeen: [],      // chuyện vặt đã xem (theo thứ tự)
       flirt: { next: 0, solved: {} }, // câu thính: câu kế tiếp, câu đã giải ("self" tự giải / "told" anh nói)
       welcomeSeen: false
     };

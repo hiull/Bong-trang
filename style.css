@@ -1657,3 +1657,17 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .fb-answer { font-weight: 800; margin-top: 2px; }
 .fb-told { margin-left: 6px; font-size: 13px; background: var(--pink-light); border-radius: 999px; padding: 0 6px; color: var(--pink-dark); }
 .fb-locked { font-size: 15px; }
+
+/* ---------------- Tiến độ mốc (Tổng kết) ---------------- */
+.ms-box { margin-top: 12px; padding: 10px 12px; border: var(--border) solid var(--brown); border-radius: 14px; background: var(--white); }
+.ms-box.cleared { background: var(--pink-light); }
+.ms-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; }
+.ms-gain { color: var(--pink-dark); }
+.ms-bar { height: 14px; margin-top: 6px; border: 2px solid var(--brown); border-radius: 8px; background: #EFE3DA; overflow: hidden; }
+.ms-fill { height: 100%; width: 0; background: linear-gradient(90deg, #FF8FB0, var(--pink)); transition: width 0.9s ease-out; }
+.ms-count { margin-top: 4px; font-size: var(--fs-s); text-align: right; }
+.ms-box.cleared .ms-count { text-align: center; font-family: var(--font-title); color: var(--pink-dark); font-size: var(--fs); }
+.ms-reward { margin-top: 4px; text-align: center; font-weight: 800; }
+.ms-tale { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: var(--cream); }
+.ms-tale-who { font-weight: 800; color: var(--pink-dark); font-size: var(--fs-s); }
+.ms-tale-text { margin-top: 2px; }
