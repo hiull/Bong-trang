@@ -34,7 +34,7 @@ window.BT = window.BT || { Screens: {} };
           const shown = Math.min(5, r.stars + r.bonus);
           const card = UI.el("div", "review-card" + (shown <= 2 ? " low" : ""));
           const top = UI.el("div", "review-top");
-          top.appendChild(UI.el("span", "review-avatar", r.avatar || "🙂"));
+          top.appendChild(UI.el("span", "review-avatar", r.doodle ? UI.icon(r.doodle) : r.avatar || "🙂"));
           const who = UI.el("div", "review-who");
           who.appendChild(UI.el("div", "review-name", r.name));
           who.appendChild(UI.el("div", "review-day", UI.t("reviewDay", { n: r.day }) + (r.weight > 1 ? " · 📝 x" + r.weight : "")));

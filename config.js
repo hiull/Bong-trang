@@ -147,7 +147,7 @@ window.CONFIG = {
   // effect: tip (+k ngay), wallet (+k vào ví), customer (+1 khách ngày mai), decor (tặng đồ trang trí)
   regulars: {
     chi_lan: {
-      name: "Chị Lan Kế Toán", avatar: "👩‍💼", self: "chị", call: "em", dish: "bt_tron_kho_bo",
+      name: "Chị Lan Kế Toán", avatar: "👩‍💼", doodle: "chi_lan", self: "chị", call: "em", dish: "bt_tron_kho_bo",
       patience: 30, tip: [3, 5], startDay: 2, gap: 2,
       chapters: [
         { text: "Chị làm kế toán ở toà nhà đối diện nè. Tháng này quyết toán, chị tăng ca hoài luôn em ơi.",
@@ -172,7 +172,7 @@ window.CONFIG = {
           ] }
       ] },
     chu_tu: {
-      name: "Chú Tư Xe Ôm", avatar: "🧔", accessory: "🛵", self: "chú", call: "con", dish: "bt_nuong_trung",
+      name: "Chú Tư Xe Ôm", avatar: "🧔", doodle: "chu_tu", accessory: "🛵", self: "chú", call: "con", dish: "bt_nuong_trung",
       patience: 30, tip: [2, 4], startDay: 4, gap: 2,
       chapters: [
         { text: "Chú chạy xe ôm trước cổng trường hoài mà giờ mới ghé. Mua cái bánh nướng cho bé Út cháu gái chú nè con.",
@@ -197,7 +197,7 @@ window.CONFIG = {
           ] }
       ] },
     be_na: {
-      name: "Bé Na Lớp 10", avatar: "👧", self: "em", call: "chị", dish: "bt_cuon_bo",
+      name: "Bé Na Lớp 10", avatar: "👧", doodle: "be_na", self: "em", call: "chị", dish: "bt_cuon_bo",
       patience: 30, tip: [0, 2], startDay: 7, gap: 2,
       chapters: [
         { text: "Chị ơi, em để dành tiền ăn sáng cả tuần mới đủ mua cuốn bơ đó. Ngon dữ thần luôn!",
@@ -321,13 +321,13 @@ window.CONFIG = {
     nhan_vien: { name: "Nhân viên văn phòng", avatar: "🧑‍💼", patience: 18, tip: [3, 5], self: "anh", call: "em",
       variants: [{ avatar: "👨‍💼", self: "anh" }, { avatar: "👩‍💼", self: "chị" }],
       lines: ["Em ơi cho {self} {dish}, đang tranh thủ giờ nghỉ!"], openDay: 3, enterSec: 0.6, kind: "normal" },
-    tomortle: { name: "Hiếu (Tomortle)", avatar: "🧑", accessory: "💐", patience: Infinity, tip: [20, 20], self: "anh", call: "bé",
+    tomortle: { name: "Hiếu (Tomortle)", avatar: "🧑", doodle: "tomortle", accessory: "💐", patience: Infinity, tip: [20, 20], self: "anh", call: "bé",
       openDay: 3, enterSec: 0.6, kind: "special" },
-    ban_be: { name: "Bạn bè", avatar: "🧑", patience: 30, tip: [5, 5], self: "mình", call: "{her}",
+    ban_be: { name: "Bạn bè", avatar: "🧑", doodleVariants: ["friend_a", "friend_b", "friend_c", "friend_d"], patience: 30, tip: [5, 5], self: "mình", call: "{her}",
       lines: ["{Her} ơi, cho mình {dish} nha!", "Ghé tiệm {shop} ủng hộ nè!"], openDay: 4, enterSec: 0.6, kind: "friend" },
     ba_cu: { name: "Bà cụ", avatar: "👵", patience: 35, tip: [2, 2], self: "bà", call: "cháu",
       lines: ["Cháu ơi, cho bà {dish} nghen cháu!"], openDay: 5, enterSec: 1.2, kind: "normal" },
-    shipper: { name: "Anh shipper", avatar: "🧑", accessory: "⛑️", patience: 15, tip: [5, 8], self: "anh", call: "em",
+    shipper: { name: "Anh shipper", avatar: "🧑", doodle: "shipper", patience: 15, tip: [5, 8], self: "anh", call: "em",
       lines: ["Như mọi khi nha em, anh đang vội giao đơn!"], openDay: 6, enterSec: 0.6, kind: "normal" },
     meo_hoang: { name: "Mèo hoang", avatar: "🐈", patience: 20, tip: [0, 0], heartBonus: 1, rareRate: 0.05,
       openDay: 7, enterSec: 0.6, kind: "cat" }

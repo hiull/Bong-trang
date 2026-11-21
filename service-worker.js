@@ -1,7 +1,7 @@
 // service-worker.js — Chơi offline (PWA) sau lần tải đầu tiên.
 // MỖI LẦN SỬA GAME rồi đưa lên mạng: tăng số phiên bản dưới đây (vd: v1.0.1)
 // để điện thoại tải bản mới thay vì dùng bản cũ đã lưu.
-const CACHE_VERSION = "bongtrang-v1.0.0";
+const CACHE_VERSION = "bongtrang-v1.1.0";
 const RUNTIME = "bongtrang-runtime";
 
 // Toàn bộ file của game, lưu sẵn ngay lần mở đầu tiên
@@ -29,6 +29,7 @@ const PRECACHE = [
   "src/screens/AlbumScreen.js",
   "src/screens/ReviewScreen.js",
   "src/screens/EndingScreen.js",
+  "assets/img/doodles.js",
   "assets/img/icon-180.png",
   "assets/img/icon-192.png",
   "assets/img/icon-512.png"

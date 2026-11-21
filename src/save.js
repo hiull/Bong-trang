@@ -260,7 +260,7 @@ window.BT = window.BT || { Screens: {} };
       const group = r.stars >= 4 ? T.good : r.stars === 3 ? T.ok : T.bad;
       S.reviews.unshift({
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-        day: r.day, name: r.name, avatar: r.avatar, stars: r.stars, weight: r.weight || 1,
+        day: r.day, name: r.name, avatar: r.avatar, doodle: r.doodle || null, stars: r.stars, weight: r.weight || 1,
         text: group[Math.floor(Math.random() * group.length)], reply: null, bonus: 0
       });
       if (S.reviews.length > CONFIG.reviewKeep) S.reviews.length = CONFIG.reviewKeep;

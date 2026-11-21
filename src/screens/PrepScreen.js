@@ -95,12 +95,12 @@ window.BT = window.BT || { Screens: {} };
       root.appendChild(el);
 
       function refresh() {
-        wallet.textContent = UI.t("prepWallet", { x: UI.money(S.wallet) });
-        spent.textContent = UI.t("prepSpent", { x: UI.money(S.today.expense) });
+        UI.setText(wallet, UI.t("prepWallet", { x: UI.money(S.wallet) }));
+        UI.setText(spent, UI.t("prepSpent", { x: UI.money(S.today.expense) }));
         rows.forEach((r) => {
-          r.n.textContent = UI.t("prepStock", { n: BT.Save.stock(r.id) });
+          UI.setText(r.n, UI.t("prepStock", { n: BT.Save.stock(r.id) }));
           const short = S.wallet < r.ing.price;
-          r.btn.textContent = short ? UI.t("lacking", { x: UI.money(r.ing.price - S.wallet) }) : UI.t("prepBuy", { q: M.buyPackQty, x: UI.money(r.ing.price) });
+          UI.setText(r.btn, short ? UI.t("lacking", { x: UI.money(r.ing.price - S.wallet) }) : UI.t("prepBuy", { q: M.buyPackQty, x: UI.money(r.ing.price) }));
           r.btn.classList.toggle("is-short", short);
         });
       }

@@ -24,7 +24,7 @@ window.BT = window.BT || { Screens: {} };
       let target = 30;
       const set = (p) => {
         fill.style.width = p + "%";
-        label.textContent = UI.t("loading", { p: Math.round(p) });
+        UI.setText(label, UI.t("loading", { p: Math.round(p) }));
       };
       set(0);
 

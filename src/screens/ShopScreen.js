@@ -63,7 +63,7 @@ window.BT = window.BT || { Screens: {} };
       const equipIcons = { khay: "🍽️", bep: "🔥", bep_nhanh: "🪵", ghe: "🪑", quat: "🌀", nhac: "🎵", chong_chay: "🪭", lac_nhanh: "🛍️" };
 
       function render() {
-        wallet.textContent = "🪙 " + UI.money(S.wallet);
+        UI.setText(wallet, "🪙 " + UI.money(S.wallet));
         Object.keys(tabEls).forEach((k) => tabEls[k].classList.toggle("active", k === tab));
         preview.className = "shop-preview front skin-" + S.activeSkin;
         preview.innerHTML = "";

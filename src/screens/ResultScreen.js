@@ -22,9 +22,9 @@ window.BT = window.BT || { Screens: {} };
       body.appendChild(starRow);
 
       const head = UI.el("div", "result-head" + (s.passed ? " win" : " lose"));
-      if (s.secret) head.textContent = UI.t("secretResult");
-      else if (s.passed) head.textContent = UI.t("resultPassed");
-      else head.textContent = s.lostHearts ? UI.t("resultFailedHearts") : UI.t("resultFailedTarget", { x: UI.money(s.target) });
+      if (s.secret) UI.setText(head, UI.t("secretResult"));
+      else if (s.passed) UI.setText(head, UI.t("resultPassed"));
+      else UI.setText(head, s.lostHearts ? UI.t("resultFailedHearts") : UI.t("resultFailedTarget", { x: UI.money(s.target) }));
       body.appendChild(head);
       if (s.newGold) body.appendChild(UI.el("div", "gold-get", UI.t("goldHeartGet") + " · " + UI.t("goldHearts", { a: S.goldHearts, b: CONFIG.build.maxPlayableDay })));
       if (!s.passed) {

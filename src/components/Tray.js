@@ -271,6 +271,10 @@ window.BT = window.BT || { Screens: {} };
         this.updateNeedle();
       }
 
+      if (this.zone === "nuong" && (this.cooking || this.burnt)) {
+        el.appendChild(UI.el("span", "fx-smoke" + (this.burnt ? " burnt" : ""), "💨"));
+        el.appendChild(UI.el("span", "fx-sparkle", "✨"));
+      }
       el.appendChild(UI.el("div", "tray-label", this.label()));
 
       if (this.canShake()) el.appendChild(this.actionBtn(UI.t("shakeBtn"), "shake"));

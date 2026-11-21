@@ -21,7 +21,7 @@ window.BT = window.BT || { Screens: {} };
       stage.appendChild(UI.el("div", "menu-sign", P.shopName));
       const her = UI.el("div", "ending-her", "👩‍🍳");
       const him = UI.el("div", "ending-him");
-      him.appendChild(UI.el("span", "", "🧑"));
+      him.appendChild(UI.icon("tomortle"));
       him.appendChild(UI.el("span", "ending-flower", "💐"));
       stage.appendChild(her);
       stage.appendChild(him);

@@ -179,6 +179,7 @@ src/save.js         Lưu/đọc tiến trình (localStorage), điểm khôi ph�
 src/audio.js        Âm thanh (Web Audio API), rung
 src/screens/        Các màn hình (Tải, Chính, Bản đồ, Chuẩn bị, Bán hàng, Tổng kết, …)
 src/components/     Khách, trạm nguyên liệu, khay, công cụ giao diện
+assets/img/doodles.js  Bộ 149 hình vẽ tay kiểu doodle (SVG) thay cho emoji
 assets/             Hình, âm thanh, nhạc, ảnh kỷ niệm
 manifest.json, service-worker.js   PWA: cài lên màn hình chính, chơi offline
 CREDITS.md          Nguồn tài nguyên & giấy phép
@@ -194,5 +195,9 @@ CREDITS.md          Nguồn tài nguyên & giấy phép
 | 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ✅ Xong |
 | 6 | Hoàn thiện, PWA & đưa lên GitHub Pages | ✅ Xong |
 
-## 8. Sao lưu tiến trình
+## 8. Hình vẽ doodle
+Mọi hình trong game (nguyên liệu, món ăn, khách, thú cưng, trang trí, nút bấm, mặt cảm xúc…) là hình **vẽ tay kiểu doodle** nằm trong `assets/img/doodles.js`.
+Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (ví dụ 💕 ❤️ ✨): khi hiển thị, game tự đổi emoji sang hình doodle tương ứng. Emoji nào chưa có hình thì vẫn hiện như emoji.
+
+## 9. Sao lưu tiến trình
 Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao lưu**. Cất mã vào app Ghi chú hoặc gửi qua email (đừng gửi qua Messenger/Zalo vì tin nhắn dài có thể bị cắt). Đổi máy thì dán mã vào ô **Dán mã để khôi phục**.

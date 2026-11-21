@@ -158,7 +158,10 @@ window.BT = window.BT || { Screens: {} };
       front.appendChild(UI.el("div", "sidewalk"));
       const w = CONFIG.weathers[this.dayCfg.weather];
       front.appendChild(UI.el("div", "weather-chip", UI.t("weatherChip", { icon: w.icon, label: w.label })));
-      front.appendChild(UI.el("div", "weather-fx"));
+      const wfx = UI.el("div", "weather-fx");
+      if (this.dayCfg.weather === "windy") { wfx.appendChild(UI.el("span", "leaf l1", "🍃")); wfx.appendChild(UI.el("span", "leaf l2", "🍃")); }
+      if (this.dayCfg.weather === "festival") wfx.appendChild(UI.el("div", "fest-row", "🏮 🏮 🏮 🏮 🏮"));
+      front.appendChild(wfx);
       CONFIG.gameplay.seatCenters[this.seatCount].forEach((c) => {
         const stool = UI.el("div", "stool");
         stool.style.left = c + "%";
@@ -450,7 +453,7 @@ window.BT = window.BT || { Screens: {} };
       const def = CONFIG.regulars[plan.id];
       const loyal = (this.S.regularCustomers[plan.id] || 0) >= G.regularChapters;
       const typeDef = {
-        name: def.name, avatar: def.avatar, accessory: def.accessory, patience: def.patience,
+        name: def.name, avatar: def.avatar, doodle: def.doodle, accessory: def.accessory, patience: def.patience,
         tip: loyal ? def.tip.map((x) => x * G.regularLoyalTipMult) : def.tip,
         self: def.self, call: def.call, lines: [UI.t("regularOrder")], enterSec: CONFIG.gameplay.customerEnterSec, kind: "regular"
       };
@@ -522,7 +525,7 @@ window.BT = window.BT || { Screens: {} };
       const weight = c && c.reviewer ? this.dayCfg.ratingWeight || 1 : 1;
       this.stats.ratings.push(stars);
       this.stats.weights.push(weight);
-      if (c) BT.Progress.addReview({ day: UI.dayName(this.dayId), name: c.tag || c.type.name, avatar: c.avatar, stars, weight });
+      if (c) BT.Progress.addReview({ day: UI.dayName(this.dayId), name: c.tag || c.type.name, avatar: c.avatar, doodle: c.doodle, stars, weight });
       if (stars === 5) this.q.five++;
     }
 
@@ -798,7 +801,9 @@ window.BT = window.BT || { Screens: {} };
       if (this.over) return;
       this.pauseReasons.add("story");
       const body = UI.el("div", "story");
-      body.appendChild(UI.el("div", "story-avatar", avatar));
+      const av = UI.el("div", "story-avatar");
+      [].concat(avatar).forEach((a) => av.appendChild(window.DOODLES && window.DOODLES[a] ? UI.icon(a) : UI.el("span", "", a)));
+      body.appendChild(av);
       body.appendChild(UI.el("div", "story-text", text));
       UI.modal({
         title,
@@ -837,7 +842,7 @@ window.BT = window.BT || { Screens: {} };
       const replies = CONFIG.texts.tomoReplies;
       const answers = CONFIG.texts.tomoAnswers;
       const effects = [{ tip: 5 }, { heart: 1 }];
-      this.storyDialog(UI.t("tomoTag"), "🧑💐", UI.t("tomoAsk", { title: mem.title }) + "\n" + mem.date, replies.map((label, i) => ({
+      this.storyDialog(UI.t("tomoTag"), ["tomortle", "bouquet"], UI.t("tomoAsk", { title: mem.title }) + "\n" + mem.date, replies.map((label, i) => ({
         label: UI.fmt(label),
         onPick: () => {
           S.regularCustomers.tomortle = n + 1;
@@ -853,7 +858,7 @@ window.BT = window.BT || { Screens: {} };
       const ch = def.chapters[chapter];
       if (!ch) return;
       const S = this.S;
-      this.storyDialog(UI.t("regularTitle", { name: def.name, c: chapter + 1, t: G.regularChapters }), def.avatar, UI.fmt(ch.text), ch.choices.map((choice) => ({
+      this.storyDialog(UI.t("regularTitle", { name: def.name, c: chapter + 1, t: G.regularChapters }), def.doodle || def.avatar, UI.fmt(ch.text), ch.choices.map((choice) => ({
         label: UI.fmt(choice.label),
         onPick: () => {
           S.regularCustomers[id] = chapter + 1;
@@ -1130,11 +1135,11 @@ window.BT = window.BT || { Screens: {} };
       };
       const complete = () => {
         finished = true;
-        if (roll) { tray.rolled = true; hint.textContent = UI.t("rollDone"); BT.Audio.play("roll"); }
+        if (roll) { tray.rolled = true; UI.setText(hint, UI.t("rollDone")); BT.Audio.play("roll"); }
         else {
           tray.tied = true;
           bag.appendChild(UI.el("div", "big-tie", "🎀"));
-          hint.textContent = UI.t("shakeDone");
+          UI.setText(hint, UI.t("shakeDone"));
         }
         layer.classList.add("done");
         BT.Audio.play("tie");
@@ -1225,7 +1230,7 @@ window.BT = window.BT || { Screens: {} };
       this.zone = id;
       Object.keys(this.tabEls).forEach((k) => this.tabEls[k].classList.toggle("active", k === id));
       const z = CONFIG.zones.find((x) => x.id === id);
-      this.zoneLabel.textContent = z.icon + " " + z.name;
+      UI.setText(this.zoneLabel, z.icon + " " + z.name);
       const grill = id === "nuong";
       this.trayGroup.style.display = grill ? "none" : "";
       this.grillGroup.style.display = grill ? "" : "none";
@@ -1266,17 +1271,17 @@ window.BT = window.BT || { Screens: {} };
     income() { return this.stats.revenue + this.stats.tips; }
 
     updateHud() {
-      this.hudCust.textContent = UI.t("hudCustomers", { d: this.done, t: this.total });
+      UI.setText(this.hudCust, UI.t("hudCustomers", { d: this.done, t: this.total }));
       const avg = this.avgRating();
-      this.hudRate.textContent = "⭐ " + (avg ? UI.rating(avg) : "–");
-      this.hudMoney.textContent = "🪙 " + UI.money(this.income()) + (this.secret ? "" : " / " + UI.money(this.dayCfg.target));
+      UI.setText(this.hudRate, "⭐ " + (avg ? UI.rating(avg) : "–"));
+      UI.setText(this.hudMoney, "🪙 " + UI.money(this.income()) + (this.secret ? "" : " / " + UI.money(this.dayCfg.target)));
       this.hudMoney.classList.toggle("reached", !this.secret && this.income() >= this.dayCfg.target);
-      this.hudCombo.textContent = UI.t("comboLabel", { n: this.combo });
+      UI.setText(this.hudCombo, UI.t("comboLabel", { n: this.combo }));
       this.hudCombo.style.display = this.combo >= 2 ? "" : "none";
       let h = "";
       const max = Math.max(CONFIG.gameplay.hearts, this.hearts);
       for (let i = 0; i < max; i++) h += i < this.hearts ? "❤️" : "🤍";
-      this.hudHearts.textContent = h;
+      UI.setText(this.hudHearts, h);
     }
 
     updateHint() {
@@ -1296,7 +1301,7 @@ window.BT = window.BT || { Screens: {} };
       } else {
         key = !has ? "cuon_start" : !t.rolled ? (Object.keys(t.items).length >= 2 ? "cuon_roll" : "cuon_toppings") : t.finish.length ? "cuon_deliver" : "cuon_sauce";
       }
-      this.hintEl.textContent = UI.fmt(H[key]);
+      UI.setText(this.hintEl, UI.fmt(H[key]));
     }
 
     // ---------------- Sổ công thức ----------------
@@ -1316,7 +1321,7 @@ window.BT = window.BT || { Screens: {} };
         const line = (label, text) => {
           const l = UI.el("div", "book-line");
           l.appendChild(UI.el("b", "", label + ": "));
-          l.appendChild(document.createTextNode(text));
+          l.appendChild(UI.el("span", "", text));
           row.appendChild(l);
         };
         if (r.combo) {

@@ -6,12 +6,63 @@ window.BT = window.BT || { Screens: {} };
 
   UI.app = () => document.getElementById("app");
 
+  // ---------- Hình doodle thay cho emoji ----------
+  // assets/img/doodles.js: DOODLES (id → SVG), DOODLE_MAP (emoji → id).
+  // Mọi chữ hiển thị đi qua UI.rich: emoji nào có hình doodle sẽ được thay bằng hình.
+  const DD = window.DOODLES || {};
+  const NORM = (s) => String(s).replace(/\uFE0F/g, "");
+  const EMAP = {};
+  Object.keys(window.DOODLE_MAP || {}).forEach((k) => { EMAP[NORM(k)] = window.DOODLE_MAP[k]; });
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const KEYS = Object.keys(EMAP).sort((a, b) => b.length - a.length).map(esc);
+  const RE = KEYS.length ? new RegExp("(" + KEYS.join("|") + ")", "gu") : null;
+
+  UI.icon = function (id, cls) {
+    const s = document.createElement("span");
+    s.className = "dd dd-" + id + (cls ? " " + cls : "");
+    s.setAttribute("aria-hidden", "true");
+    s.innerHTML = DD[id] ? '<svg viewBox="0 0 64 64">' + DD[id] + "</svg>" : "";
+    return s;
+  };
+
+  // Tách chữ thành các phần: chữ thường và emoji (để hiện từng ký tự / thay hình)
+  UI.tokens = function (text) {
+    const s = NORM(text);
+    if (!RE) return Array.from(s);
+    const out = [];
+    let last = 0;
+    s.replace(RE, (m, g, off) => {
+      if (off > last) out.push(...Array.from(s.slice(last, off)));
+      out.push(m);
+      last = off + m.length;
+      return m;
+    });
+    if (last < s.length) out.push(...Array.from(s.slice(last)));
+    return out;
+  };
+
+  UI.rich = function (el, text) {
+    el.textContent = "";
+    const s = NORM(text);
+    if (!RE) { el.textContent = s; return el; }
+    let last = 0;
+    s.replace(RE, (m, g, off) => {
+      if (off > last) el.appendChild(document.createTextNode(s.slice(last, off)));
+      el.appendChild(UI.icon(EMAP[m]));
+      last = off + m.length;
+      return m;
+    });
+    if (last < s.length) el.appendChild(document.createTextNode(s.slice(last)));
+    return el;
+  };
+  UI.setText = UI.rich;
+
   UI.el = function (tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
     if (text !== undefined && text !== null) {
       if (text instanceof Node) e.appendChild(text);
-      else e.textContent = String(text);
+      else UI.rich(e, String(text));
     }
     return e;
   };
@@ -151,7 +202,7 @@ window.BT = window.BT || { Screens: {} };
     const box = UI.el("div", "modal");
     if (title) box.appendChild(UI.el("h2", "modal-title", title));
     const b = UI.el("div", "modal-body");
-    if (typeof body === "string") b.textContent = body;
+    if (typeof body === "string") UI.rich(b, body);
     else if (body) b.appendChild(body);
     box.appendChild(b);
     const row = UI.el("div", "modal-buttons");
@@ -278,7 +329,7 @@ window.BT = window.BT || { Screens: {} };
 
   // Chữ hiện từng ký tự; chạm để hiện hết ngay
   UI.typewriter = function (el, text, msPerChar, onDone) {
-    const chars = Array.from(text);
+    const chars = UI.tokens(text);
     let i = 0;
     let timer = null;
     let done = false;
@@ -287,13 +338,13 @@ window.BT = window.BT || { Screens: {} };
       if (done) return;
       done = true;
       clearTimeout(timer);
-      el.textContent = text;
+      UI.rich(el, text);
       if (onDone) onDone();
     };
     const step = () => {
       if (done) return;
       i++;
-      el.textContent = chars.slice(0, i).join("");
+      UI.rich(el, chars.slice(0, i).join(""));
       if (i >= chars.length) finish();
       else timer = setTimeout(step, msPerChar);
     };
@@ -337,7 +388,7 @@ window.BT = window.BT || { Screens: {} };
       const text = UI.el("div", "mem-text");
       wrap.appendChild(text);
       if (opts.typing) tw = UI.typewriter(text, m.text, CONFIG.gameplay.typeMsPerChar);
-      else text.textContent = m.text;
+      else UI.rich(text, m.text);
       if (list.length > 1) {
         const nav = UI.el("div", "mem-nav");
         const prev = UI.iconButton("◀", UI.t("zonePrev"), () => { pos = (pos - 1 + list.length) % list.length; show(); });
@@ -398,7 +449,13 @@ window.BT = window.BT || { Screens: {} };
   UI.decorateFront = function (front) {
     const S = BT.Save.state;
     front.querySelectorAll(".skin-fx, .decor, .pets, .curtain").forEach((x) => x.remove());
-    front.appendChild(UI.el("div", "skin-fx"));
+    const fx = UI.el("div", "skin-fx");
+    const add = (cls, text) => fx.appendChild(UI.el("div", cls, text));
+    if (S.activeSkin === "valentine") { add("sfx-row", "🎈 💕 🎈 💕 🎈"); add("sfx-corner", "🍫💝"); }
+    if (S.activeSkin === "trung_thu") { add("sfx-moon", "🌕"); add("sfx-row", "🏮 ⭐ 🐟 ⭐ 🏮"); }
+    if (S.activeSkin === "tet") { add("sfx-row wide", "🌼 🌸 🌼"); add("sfx-couplet", "An Khang · Thịnh Vượng"); }
+    if (S.activeSkin === "noel") { add("sfx-snow", ""); add("sfx-tree", "🎄"); }
+    front.appendChild(fx);
     S.decor.forEach((id) => {
       const d = CONFIG.decor.find((x) => x.id === id);
       if (!d) return;
@@ -409,6 +466,7 @@ window.BT = window.BT || { Screens: {} };
       }
       if (id === "neon") { front.classList.add("has-neon"); return; }
       front.appendChild(UI.el("div", "decor decor-" + id, d.emoji));
+      if (id === "den_long") front.appendChild(UI.el("div", "decor decor-den_long two", d.emoji));
     });
     const pets = UI.el("div", "pets");
     S.pets.forEach((id) => {

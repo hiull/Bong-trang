@@ -38,6 +38,12 @@ window.BT = window.BT || { Screens: {} };
 
       const variant = type.variants ? UI.pick(type.variants) : null;
       this.avatar = variant ? variant.avatar : type.avatar;
+      // Hình doodle riêng (anh Hiếu, shipper, khách quen…); bạn bè chọn kiểu theo tên
+      this.doodle = type.doodle || null;
+      if (type.doodleVariants && opts.tag) {
+        const i = Math.max(0, window.PERSONAL.friends.indexOf(opts.tag));
+        this.doodle = type.doodleVariants[i % type.doodleVariants.length];
+      }
       this.self = variant ? variant.self : type.self || "";
       this.call = UI.fmt(type.call || "");
 
@@ -67,7 +73,10 @@ window.BT = window.BT || { Screens: {} };
       el.style.left = centerPct + "%";
 
       const bubble = UI.el("div", "bubble");
-      if (this.items.some((x) => x.id === window.PERSONAL.favoriteDish) || this.combo) bubble.classList.add("fav");
+      if (this.items.some((x) => x.id === window.PERSONAL.favoriteDish) || this.combo) {
+        bubble.classList.add("fav");
+        bubble.appendChild(UI.el("span", "fav-heart", "💕"));
+      }
 
       let speechText;
       if (this.isCat) speechText = UI.t("catLine");
@@ -125,7 +134,7 @@ window.BT = window.BT || { Screens: {} };
       const body = UI.el("div", "cbody");
       if (this.tag) body.appendChild(UI.el("div", "name-tag" + (this.isTomortle ? " tomo" : ""), this.tag + (this.loyal ? " ❤️" : "")));
       if (this.isTomortle) el.classList.add("tomortle");
-      body.appendChild(UI.el("div", "avatar", this.avatar));
+      body.appendChild(UI.el("div", "avatar", this.doodle ? UI.icon(this.doodle) : this.avatar));
       if (this.type.accessory) body.appendChild(UI.el("div", "accessory", this.type.accessory));
       if (this.reviewer) {
         const badge = UI.el("div", "badge-review", "📝");
@@ -150,7 +159,10 @@ window.BT = window.BT || { Screens: {} };
     markDone(item) {
       item.done = true;
       const i = this.items.indexOf(item);
-      if (this.rows && this.rows[i]) this.rows[i].classList.add("done");
+      if (this.rows && this.rows[i]) {
+        this.rows[i].classList.add("done");
+        this.rows[i].querySelector(".dish-row").appendChild(UI.el("span", "done-check", "✅"));
+      }
       this.el.dataset.order = this.pending().map((x) => x.id).join(",");
     }
 
@@ -203,7 +215,7 @@ window.BT = window.BT || { Screens: {} };
       }
     }
 
-    setMood(m) { this.moodEl.textContent = m; }
+    setMood(m) { UI.setText(this.moodEl, m); }
 
     penalize(ratio) {
       this.patience = Math.max(0.01, this.patience - this.max * ratio);
@@ -212,7 +224,7 @@ window.BT = window.BT || { Screens: {} };
 
     // Câu phản hồi tạm thời trong bong bóng
     react(text, mood, sec) {
-      this.reactEl.textContent = text;
+      UI.setText(this.reactEl, text);
       const prev = this.bubble.dataset.mode;
       this.bubble.dataset.mode = "react";
       if (mood) this.setMood(mood);

@@ -673,7 +673,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .customer.exiting .bubble { transform: scale(0); }
 .bubble.fav { border-color: var(--pink); background: #FFF4F8; box-shadow: 0 0 0 3px #FFC2D6, 0 4px 0 var(--shadow); animation: sparkle 1.2s ease-in-out infinite; }
 .bubble.fav::after { background: #FFF4F8; border-color: var(--pink); }
-.bubble.fav::before { content: "💕"; position: absolute; top: -12px; right: -8px; font-size: 18px; }
+.fav-heart { position: absolute; top: -14px; right: -10px; font-size: 22px; line-height: 1; }
 @keyframes sparkle { 50% { box-shadow: 0 0 0 5px #FFD9E6, 0 0 14px #FF8FAB, 0 4px 0 var(--shadow); } }
 .bubble.low { animation: bubble-shake 0.25s linear infinite; }
 @keyframes bubble-shake { 0%, 100% { left: 0; } 25% { left: -3px; } 75% { left: 3px; } }
@@ -1128,7 +1128,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .dish-box { padding: 1px 0; }
 .dish-box + .dish-box { border-top: 2px dashed rgba(93, 64, 55, 0.25); margin-top: 2px; padding-top: 3px; }
 .dish-box.done { opacity: 0.4; }
-.dish-box.done .dish-name::after { content: " ✅"; }
+.done-check { margin-left: 2px; font-size: 16px; }
 .req-note { color: #E86A00; font-weight: 800; font-size: 15px; line-height: 1.15; }
 .combo-tag { font-family: var(--font-title); font-weight: 800; color: var(--pink-dark); font-size: 15px; }
 .badge-review { position: absolute; left: -10px; top: -6px; font-size: 22px; z-index: 2; }
@@ -1196,29 +1196,14 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   opacity: 0.7;
 }
 @keyframes rain { to { background-position: -40px 80px; } }
-.weather-windy .weather-fx::before, .weather-windy .weather-fx::after {
-  content: "🍃";
-  position: absolute;
-  top: 35%;
-  font-size: 22px;
-  animation: leaf 4s linear infinite;
-}
-.weather-windy .weather-fx::after { top: 55%; animation-delay: 2s; }
+.weather-fx .leaf { position: absolute; top: 35%; font-size: 24px; animation: leaf 4s linear infinite; }
+.weather-fx .leaf.l2 { top: 55%; animation-delay: 2s; }
 @keyframes leaf { from { left: 105%; transform: rotate(0); } to { left: -10%; transform: rotate(-540deg); } }
 .weather-hot .sky-sun { width: 26%; filter: saturate(1.6); }
 .weather-hot .front { background: linear-gradient(#FFB074 0%, #FFD6A5 50%, #FFF1E0 75%); }
 .weather-sunset .front { background: linear-gradient(#FF9A8B 0%, #FFC3A0 45%, #FFE3C7 75%); }
 .weather-festival .lights, .weather-sunset .lights { filter: drop-shadow(0 0 10px #FFC94D); }
-.weather-festival .weather-fx::before {
-  content: "🏮 🏮 🏮 🏮 🏮";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 26%;
-  text-align: center;
-  letter-spacing: 18px;
-  font-size: 18px;
-}
+.fest-row { position: absolute; left: 0; right: 0; top: 26%; text-align: center; letter-spacing: 10px; font-size: 22px; }
 
 /* Chuẩn bị: tiêu đề khu */
 .zone-header { font-family: var(--font-title); font-weight: 800; color: var(--pink-dark); margin: 6px 2px 0; }
@@ -1435,7 +1420,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 /* Trang trí */
 .decor { position: absolute; z-index: 3; pointer-events: none; line-height: 1; }
 .decor-den_long { top: 16%; left: 20%; font-size: max(26px, calc(var(--u) * 50)); transform-origin: 50% 0; animation: swing 3s ease-in-out infinite; }
-.decor-den_long::after { content: "🏮"; position: absolute; left: 260%; top: 0; }
+.decor-den_long.two { left: 64%; animation-delay: -1.5s; }
 @keyframes swing { 50% { transform: rotate(8deg); } }
 .decor-hoa_giay { right: 2%; bottom: 3%; font-size: max(30px, calc(var(--u) * 58)); }
 .decor-meo_than_tai { right: 16%; bottom: 4%; font-size: max(24px, calc(var(--u) * 44)); animation: wave 1.2s ease-in-out infinite; transform-origin: 50% 100%; }
@@ -1450,25 +1435,25 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 /* Giao diện mùa */
 .skin-fx { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
 .skin-valentine { --awn1: #FF4F8B; --awn2: #FFE4EC; }
-.skin-valentine .skin-fx::before { content: "🎈 💕 🎈 💕 🎈"; position: absolute; left: 0; right: 0; top: 22%; text-align: center; letter-spacing: 14px; font-size: 18px; animation: bob 3s ease-in-out infinite; }
-.skin-valentine .skin-fx::after { content: "🍫💝"; position: absolute; right: 18%; bottom: 3%; font-size: 24px; }
-.skin-trung_thu { --awn1: #FF9F43; --awn2: #FFE8B0; }
+.sfx-row { position: absolute; left: 0; right: 0; top: 22%; text-align: center; letter-spacing: 8px; font-size: 20px; animation: bob 3s ease-in-out infinite; }
+.sfx-row.wide { letter-spacing: 28px; animation: none; }
+.sfx-corner { position: absolute; right: 18%; bottom: 3%; font-size: 26px; }
 .skin-trung_thu .front, .front.skin-trung_thu { background: linear-gradient(#3B3A6B 0%, #7A6BA8 45%, #F3D9C4 75%); }
-.skin-trung_thu .skin-fx::before { content: "🌕"; position: absolute; left: 6%; top: 18%; font-size: 40px; filter: drop-shadow(0 0 14px #FFF3B0); }
-.skin-trung_thu .skin-fx::after { content: "🏮 ⭐ 🐟 ⭐ 🏮"; position: absolute; left: 0; right: 0; top: 24%; text-align: center; letter-spacing: 12px; font-size: 18px; animation: bob 3s ease-in-out infinite; }
 .skin-trung_thu .sky-sun { display: none; }
-.skin-tet { --awn1: #E53935; --awn2: #FFD54F; }
-.skin-tet .skin-fx::before { content: "🌼 🌸 🌼"; position: absolute; left: 0; right: 0; top: 22%; text-align: center; letter-spacing: 30px; font-size: 20px; }
-.skin-tet .skin-fx::after { content: "An Khang · Thịnh Vượng"; position: absolute; left: 50%; bottom: 25%; transform: translateX(-50%); white-space: nowrap;
+.sfx-moon { position: absolute; left: 6%; top: 18%; font-size: 42px; filter: drop-shadow(0 0 14px #FFF3B0); }
+.sfx-couplet { position: absolute; left: 50%; bottom: 25%; transform: translateX(-50%); white-space: nowrap;
   background: #C62828; color: #FFD54F; border: 2px solid #FFD54F; border-radius: 6px; padding: 0 8px; font-family: var(--font-title); font-weight: 800; font-size: 15px; }
-.skin-noel { --awn1: #D32F2F; --awn2: #FFFFFF; }
-.skin-noel .skin-fx::before { content: ""; position: absolute; inset: 0;
+.sfx-snow { position: absolute; inset: 0;
   background-image: radial-gradient(circle, #fff 0 2px, transparent 3px), radial-gradient(circle, #fff 0 1.5px, transparent 2.5px);
   background-size: 60px 60px, 37px 37px; animation: snow 6s linear infinite; opacity: 0.9; }
-.skin-noel .skin-fx::after { content: "🎄"; position: absolute; right: 2%; bottom: 3%; font-size: 40px; }
+.sfx-tree { position: absolute; right: 2%; bottom: 3%; font-size: 44px; }
+.skin-valentine { --awn1: #FF4F8B; --awn2: #FFE4EC; }
+.skin-trung_thu { --awn1: #FF9F43; --awn2: #FFE8B0; }
+.skin-tet { --awn1: #E53935; --awn2: #FFD54F; }
+.skin-noel { --awn1: #D32F2F; --awn2: #FFFFFF; }
 .skin-noel .pet-miu::before { content: ""; position: absolute; left: 22%; top: -4px; width: 0; height: 0;
-  border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 16px solid #D32F2F; transform: rotate(-15deg); }
-.skin-noel .pet-miu::after { content: ""; position: absolute; left: 26%; top: -10px; width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+  border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 16px solid #D32F2F; transform: rotate(-15deg); z-index: 1; }
+.skin-noel .pet-miu::after { content: ""; position: absolute; left: 26%; top: -10px; width: 7px; height: 7px; border-radius: 50%; background: #fff; z-index: 1; }
 @keyframes snow { to { background-position: 0 60px, 0 37px; } }
 @keyframes bob { 50% { transform: translateY(-5px); } }
 
@@ -1592,11 +1577,12 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .big-bag .bag-item { display: inline-block; transition: transform 0.12s ease-out; }
 .tray.grill[data-q]:not([data-q=""]) .bag-items { animation: puff 1.2s ease-in-out infinite; }
 @keyframes puff { 50% { transform: scale(1.06); } }
-.tray.grill[data-q]:not([data-q=""])::before {
-  content: "💨"; position: absolute; top: -14px; left: 40%; font-size: 18px; opacity: 0.7; pointer-events: none; animation: smoke 1.6s ease-out infinite;
-}
-.tray.grill[data-q="good"]::before { content: "✨"; opacity: 1; }
-.tray.grill.burnt::before { content: "💨"; position: absolute; top: -14px; left: 40%; font-size: 20px; filter: grayscale(1) brightness(0.5); animation: smoke 1.2s ease-out infinite; pointer-events: none; }
+.fx-smoke, .fx-sparkle { position: absolute; top: -16px; left: 40%; font-size: 20px; pointer-events: none; }
+.fx-smoke { opacity: 0.8; animation: smoke 1.6s ease-out infinite; }
+.fx-smoke.burnt { filter: grayscale(1) brightness(0.55); animation-duration: 1.2s; }
+.fx-sparkle { display: none; animation: pop-in 0.3s ease-out; }
+.tray.grill[data-q="good"] .fx-sparkle { display: block; }
+.tray.grill[data-q="good"] .fx-smoke { display: none; }
 @keyframes smoke { from { transform: translateY(0) scale(0.8); opacity: 0.8; } to { transform: translateY(-22px) scale(1.3); opacity: 0; } }
 
 /* Cài đặt */
@@ -1617,3 +1603,25 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .embed-banner { position: fixed; left: 50%; transform: translateX(-50%); width: min(444px, calc(100% - 16px)); top: calc(8px + env(safe-area-inset-top, 0px)); z-index: 9000; font-size: 15px; color: var(--brown); display: flex; align-items: center; gap: 8px;
   background: #FFF3C4; border: var(--border) solid var(--brown); border-radius: 14px; padding: 8px 10px; font-weight: 800; box-shadow: 0 6px 16px var(--shadow); }
 .embed-banner span { flex: 1; line-height: 1.3; }
+
+/* ================= HÌNH DOODLE ================= */
+.dd { display: inline-block; width: 1.18em; height: 1.18em; vertical-align: -0.24em; line-height: 0; flex: none; }
+.dd svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.avatar .dd { width: 1.1em; height: 1.1em; vertical-align: bottom; }
+.avatar { line-height: 0; }
+.mood .dd { width: 1em; height: 1em; }
+.rstar { line-height: 0; }
+.rstar .dd { width: 64px; height: 64px; }
+.rstar.off { filter: grayscale(1) opacity(0.45); }
+.rstar.on { -webkit-text-stroke: 0; }
+.node-stars .dd { width: 14px; height: 14px; vertical-align: -2px; }
+.review-stars .dd, .review-card-stars .dd { width: 18px; height: 18px; }
+.coach-hand .dd { width: 44px; height: 44px; }
+.story-avatar { display: flex; justify-content: center; align-items: flex-end; gap: 4px; }
+.story-avatar .dd { width: 72px; height: 72px; }
+.story-avatar .dd-bouquet { width: 40px; height: 40px; }
+.ending-her .dd, .ending-him .dd { width: 84px; height: 84px; }
+.ending-flower .dd { width: 44px; height: 44px; }
+.owner-avatar .dd { width: 1.15em; height: 1.15em; }
+.pet .dd { width: 1.15em; height: 1.15em; }
+.stub-icon .dd, .howto-icon .dd, .boot-icon .dd { width: 1.1em; height: 1.1em; }

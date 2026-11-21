@@ -86,7 +86,8 @@ window.BT = window.BT || { Screens: {} };
     applyColors();
     BT.Save.load();
     document.title = window.PERSONAL.shopName;
-    document.getElementById("rotate-text").textContent = UI.t("rotate");
+    UI.setText(document.getElementById("rotate-text"), UI.t("rotate"));
+    UI.setText(document.querySelector("#rotate-overlay .rotate-icon"), "📱");
     Router.root = UI.app();
     applyUnit();
     window.addEventListener("resize", () => {

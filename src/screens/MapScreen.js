@@ -46,7 +46,7 @@ window.BT = window.BT || { Screens: {} };
         node.appendChild(UI.el("span", "node-label", secret ? "★" : String(d)));
         const stars = UI.el("span", "node-stars");
         const n = rec ? rec.stars : 0;
-        stars.textContent = secret ? "" : "★".repeat(n) + "☆".repeat(3 - n);
+        UI.setText(stars, secret ? "" : "★".repeat(n) + "☆".repeat(3 - n));
         node.appendChild(stars);
         if (!playable) node.appendChild(UI.el("span", "node-lock", "🔒"));
         node.addEventListener("click", () => {
