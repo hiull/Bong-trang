@@ -141,11 +141,18 @@ window.PERSONAL = {
   ],
 
   // Câu thả thính dễ thương (nói lái / chơi chữ) — anh Hiếu ghé tiệm buông câu, Bống gõ "ý thật".
-  // lines: các dòng của câu · answers: đáp án được chấp nhận (gõ không dấu cũng được)
+  // lines: các dòng của câu · answers: cả câu "ý thật". Bống chỉ cần gõ những chữ bị đổi (gõ không dấu cũng được).
   // Thêm câu mới thì chép một dòng { lines: [...], answers: [...] }, và luôn THÊM VÀO CUỐI danh sách.
   flirtLines: [
-    { lines: ["em giảm cân à, anh thấy em toàn xương. xương nhất trình"], answers: ["xinh nhất trường"] },
-    { lines: ["lúc xào anh cũng thấy em ninh"], answers: ["lúc nào anh cũng thấy em xinh"] },
-    { lines: ["Anh với em thi làm bánh đi, anh làm vị anh đào còn em làm vị anh đơ."], answers: ["em làm anh đơ", "làm anh đơ"] }
+    { lines: ["dùng câu từ đùa vì anh đã muốn của từ đầu"], answers: ["dùng câu từ đùa vì anh đã muốn cua từ đầu"] },
+    { lines: ["xa không thể tỉnh"], answers: ["xinh không thể tả"] },
+    { lines: ["thiếu vàng là nợ"], answers: ["thiếu vợ là nàng"] },
+    { lines: ["đinh trên đường tàu"], answers: ["đau trên đường tình"] },
+    { lines: ["Hoàng hôn nắng vàng"], answers: ["Hoàng hôn vắng nàng"] },
+    { lines: ["bố bận vì nhiều em in"], answers: ["bố bận vì nhìn em yêu"] },
+    { lines: ["Anh với em thi làm bánh đi, anh làm vị anh đào còn em làm vị anh đơ."], answers: ["Anh với em thi làm bánh đi, anh làm vị anh đào còn em làm vợ anh đi"] },
+    { lines: ["em giảm cân à, anh thấy em toàn xương. xương nhất trình"], answers: ["em giảm cân à, anh thấy em toàn xương. xinh nhất trường"] },
+    { lines: ["phải cùng nangf ăn tối", "anh mới thấy được quá trình xơi"], answers: ["phải cùng nàng ăn tối anh mới thấy được quá trời xinh"] },
+    { lines: ["lúc xào anh cũng thấy em ninh"], answers: ["lúc nào anh cũng thấy em xinh"] }
   ]
 };

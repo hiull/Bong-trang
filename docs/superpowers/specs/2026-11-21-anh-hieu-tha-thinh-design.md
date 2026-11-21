@@ -38,3 +38,7 @@ trong danh sách người dùng thành từng câu.
 ## Cập nhật sau duyệt (người dùng, 21/11/2026)
 - **Chỉ giữ các câu thả thính dễ thương, bỏ hết câu tục tĩu.** Trong bộ câu đã gửi chỉ 3 câu đạt (xương nhất trình, lúc xào… ninh, vị anh đơ); câu không chắc nghĩa cũng bỏ. Phản ứng của anh Hiếu đổi sang giọng dễ thương (💕 thay 😈).
 - Sau đánh giá mã: gõ lại câu đố không được tính; đáp án ngắn nhận cả câu có chứa đáp án (khi có dấu); câu chưa giải được ưu tiên; không bao giờ chồng popup thả thính với câu chuyện khách quen; ô nhập tắt tự sửa chữ của bàn phím.
+
+### Cập nhật: bộ câu cố định & chấm theo chữ bị đổi
+- Bộ câu chỉ gồm 10 câu người dùng đưa (hai dòng "phải cùng nàng ăn tối / anh mới thấy được quá trời xinh" gộp thành một câu hai dòng).
+- `answers[0]` là cả câu ý thật. Bống chỉ cần gõ những chữ khác với câu đố, đúng thứ tự; gõ cả câu vẫn đúng. Chữ chỉ khác dấu với chữ cùng vị trí trong câu đố phải gõ đúng dấu.
