@@ -1748,9 +1748,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .card2-title { font-family: var(--font-title); }
 
 /* ---------------- Anh Hiếu phụ tiệm ---------------- */
-.helper { position: absolute; right: 4%; bottom: 2px; width: max(44px, calc(var(--u) * 84)); z-index: 5; text-align: center; pointer-events: none; }
+.helper { position: absolute; right: 0; bottom: 0; width: max(40px, calc(var(--u) * 70)); z-index: 1; text-align: center; pointer-events: none; }
 .helper .dd { width: 100%; height: auto; }
-.helper-role { font-size: 11px; font-weight: 800; background: var(--white); border: 1.5px solid var(--brown); border-radius: 8px; padding: 0 4px; white-space: nowrap; }
+.helper-role { position: relative; right: 50%; margin-right: -50%; display: inline-block; transform: translateX(-30%); font-size: 11px; font-weight: 800; background: var(--white); border: 1.5px solid var(--brown); border-radius: 8px; padding: 0 4px; white-space: nowrap; }
 .helper-bubble { position: absolute; bottom: 100%; right: 0; width: max-content; max-width: 190px; background: var(--white); border: 2px solid var(--brown); border-radius: 12px; padding: 4px 8px; font-size: 13px; font-weight: 700; text-align: left; animation: fade-in 0.2s; }
 .helper-pick { margin-top: 10px; padding: 8px 10px; border: var(--border) solid var(--brown); border-radius: 14px; background: var(--white); }
 .helper-pick-title { font-weight: 800; margin-bottom: 6px; }

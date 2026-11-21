@@ -222,3 +222,12 @@ Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao
 - **Sửa lời nhắn / chuyện vặt:** `personal.js` → `dailyNotes` (lời nhắn mỗi ngày) và `minorTales` (chuyện vặt). Thêm câu mới thì thêm vào cuối.
 - **Chỉnh độ dài mùa:** `config.js` → `seasons[0].minorPerMajor` (1 = 30 mốc, 2 = 45 mốc), `milestones.shiftsBase` / `shiftsGrowth` (số ca cần cho mỗi mốc). Thử thách: `daily`. Ca vô tận: `endless`.
 - Bản lưu cũ tự chuyển: đang ở Ngày N thì thành mốc lớn tương ứng, sao và Tim vàng giữ nguyên.
+
+## 13. Mùa 2 · Quầy chè & anh Hiếu phụ tiệm
+- **Mở Mùa 2:** đi hết 30 mốc Mùa 1 và xem đoạn kết → ở màn chính có thẻ **"Mùa 2 mở rồi!"**. Bản đồ có nút chuyển giữa Mùa 1 và Mùa 2. Chơi lại mốc Mùa 1 vẫn cộng một nửa tiến độ cho mốc Mùa 2 đang chơi.
+- **Quầy Chè & Sữa chua:** chọn cốc rồi chạm nguyên liệu **đúng thứ tự từ dưới lên**, sau đó thêm đá / dừa nạo. Sai thứ tự thì khách không nhận. Sổ công thức ghi rõ thứ tự lớp.
+- **Anh Hiếu phụ tiệm** (từ Mùa 2 · Mốc 3): ở màn Chuẩn bị chọn anh **Chạy bàn / Pha nước / Phụ chè** hoặc **Anh nghỉ** (anh ghé làm khách như cũ). Càng làm chung nhiều ca anh càng nhanh tay và mở chương "Sau giờ đóng cửa".
+- **Bác Sáu chủ nhà** ghé thu tiền mặt bằng ở các mốc lớn chẵn (khất được 1 lần). **Xe chè đối thủ** thỉnh thoảng giành khách: phục vụ liền 5 khách là xe dọn đi.
+- **Sửa chữ Mùa 2** trong `personal.js`: `season2Intro` (thư mở mùa), `ending2` (thư kết), `bonusMessage2` (lời nhắn đủ 15 tim Mùa 2), `recipeCards2` (15 thẻ công thức), `helperLines` / `helperChapters` (anh Hiếu), `landlordLines`, `rivalLines`.
+- **Thêm kỷ niệm Mùa 2:** điền `memories2` giống `memories` (ảnh để trong `assets/memories/`). Phần tử thứ k mở ở mốc lớn thứ k của Mùa 2; thêm sau khi đã qua mốc thì tự mở lần vào Album kế tiếp.
+- **Chỉnh số liệu** trong `config.js`: `days` 16–30, `helper`, `landlord`, `rival`, `seasons`.
