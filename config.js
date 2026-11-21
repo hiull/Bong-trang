@@ -384,7 +384,8 @@ window.CONFIG = {
 
   // Mùa & mốc: 15 ngày bên dưới là 15 mốc lớn; giữa các mốc lớn có mốc nhỏ (minorPerMajor).
   seasons: [
-    { id: 1, name: "Mùa 1 · Tiệm nhỏ đầu hẻm", majorDays: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], minorPerMajor: 1 }
+    { id: 1, name: "Mùa 1 · Tiệm nhỏ đầu hẻm", majorDays: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], minorPerMajor: 1 },
+    { id: 2, name: "Mùa 2 · Quầy chè đầu hẻm", majorDays: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], minorPerMajor: 1 }
   ],
   milestones: {
     shiftsBase: 2,            // số "ca chuẩn" cần cho mốc đầu tiên
@@ -461,6 +462,22 @@ window.CONFIG = {
     { day: 14, customers: 17, target: 650, spawn: [3, 4.5],   patienceMult: 1.00, unlock: ["combo_tinh_yeu"], weather: "payday", tipMult: 2 },
     { day: 15, customers: 18, target: 720, spawn: [3, 4],     patienceMult: 1.00, unlock: [], weather: "sunset", tipMult: 1,
       note: "Hoàn thành mở màn kết thúc & Ngày bí mật" },
+    // Mùa 2 · Quầy chè (mốc lớn 16–30). unlock điền ở bước quầy chè.
+    { day: 16, customers: 18, target: 760, spawn: [3.0, 4.0], patienceMult: 1.0, unlock: [], weather: "sunny", tipMult: 1, cheWeight: 0.5, hints: true },
+    { day: 17, customers: 18, target: 810, spawn: [2.97, 3.96], patienceMult: 1.0, unlock: [], weather: "windy", tipMult: 1, cheWeight: 0.5 },
+    { day: 18, customers: 19, target: 860, spawn: [2.94, 3.91], patienceMult: 0.99, unlock: [], weather: "payday", tipMult: 2, cheWeight: 0.5 },
+    { day: 19, customers: 19, target: 910, spawn: [2.91, 3.87], patienceMult: 0.99, unlock: [], weather: "hot", tipMult: 1, drinkWeight: 2 },
+    { day: 20, customers: 20, target: 960, spawn: [2.88, 3.82], patienceMult: 0.99, unlock: [], weather: "sunny", tipMult: 1 },
+    { day: 21, customers: 20, target: 1010, spawn: [2.85, 3.77], patienceMult: 0.98, unlock: [], weather: "reviewer", tipMult: 1, ratingWeight: 3 },
+    { day: 22, customers: 21, target: 1060, spawn: [2.82, 3.73], patienceMult: 0.98, unlock: [], weather: "rain", tipMult: 1, grillWeight: 2 },
+    { day: 23, customers: 21, target: 1110, spawn: [2.79, 3.69], patienceMult: 0.97, unlock: [], weather: "windy", tipMult: 1 },
+    { day: 24, customers: 22, target: 1170, spawn: [2.76, 3.64], patienceMult: 0.97, unlock: [], weather: "school", tipMult: 1, groupOf: 3 },
+    { day: 25, customers: 22, target: 1230, spawn: [2.73, 3.6], patienceMult: 0.97, unlock: [], weather: "payday", tipMult: 2 },
+    { day: 26, customers: 23, target: 1290, spawn: [2.7, 3.55], patienceMult: 0.96, unlock: [], weather: "hot", tipMult: 1, drinkWeight: 2 },
+    { day: 27, customers: 23, target: 1350, spawn: [2.67, 3.5], patienceMult: 0.96, unlock: [], weather: "sunny", tipMult: 1 },
+    { day: 28, customers: 24, target: 1410, spawn: [2.64, 3.46], patienceMult: 0.96, unlock: [], weather: "rain", tipMult: 1, grillWeight: 2 },
+    { day: 29, customers: 24, target: 1460, spawn: [2.61, 3.42], patienceMult: 0.95, unlock: [], weather: "festival", tipMult: 1.5 },
+    { day: 30, customers: 24, target: 1500, spawn: [2.6, 3.4], patienceMult: 0.95, unlock: [], weather: "sunset", tipMult: 1 },
     { day: "secret", customers: 15, target: 0, spawn: [3, 4], patienceMult: 1.00, unlock: [], weather: "secret", tipMult: 1, cannotLose: true }
   ],
 

@@ -13,7 +13,10 @@ window.BT = window.BT || { Screens: {} };
 
   function defaults() {
     return {
-      version: 2,
+      version: 3,
+      season: 1,          // mùa đang chơi
+      msBySeason: {},     // tiến độ các mùa không đang chơi
+      s2: { cards: [], memories: [], endingSeen: false, bonusSeen: false, goldHearts: 0, started: false }, // mùa 2
       wallet: CONFIG.money.startWallet,
       xp: 0,
       days: {},
@@ -84,7 +87,7 @@ window.BT = window.BT || { Screens: {} };
         const raw = localStorage.getItem(KEY);
         if (!raw) return false;
         const data = JSON.parse(raw);
-        if (!data || !(data.version >= 1 && data.version <= 2)) return false;
+        if (!data || !(data.version >= 1 && data.version <= 3)) return false;
         this.state = merge(defaults(), data);
         // Bản lưu theo ngày → mốc
         if (BT.MS && BT.MS.migrate(this.state)) this.persist();
@@ -177,7 +180,7 @@ window.BT = window.BT || { Screens: {} };
       bytes = await pipe(bytes, new DecompressionStream("deflate-raw"));
     } else if (kind !== "J") throw new Error("bad");
     const data = JSON.parse(new TextDecoder().decode(bytes));
-    if (!data || !(data.version >= 1 && data.version <= 2) || typeof data.wallet !== "number") throw new Error("bad");
+    if (!data || !(data.version >= 1 && data.version <= 3) || typeof data.wallet !== "number") throw new Error("bad");
     this.state = merge(defaults(), data);
     if (BT.MS) BT.MS.migrate(this.state);
     this.persist();

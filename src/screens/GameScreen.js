@@ -1650,11 +1650,12 @@ window.BT = window.BT || { Screens: {} };
         units = daily.units;
         progress = daily.progress || null;
       } else if (!this.secret) {
-        const best = S.ms.best[run.ms] || { stars: 0, income: 0 };
+        const rs = MS.stateOf(run.season);   // mùa của ca (chơi lại mùa cũ thì ghi vào mùa cũ)
+        const best = rs.best[run.ms] || { stars: 0, income: 0 };
         best.stars = Math.max(best.stars, stars);
         best.income = Math.max(best.income, income);
-        S.ms.best[run.ms] = best;
-        S.ms.firstDone[run.ms] = true;
+        rs.best[run.ms] = best;
+        rs.firstDone[run.ms] = true;
         S.ms.lastEvent = run.event;
         units = MS.units({ passed, stars, income, target: d.target });
         progress = MS.addProgress(units, { replay: run.mode === "replay" });

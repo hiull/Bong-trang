@@ -8,13 +8,14 @@ window.BT = window.BT || { Screens: {} };
   const lerp = (a, b, t) => a + (b - a) * t;
   const NUM_KEYS = ["customers", "target", "spawn", "patienceMult"];
 
-  let cache = null;
+  let cache = {};
 
-  function season() { return CONFIG.seasons[0]; }
+  const curSeason = () => (BT.Save && BT.Save.state && BT.Save.state.season) || 1;
+  function season(sid) { sid = sid || curSeason(); return CONFIG.seasons.find((x) => x.id === sid) || CONFIG.seasons[0]; }
   function dayCfg(k) { return CONFIG.days.find((d) => d.day === k); }
 
-  function build() {
-    const se = season();
+  function build(sid) {
+    const se = season(sid);
     const m = se.minorPerMajor;
     const A = CONFIG.milestones.afterLast;
     const out = [];
@@ -48,11 +49,40 @@ window.BT = window.BT || { Screens: {} };
   }
 
   const MS = {
-    _reset() { cache = null; },
-    list() { if (!cache) cache = build(); return cache; },
-    count() { return this.list().length; },
-    get(i) { return this.list()[i - 1]; },
-    majorIndex(k) { return 1 + (k - 1) * (1 + season().minorPerMajor); },
+    _reset() { cache = {}; },
+    season(sid) { return season(sid); },
+    list(sid) { sid = sid || curSeason(); if (!cache[sid]) cache[sid] = build(sid); return cache[sid]; },
+    count(sid) { return this.list(sid).length; },
+    get(i, sid) { return this.list(sid)[i - 1]; },
+    // Chỉ số mốc của mốc lớn ứng với ngày `day` trong mùa sid
+    majorIndex(day, sid) { const se = season(sid); return 1 + se.majorDays.indexOf(day) * (1 + se.minorPerMajor); },
+    // Trạng thái tiến độ của một mùa (mùa đang chơi là S.ms)
+    stateOf(sid) {
+      const S = BT.Save.state;
+      sid = sid || S.season || 1;
+      if (sid === (S.season || 1)) return S.ms;
+      S.msBySeason = S.msBySeason || {};
+      return S.msBySeason[sid] || (S.msBySeason[sid] = { index: 1, progress: 0, cleared: 0, shifts: 0, best: {}, firstDone: {}, lastEvent: null });
+    },
+    // Mùa hiện tại đã đi hết, đã xem đoạn kết, và có mùa sau
+    nextSeasonReady() {
+      const S = BT.Save.state;
+      const sid = S.season || 1;
+      const ended = sid === 1 ? S.endingSeen : !!(S.s2 && S.s2.endingSeen);
+      return S.ms.cleared >= this.count(sid) && ended && CONFIG.seasons.some((x) => x.id === sid + 1);
+    },
+    startSeason(sid) {
+      const S = BT.Save.state;
+      const old = S.season || 1;
+      if (sid === old) return;
+      S.msBySeason = S.msBySeason || {};
+      S.msBySeason[old] = S.ms;
+      S.ms = S.msBySeason[sid] || { index: 1, progress: 0, cleared: 0, shifts: 0, best: {}, firstDone: {}, lastEvent: null };
+      delete S.msBySeason[sid];
+      S.season = sid;
+      if (sid === 2 && S.s2) S.s2.started = true;
+      BT.Save.persist();
+    },
     need(i) { const C = CONFIG.milestones; return round2(C.shiftsBase + C.shiftsGrowth * (i - 1)); },
     current() { return this.get(BT.Save.state.ms.index); },
 
@@ -101,8 +131,8 @@ window.BT = window.BT || { Screens: {} };
       return ids[ids.length - 1];
     },
 
-    shiftCfg(i, scripted, event) {
-      const ms = this.get(i);
+    shiftCfg(i, scripted, event, sid) {
+      const ms = this.get(i, sid);
       if (scripted) return JSON.parse(JSON.stringify(ms.cfg));
       const cfg = { day: ms.day, unlock: [], weather: event, tipMult: 1 };
       NUM_KEYS.forEach((k) => { cfg[k] = Array.isArray(ms.cfg[k]) ? ms.cfg[k].slice() : ms.cfg[k]; });
@@ -114,58 +144,67 @@ window.BT = window.BT || { Screens: {} };
     run(i, opts) {
       const replay = !!(opts && opts.replay);
       const S = BT.Save.state;
-      const ms = this.get(i);
-      const scripted = ms.major && !replay && !S.ms.firstDone[i];
+      const sid = (opts && opts.season) || S.season || 1;
+      const ms = this.get(i, sid);
+      const scripted = ms.major && !replay && !this.stateOf(sid).firstDone[i];
       const event = scripted ? ms.cfg.weather : this.pickEvent(ms.level, S.ms.lastEvent);
-      return { mode: replay ? "replay" : "story", key: "ms" + i, ms: i, level: ms.level, cfg: this.shiftCfg(i, scripted, event), event, scripted };
+      return { mode: replay ? "replay" : "story", key: "s" + sid + "ms" + i, season: sid, ms: i, level: ms.level, cfg: this.shiftCfg(i, scripted, event, sid), event, scripted };
     },
 
     // Chuyển bản lưu theo ngày (version 1) sang mốc. Trả true nếu có chuyển.
     migrate(st) {
-      if (!st || (st.version || 1) >= 2) return false;
-      const n = this.count();
+      if (!st || (st.version || 1) >= 3) return false;
+      if ((st.version || 1) < 2) this.migrateV1(st);
+      // v2 → v3: thêm mùa
+      st.season = st.season || 1;
+      st.msBySeason = st.msBySeason || {};
+      st.version = 3;
+      return true;
+    },
+
+    migrateV1(st) {
+      const n = this.count(1);
       const d = st.unlockedDay || 1;
       const ms = st.ms;
-      if (d <= 15) { ms.index = this.majorIndex(d); ms.cleared = ms.index - 1; }
+      if (d <= 15) { ms.index = this.majorIndex(d, 1); ms.cleared = ms.index - 1; }
       else { ms.index = n; ms.cleared = n - 1; }
       ms.progress = 0;
       const days = st.days || {};
       Object.keys(days).forEach((k) => {
         const kn = Number(k);
         if (!kn) return;
-        const i = this.majorIndex(kn);
+        const i = this.majorIndex(kn, 1);
         ms.best[i] = { stars: days[k].stars || 0, income: days[k].bestRevenue || 0 };
       });
-      for (let k = 1; k < Math.min(d, 16); k++) ms.firstDone[this.majorIndex(k)] = true;
+      for (let k = 1; k < Math.min(d, 16); k++) ms.firstDone[this.majorIndex(k, 1)] = true;
       ms.shifts = Object.keys(days).filter((k) => Number(k)).length;
-      st.goldHearts = this.list().filter((m) => m.major && ms.best[m.index] && ms.best[m.index].stars >= 3).length;
+      st.goldHearts = this.list(1).filter((m) => m.major && ms.best[m.index] && ms.best[m.index].stars >= 3).length;
       st.regularNext = {};
-      (st.reviews || []).forEach((r) => { const k = Number(r.day); r.day = k ? this.majorIndex(k) : CONFIG.texts.runSecret; });
+      (st.reviews || []).forEach((r) => { const k = Number(r.day); r.day = k ? this.majorIndex(k, 1) : CONFIG.texts.runSecret; });
       const b = st.dayBackup;
       if (b && !b.finished) { st.wallet = b.wallet; st.inventory = JSON.parse(JSON.stringify(b.inventory || {})); st.today = null; }
       st.dayBackup = null;
       st.loseStreak = null;
       st.version = 2;
-      return true;
     },
 
     secretRun() {
       const cfg = JSON.parse(JSON.stringify(CONFIG.days.find((d) => d.day === "secret")));
-      return { mode: "secret", key: "secret", ms: BT.Save.state.ms.index, level: CONFIG.build.maxPlayableDay + 1, cfg, event: cfg.weather, scripted: true };
+      return { mode: "secret", key: "secret", season: 1, ms: BT.Save.state.ms.index, level: CONFIG.build.maxPlayableDay, cfg, event: cfg.weather, scripted: true };
     },
 
     // Ca mới cùng kiểu với run (dùng cho "Chơi lại" trong menu tạm dừng)
     again(run) {
-      if (run.mode === "story" || run.mode === "replay") return this.run(run.ms, { replay: run.mode === "replay" });
+      if (run.mode === "story" || run.mode === "replay") return this.run(run.ms, { replay: run.mode === "replay", season: run.season });
       if (run.mode === "secret") return this.secretRun();
       if (run.mode === "daily" && BT.Daily) return BT.Daily.run(run.date);
       if (run.mode === "endless" && BT.Endless) return BT.Endless.run();
       return run;
     },
 
-    goldHearts() {
-      const best = BT.Save.state.ms.best;
-      return this.list().filter((m) => m.major && best[m.index] && best[m.index].stars >= 3).length;
+    goldHearts(sid) {
+      const best = this.stateOf(sid).best;
+      return this.list(sid).filter((m) => m.major && best[m.index] && best[m.index].stars >= 3).length;
     }
   };
 
@@ -219,7 +258,7 @@ window.BT = window.BT || { Screens: {} };
       cfg.focus = ch.focus;
       cfg.focusWeight = CONFIG.daily.focusWeight;
       cfg.rule = r.id;
-      return { mode: "daily", key: "daily", date: key, ms: i, level: ms.level, cfg, event: ch.event, scripted: false };
+      return { mode: "daily", key: "daily", season: S.season || 1, date: key, ms: i, level: ms.level, cfg, event: ch.event, scripted: false };
     },
 
     tier(income, target) {
@@ -283,7 +322,7 @@ window.BT = window.BT || { Screens: {} };
       const i = S.ms.index;
       const ms = MS.get(i);
       const event = MS.pickEvent(ms.level, null);
-      return { mode: "endless", key: "endless", ms: i, level: ms.level, cfg: MS.shiftCfg(i, false, event), event, scripted: false };
+      return { mode: "endless", key: "endless", season: S.season || 1, ms: i, level: ms.level, cfg: MS.shiftCfg(i, false, event), event, scripted: false };
     }
   };
   BT.Endless = Endless;
