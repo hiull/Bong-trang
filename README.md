@@ -180,6 +180,7 @@ src/audio.js        Âm thanh (Web Audio API), rung
 src/screens/        Các màn hình (Tải, Chính, Bản đồ, Chuẩn bị, Bán hàng, Tổng kết, …)
 src/components/     Khách, trạm nguyên liệu, khay, công cụ giao diện
 assets/img/doodles.js  Bộ 149 hình vẽ tay kiểu doodle (SVG) thay cho emoji
+tools/doodle/       Công cụ tạo lại doodles.js (python3 tools/doodle/gen.py assets/img/doodles.js) — không phải tải lên web
 assets/             Hình, âm thanh, nhạc, ảnh kỷ niệm
 manifest.json, service-worker.js   PWA: cài lên màn hình chính, chơi offline
 CREDITS.md          Nguồn tài nguyên & giấy phép
