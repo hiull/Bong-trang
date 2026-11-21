@@ -6,7 +6,7 @@ window.BT = window.BT || { Screens: {} };
 
   function isPlayable(day) {
     const S = BT.Save.state;
-    if (day === "secret") return false;
+    if (day === "secret") return CONFIG.build.secretPlayable && S.unlockedDay > 15;
     return day <= S.unlockedDay && day <= CONFIG.build.maxPlayableDay;
   }
 
@@ -50,7 +50,7 @@ window.BT = window.BT || { Screens: {} };
         if (!playable) node.appendChild(UI.el("span", "node-lock", "🔒"));
         node.addEventListener("click", () => {
           if (!playable) {
-            if (secret) UI.toast(UI.t("secretLocked"));
+            if (secret) UI.toast(S.unlockedDay > 15 ? UI.t("secretSoon") : UI.t("secretLocked"));
             else if (d > S.unlockedDay) UI.toast(UI.t("dayLockedPrev", { p: d - 1 }));
             else UI.toast(UI.t("dayLockedBuild", { n: d }));
             return;

@@ -56,6 +56,7 @@ window.BT = window.BT || { Screens: {} };
       const row2 = UI.el("div", "foot-row");
       row2.appendChild(UI.button(UI.t("btnRetry"), "btn-orange", () => {
         BT.Save.restoreDay();
+        BT.Save.persist();
         router.go("Prep", { day: s.day }, { replace: true });
       }));
       row2.appendChild(UI.button(UI.t("btnToMap"), "btn-white", () => router.backTo("Map")));

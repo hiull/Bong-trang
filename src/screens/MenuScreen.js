@@ -55,8 +55,10 @@ window.BT = window.BT || { Screens: {} };
       root.appendChild(el);
 
       // Lần đầu mở game: popup chào mừng → vào thẳng Chuẩn bị Ngày 1
+      if (!BT.Save.available) UI.toast(UI.t("privateMode"), 3200);
       if (!S.welcomeSeen) {
         S.welcomeSeen = true;
+        BT.Save.persist();
         UI.modal({
           title: UI.t("welcomeTitle"),
           body: P.welcomeMessage,

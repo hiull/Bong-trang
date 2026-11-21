@@ -3,8 +3,9 @@
 Game nấu ăn – quản lý thời gian bán bánh tráng, làm tặng **Bống (Sarose)** từ **Hiếu (Tomortle)**.
 Chạy trên trình duyệt, không cần cài đặt, không quảng cáo, không gửi dữ liệu đi đâu cả.
 
-> **Trạng thái hiện tại: Giai đoạn 1 / 6 — Lõi bán hàng & Chuẩn bị.**
-> Chơi trọn vẹn **Ngày 1** (Quầy trộn): nhập hàng → mở cửa → làm bánh tráng trộn → lắc bịch → giao khách → tổng kết thu chi.
+> **Trạng thái hiện tại: Giai đoạn 2 / 6 — Đủ 4 khu & 15 Ngày.**
+> Chơi thông suốt **Ngày 1 → Ngày 15** với đủ 4 khu: Trộn (lắc bịch), Nước (nhấn giữ rót), Nướng (canh lửa), Cuốn (vuốt cuốn).
+> Có yêu cầu riêng của khách, combo, chiêu 💖 Năng lượng yêu thương, và **tự lưu tiến trình**.
 
 ---
 
@@ -53,8 +54,23 @@ Bạn chỉ cần máy tính có **Google Chrome** (hoặc Microsoft Edge) và c
 - [ ] Hết 8 khách → màn **Tổng kết Ngày 1**: sao bật lên lần lượt, Doanh thu, Tiền tip, Chi phí nhập hàng, Lãi ròng, Số khách phục vụ, Điểm đánh giá.
 - [ ] **"Làm lại ngày"** đưa tiền & kho về đúng lúc đầu ngày. **"Về bản đồ"** mở bản đồ 15 ngày (Ngày 2–15 còn khoá).
 
-### Lưu ý ở Giai đoạn 1
-- **Chưa lưu tiến trình:** tải lại trang (F5) là chơi lại từ đầu. Lưu tự động sẽ có ở Giai đoạn 2.
+### Bước 6 — Kiểm tra Giai đoạn 2 (Ngày 2 → 15)
+- [ ] **Ngày 2 – Quầy nước 🧋:** chạm **Ly nhựa** → **nhấn giữ** Bình trà 2 giây (vòng tròn hồng chạy quanh ngón tay; thả sớm thì huỷ) → chạm **Đá** → thêm **Tắc** nếu là trà tắc.
+- [ ] **Ngày 3:** khách văn phòng xưng *anh/chị*; bong bóng có **dòng chữ cam** là yêu cầu riêng (*không rau răm*, *thêm trứng cút*, *🌶️ x2* = chạm Sa tế 2 lần…). Làm đúng được **+5k** và câu *"Nhớ ý … ghê!"*.
+- [ ] **Ngày 4 – Bếp nướng 🔥:** chạm **Bánh tráng tròn** → **Trứng cút** → **nhấn giữ vỉ** 0,8 giây để tán trứng → thêm topping → kim chạy trên thanh lửa, chạm vỉ khi kim ở **vùng xanh** để gấp bánh (giòn vừa ✨, +10% tiền) → chạm sốt. Để kim chạy hết → bánh cháy, chỉ bỏ thùng rác. Tab 🔥 nhấp nháy đỏ khi bánh sắp cháy mà bạn đang ở khu khác.
+- [ ] **Ngày 5:** bà cụ đi chậm; ngày lãnh lương tip gấp đôi.
+- [ ] **Ngày 6:** nút **💖** góc phải dưới đầy dần sau mỗi món đúng; đầy thì chạm để mọi khách đứng yên 8 giây.
+- [ ] **Ngày 7 – Quầy cuốn 🌯:** **Bánh tráng phơi sương** → nhân → bấm **"Cuốn!"** → vuốt từ dưới lên → **Nước chấm me**. Thỉnh thoảng có **mèo hoang** 🐈: chạm Trứng cút (khi chưa có khay đang làm) rồi chạm mèo → +1 tim.
+- [ ] **Ngày 8 trở đi:** có khách gọi **2 món** (bánh + nước), giao từng món một. Ngày 9 có **người review 📝** (đánh giá tính gấp 3). Ngày 10 trời mưa. Ngày 12 có nhóm học sinh đến cùng lúc. Ngày 14 có **Combo Tình Yêu 💕**.
+- [ ] Giao đúng liên tiếp → chip **Combo x2, x3…** (mỗi bậc +5% tiền); giao sai hoặc khách bỏ đi thì combo về 0.
+- [ ] Thua cùng một ngày **2 lần liên tiếp** → lần sau hiện *"Anh giúp em một chút nha 😉"*, khách kiên nhẫn hơn 20%.
+- [ ] **Lưu game:** chơi xong vài ngày, bấm F5 tải lại → tiền, ngày đã mở, sao trên bản đồ vẫn còn.
+
+### Muốn chơi lại từ đầu?
+Tiến trình được lưu trong trình duyệt. Để thử lại từ Ngày 1, mở một **cửa sổ ẩn danh** (**Ctrl + Shift + N**, Mac: **Cmd + Shift + N**) rồi kéo file `index.html` vào cửa sổ đó. *(Nút "Xoá dữ liệu" trong Cài đặt sẽ có ở Giai đoạn 6.)*
+
+### Lưu ý ở Giai đoạn 2
+- Khách **Hiếu (Tomortle)**, 7 người bạn, 3 khách quen có cốt truyện, phong bì kỷ niệm, màn kết thúc và **Ngày bí mật ★** sẽ có ở Giai đoạn 3.
 - **Âm thanh:** mới có tiếng "tít" ngắn tạo bằng code. Nhạc nền & hiệu ứng thật ở Giai đoạn 5.
 - Các nút **Nâng cấp, Kỷ niệm, Đánh giá, Điểm danh, Nhiệm vụ, ⚙️** hiện thông báo *"sắp có"*.
 - Mở trên điện thoại thật qua link web sẽ làm ở Giai đoạn 6 (GitHub Pages).
@@ -93,7 +109,7 @@ style.css           Màu sắc, bố cục, hiệu ứng
 personal.js         Thông tin cá nhân (chỉ sửa file này để cá nhân hoá)
 config.js           Mọi con số cân bằng game + toàn bộ chữ hiển thị
 src/main.js         Khởi động, chuyển màn hình, nút quay lại, tự tạm dừng
-src/save.js         Trạng thái người chơi, điểm khôi phục đầu ngày
+src/save.js         Lưu/đọc tiến trình (localStorage), điểm khôi phục đầu ngày
 src/audio.js        Âm thanh (Web Audio API), rung
 src/screens/        Các màn hình (Tải, Chính, Bản đồ, Chuẩn bị, Bán hàng, Tổng kết, …)
 src/components/     Khách, trạm nguyên liệu, khay, công cụ giao diện
@@ -105,8 +121,8 @@ CREDITS.md          Nguồn tài nguyên & giấy phép
 ## 6. Lộ trình
 | Giai đoạn | Nội dung | Trạng thái |
 |---|---|---|
-| 1 | Lõi bán hàng & Chuẩn bị (Ngày 1, Quầy trộn) | ✅ Xong, chờ xác nhận |
-| 2 | Đủ 4 khu & 15 Ngày, lưu game | ⏳ |
+| 1 | Lõi bán hàng & Chuẩn bị (Ngày 1, Quầy trộn) | ✅ Xong |
+| 2 | Đủ 4 khu & 15 Ngày, lưu game | ✅ Xong, chờ xác nhận |
 | 3 | Cá nhân hoá & Kỷ niệm, khách Hiếu (Tomortle), Ending | ⏳ |
 | 4 | Cửa hàng, Đánh giá & Sự kiện | ⏳ |
 | 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ⏳ |

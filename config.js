@@ -8,11 +8,13 @@
 window.CONFIG = {
   version: "1.0.0",
 
-  // Phạm vi đã làm xong theo lộ trình (Mục 23). Giai đoạn 1: chỉ chơi được Ngày 1, Quầy trộn.
+  // Phạm vi đã làm xong theo lộ trình (Mục 23). Giai đoạn 2: đủ 4 khu, Ngày 1 → 15.
+  // Ngày bí mật mở ở Giai đoạn 3 (cùng khách Hiếu & nhóm bạn).
   build: {
-    stage: 1,
-    maxPlayableDay: 1,
-    playableZones: ["tron"]
+    stage: 2,
+    maxPlayableDay: 15,
+    playableZones: ["tron", "nuong", "cuon", "nuoc"],
+    secretPlayable: false
   },
 
   // Bảng màu (Mục 14.2) — main.js tự nạp vào biến CSS.
@@ -101,8 +103,25 @@ window.CONFIG = {
     loveFreezeSec: 8,
     retryHelpPatienceBonus: 0.20,
     specialRequestFromDay: 3,
-    specialRequestRate: { 3: 0.3, 8: 0.5 },
-    twoDishFromDay: 8
+    specialRequestRate: { 3: 0.3, 8: 0.5 },   // từ ngày → tỉ lệ đơn có yêu cầu riêng
+    specialRequestMax: { 3: 1, 8: 2 },        // từ ngày → số yêu cầu tối đa mỗi món
+    spicyMax: 3,
+    twoDishFromDay: 8,
+    twoDishRate: 0.35,                         // tỉ lệ khách gọi 2 món (1 bánh tráng + 1 ly nước)
+    catMaxPerDay: 1,
+
+    // Quầy nước: nhấn giữ để rót (giây)
+    holdSec: { tra: 2.0, nuoc_mia: 2.0 },
+    // Bếp nướng
+    crackHoldSec: 0.8,                         // nhấn giữ vỉ để tán trứng
+    cookSec: 6,                                // kim chạy hết thanh lửa trong 6 giây
+    cookZones: { raw: 0.45, ok1: 0.15, good: 0.20, ok2: 0.08, burn: 0.12 }, // độ dài từng vùng (tổng = 1)
+    goodWidenPerLevel: 0.03,                   // mỗi cấp Than hồng: vùng xanh rộng thêm
+    crispyBonus: 0.10,                         // gấp ở vùng xanh: +10% tiền món đó
+    // Quầy cuốn
+    rollDistance: 0.55,                        // vuốt lên được 55% chiều cao bánh là cuốn xong
+    // Ngày Học sinh tan trường
+    groupSpawnGapSec: 0.5
   },
 
   // 4 khu làm món (Mục 7.1)
@@ -214,6 +233,18 @@ window.CONFIG = {
     meo_hoang: { name: "Mèo hoang", avatar: "🐈", patience: 20, tip: [0, 0], heartBonus: 1, rareRate: 0.05,
       openDay: 7, enterSec: 0.6, kind: "cat" }
   },
+
+  // Yêu cầu riêng của khách (Mục 7.4)
+  specialRequests: [
+    { id: "no_rau_ram", type: "remove", ing: "rau_ram", text: "không rau răm" },
+    { id: "no_xoai", type: "remove", ing: "xoai", text: "không xoài" },
+    { id: "no_hanh_phi", type: "remove", ing: "hanh_phi", text: "không hành phi" },
+    { id: "it_da", type: "remove", ing: "da", text: "ít đá" },
+    { id: "them_trung", type: "double", ing: "trung_cut", text: "thêm trứng cút" },
+    { id: "nhieu_kho_bo", type: "double", ing: "kho_bo", text: "nhiều khô bò" },
+    { id: "nuong_gion", type: "crispy", text: "nướng giòn" },
+    { id: "cay", type: "spicy", text: "🌶️ x{n}" }
+  ],
 
   // Thời tiết & sự kiện (Mục 10)
   weathers: {
@@ -364,7 +395,7 @@ window.CONFIG = {
     // Trong ca
     hudCustomers: "Khách: {d}/{t}",
     countdown: ["3", "2", "1", "Mở tiệm thôi!"],
-    trayEmpty: "Bịch trống",
+    trayEmpty: "Khay trống",
     trayN: "Khay {n}",
     shakeBtn: "Lắc!",
     shakeTitle: "Lắc cho đều nào!",
@@ -399,13 +430,27 @@ window.CONFIG = {
     endWin: "Hết khách rồi! Tổng kết thôi 🎉",
     endLose: "Hết tim rồi... 💔",
 
-    // Hướng dẫn nhanh Ngày 1
+    // Gợi ý nhanh theo từng khu (hiện ở các ngày có hints: true)
     hints: {
       start: "👆 Chạm Bánh tráng sợi 🍜 để bắt đầu một bịch",
       toppings: "Thêm topping đúng như bong bóng của khách (thứ tự tuỳ ý)",
       finish: "Đủ topping rồi thì vắt Tắc 🍋",
       shake: "Bấm \"Lắc!\" trên bịch để trộn đều",
-      deliver: "Chạm bịch rồi chạm khách để giao (hoặc kéo thả bịch lên khách)"
+      deliver: "Chạm bịch rồi chạm khách để giao (hoặc kéo thả bịch lên khách)",
+      nuoc_start: "👆 Chạm Ly nhựa 🥤 để bắt đầu một ly",
+      nuoc_pour: "Nhấn giữ Bình trà 🫖 (hoặc Nước mía 🎋) 2 giây để rót",
+      nuoc_ice: "Chạm Đá 🧊, thêm Tắc 🍋 nếu món có",
+      nuoc_deliver: "Chạm ly rồi chạm khách để giao",
+      nuong_start: "👆 Chạm Bánh tráng tròn ⚪ để đặt lên vỉ",
+      nuong_egg: "Chạm Trứng cút 🥚 rồi nhấn giữ vỉ để tán trứng",
+      nuong_cook: "Thêm topping, đợi kim vào vùng xanh rồi chạm vỉ để gấp bánh",
+      nuong_sauce: "Chạm sốt Mayonnaise 🥫 hoặc Tương ớt 🔴",
+      nuong_deliver: "Chạm vỉ rồi chạm khách để giao",
+      cuon_start: "👆 Chạm Bánh tráng phơi sương 📃 để trải ra thớt",
+      cuon_toppings: "Thêm nhân đúng như khách gọi rồi bấm \"Cuốn!\"",
+      cuon_roll: "Bấm \"Cuốn!\" rồi vuốt từ dưới lên để cuốn bánh",
+      cuon_sauce: "Chạm Nước chấm me 🫙",
+      cuon_deliver: "Chạm thớt rồi chạm khách để giao"
     },
 
     // Phản hồi của khách ({Self} = tự xưng viết hoa, {call} = gọi bà chủ)
@@ -438,6 +483,51 @@ window.CONFIG = {
     welcomeTitle: "Chào mừng bà chủ! 💕",
     ownerLabel: "Bà chủ {her}",
     trashLabel: "Thùng rác",
+    grillN: "Vỉ {n}",
+    grillEmpty: "Vỉ trống",
+    rollBtn: "Cuốn!",
+    rollTitle: "Cuốn bánh nào!",
+    rollHint: "Vuốt từ dưới lên trên bánh tráng để cuốn",
+    rollDone: "Cuốn xong rồi 🌯",
+    holdToCrack: "Giữ vỉ để tán 🥚",
+    needEgg: "Cho trứng cút vào trước rồi tán nha!",
+    needCrack: "Nhấn giữ vỉ để tán trứng đã nha",
+    needFold: "Đợi gấp bánh xong rồi mới chấm sốt nha",
+    alreadyFolded: "Bánh gấp rồi, chỉ còn chấm sốt thôi",
+    notCookedYet: "Bánh chưa chín, đợi kim qua vùng vàng nha",
+    burntNow: "Ôi cháy mất rồi! Bỏ thùng rác thôi 🔥",
+    burntTrash: "Bánh cháy rồi, bỏ thùng rác nha",
+    foldGood: "Giòn vừa! ✨",
+    foldOk: "Tạm được",
+    needRoll: "Cuốn bánh trước rồi mới thêm nước chấm nha",
+    alreadyRolled: "Bánh cuốn rồi, giờ thêm nước chấm",
+    needToppingRoll: "Thêm nhân trước rồi mới cuốn nha",
+    needPour: "Rót trà hoặc nước mía trước nha",
+    alreadyPoured: "Ly này rót rồi nè",
+    holdToPour: "Nhấn giữ 2 giây để rót",
+    pourCancel: "Thả sớm quá, giữ lâu hơn chút nha",
+    needCup: "Chạm Ly nhựa trước nha",
+    eggInHand: "Đang cầm 1 trứng cút, chạm mèo để cho ăn 🐈",
+    catFed: "Mèo được cho ăn, tiệm thêm 1 tim ❤️",
+    catLine: "Meo meo~ 🥚",
+    catLeave: "Meo...",
+    reviewerBadge: "Người review",
+    comboLabel: "Combo x{n}",
+    loveReady: "Năng lượng yêu thương đầy rồi! Chạm 💖 nha",
+    loveActive: "Khách đứng yên chờ {her} nè 💖",
+    retryHelp: "Anh giúp em một chút nha 😉",
+    requestPraise: "Nhớ ý {self} ghê!",
+    partialOk: "Còn món nữa nè!",
+    comboName: "Combo Tình Yêu 💕",
+    wrongNotRolled: "Chưa cuốn bánh nè {call}!",
+    wrongNotCooked: "Bánh chưa nướng xong nè!",
+    wrongBurnt: "Bánh cháy đen rồi {call} ơi!",
+    wrongNotCrispy: "{Self} dặn nướng giòn mà!",
+    groupArrive: "Học sinh tan trường kéo tới nè! 🎒",
+    weatherChip: "{icon} {label}",
+    zoneHeader: "{icon} Khu {name}",
+    secretSoon: "Ngày bí mật sẽ mở ở bản cập nhật tới 💕",
+    stepNames: { lac: "💫 Lắc", nuong: "🔥 Canh lửa", gap: "🫓 Gấp bánh", cuon: "🌯 Cuốn", "rot:tra": "🫖 Rót trà (giữ 2 giây)", "rot:nuoc_mia": "🎋 Rót nước mía (giữ 2 giây)" },
     zonePrev: "Khu trước",
     zoneNext: "Khu sau",
     loveLabel: "Năng lượng yêu thương",

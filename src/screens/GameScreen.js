@@ -1,6 +1,7 @@
 // GameScreen.js — Màn bán hàng chính.
-// Giai đoạn 1: Quầy trộn (đế → topping → tắc → lắc bịch), khách gọi món, thanh kiên nhẫn,
-// 3 tim tiệm, giao món bằng chạm hoặc kéo thả, Nhập nhanh, Sổ công thức, tạm dừng.
+// 4 khu: Trộn (lắc bịch), Nướng (tán trứng, canh lửa, gấp bánh), Cuốn (vuốt cuốn), Nước (nhấn giữ rót).
+// Khách gọi 1–2 món + yêu cầu riêng, thanh kiên nhẫn, 3 tim, combo, Năng lượng yêu thương,
+// Nhập nhanh, Sổ công thức, tạm dừng, sự kiện theo ngày.
 window.BT = window.BT || { Screens: {} };
 
 (function () {
@@ -23,21 +24,38 @@ window.BT = window.BT || { Screens: {} };
       this.spawned = 0;
       this.done = 0;
       this.hearts = G.hearts;
+      this.combo = 0;
+      this.love = 0;
+      this.freezeLeft = 0;
+      this.catsToday = 0;
+      this.eggInHand = false;
+      this.groupDone = false;
+      this.groupPending = 0;
+      this.reviewerAt = this.dayCfg.ratingWeight ? UI.randInt(1, Math.max(1, this.total - 2)) : -1;
       const today = this.S.today && this.S.today.day === this.dayNum ? this.S.today : { day: this.dayNum, expense: 0 };
       this.S.today = today;
-      this.stats = { revenue: 0, tips: 0, expense: today.expense, served: 0, walkouts: 0, ratings: [] };
+      this.stats = { revenue: 0, tips: 0, expense: today.expense, served: 0, walkouts: 0, ratings: [], weights: [] };
 
-      this.seatCount = this.S.upgrades.ghe;
+      // Nâng cấp & trợ giúp khi thua 2 lần liên tiếp
+      const up = this.S.upgrades;
+      this.patienceMult = this.dayCfg.patienceMult;
+      if (up.quat > 0) this.patienceMult *= 1 + C.upgrades.quat.patienceBonus[up.quat - 1];
+      const streak = this.S.loseStreak;
+      this.helped = !!(streak && streak.day === this.dayNum && streak.n >= 2);
+      if (this.helped) this.patienceMult *= 1 + G.retryHelpPatienceBonus;
+
+      this.seatCount = up.ghe;
       this.seats = new Array(this.seatCount).fill(null);
       this.customers = [];
       this.trays = [];
+      this.grills = [];
       this.selected = null;
       this.spawnTimer = G.firstCustomerDelaySec;
 
       this.openZones = C.zones.filter((z) => z.openDay <= this.dayNum && C.build.playableZones.includes(z.id));
       this.zone = this.openZones[0].id;
-
-      this.dishPool = C.recipes.filter((r) => r.openDay <= this.dayNum && C.build.playableZones.includes(r.zone));
+      const zoneIds = this.openZones.map((z) => z.id);
+      this.dishPool = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))));
       this.typePool = Object.keys(C.customerTypes).filter((id) => {
         const t = C.customerTypes[id];
         return t.kind === "normal" && t.openDay <= this.dayNum;
@@ -48,9 +66,11 @@ window.BT = window.BT || { Screens: {} };
       this.countdown();
     }
 
+    containers() { return this.trays.concat(this.grills); }
+
     // ---------------- Dựng giao diện ----------------
     build(root) {
-      const el = UI.el("div", "screen game skin-" + this.S.activeSkin);
+      const el = UI.el("div", "screen game skin-" + this.S.activeSkin + " weather-" + this.dayCfg.weather);
       this.el = el;
 
       // HUD
@@ -59,11 +79,13 @@ window.BT = window.BT || { Screens: {} };
       this.hudRate = UI.el("div", "pill hud-rate");
       this.hudMoney = UI.el("div", "pill hud-money");
       this.hudHearts = UI.el("div", "hud-hearts");
+      this.hudCombo = UI.el("div", "pill hud-combo");
       const left = UI.el("div", "hud-left");
       const row1 = UI.el("div", "hud-row");
       const row2 = UI.el("div", "hud-row");
       row1.appendChild(this.hudCust);
       row1.appendChild(this.hudRate);
+      row1.appendChild(this.hudCombo);
       row2.appendChild(this.hudMoney);
       row2.appendChild(this.hudHearts);
       left.appendChild(row1);
@@ -81,8 +103,10 @@ window.BT = window.BT || { Screens: {} };
       front.appendChild(UI.el("div", "lights"));
       front.appendChild(UI.el("div", "front-sign", window.PERSONAL.shopName));
       front.appendChild(UI.el("div", "sidewalk"));
-      const centers = CONFIG.gameplay.seatCenters[this.seatCount];
-      centers.forEach((c) => {
+      const w = CONFIG.weathers[this.dayCfg.weather];
+      front.appendChild(UI.el("div", "weather-chip", UI.t("weatherChip", { icon: w.icon, label: w.label })));
+      front.appendChild(UI.el("div", "weather-fx"));
+      CONFIG.gameplay.seatCenters[this.seatCount].forEach((c) => {
         const stool = UI.el("div", "stool");
         stool.style.left = c + "%";
         front.appendChild(stool);
@@ -92,8 +116,7 @@ window.BT = window.BT || { Screens: {} };
       pet.setAttribute("aria-label", UI.fmt("{pet}"));
       pet.appendChild(UI.el("span", "pet-z", "💤"));
       pet.addEventListener("click", () => {
-        const lines = CONFIG.pets.miu.lines;
-        UI.toast(UI.fmt(UI.pick(lines)));
+        UI.toast(UI.fmt(UI.pick(CONFIG.pets.miu.lines)));
         pet.classList.remove("wiggle"); void pet.offsetWidth; pet.classList.add("wiggle");
         BT.Audio.play("pop");
       });
@@ -101,18 +124,33 @@ window.BT = window.BT || { Screens: {} };
       this.custArea = UI.el("div", "customers");
       this.custArea.style.setProperty("--cw", (100 / this.seatCount - 2) + "%");
       front.appendChild(this.custArea);
+      this.loveFx = UI.el("div", "love-fx");
+      front.appendChild(this.loveFx);
       el.appendChild(front);
       this.front = front;
 
-      // Quầy chế biến
+      // Quầy chế biến: khay chung + vỉ nướng
       const counter = UI.el("div", "counter");
-      const trayCount = this.S.upgrades.khay;
-      for (let i = 0; i < trayCount; i++) {
-        const t = new BT.Tray(i);
+      this.trayGroup = UI.el("div", "tray-group");
+      this.grillGroup = UI.el("div", "tray-group grills");
+      for (let i = 0; i < this.S.upgrades.khay; i++) {
+        const t = new BT.Tray(i, "tray");
         this.trays.push(t);
-        counter.appendChild(t.el);
+        this.trayGroup.appendChild(t.el);
         this.bindTray(t);
       }
+      if (this.openZones.some((z) => z.id === "nuong")) {
+        for (let i = 0; i < this.S.upgrades.bep; i++) {
+          const g = new BT.Tray(i, "grill");
+          this.grills.push(g);
+          this.grillGroup.appendChild(g.el);
+          this.bindTray(g);
+        }
+      }
+      this.trayGroup.classList.add("n" + this.trays.length);
+      this.grillGroup.classList.add("n" + this.grills.length);
+      counter.appendChild(this.trayGroup);
+      counter.appendChild(this.grillGroup);
       el.appendChild(counter);
       this.counter = counter;
 
@@ -138,7 +176,10 @@ window.BT = window.BT || { Screens: {} };
       if (this.dayCfg.hints) ingArea.appendChild(this.hintEl);
       this.grid = new BT.StationGrid(this.dayNum, {
         onTap: (id, cell) => this.onStationTap(id, cell),
-        onQuickBuy: (id) => this.onQuickBuy(id)
+        onQuickBuy: (id) => this.onQuickBuy(id),
+        canHold: (id) => this.canHold(id),
+        onHoldDone: (id, cell) => this.onStationTap(id, cell, true),
+        isPaused: () => this.isPaused()
       });
       ingArea.appendChild(this.grid.el);
       this.bindZoneSwipe(this.grid.el);
@@ -154,45 +195,72 @@ window.BT = window.BT || { Screens: {} };
       nav.appendChild(this.zoneLabel);
       nav.appendChild(UI.iconButton("▶", UI.t("zoneNext"), () => this.stepZone(1), "nav-btn"));
       bottom.appendChild(nav);
-      const love = UI.el("div", "love-slot");
-      if (this.dayNum >= CONFIG.gameplay.loveOpenDay) love.appendChild(UI.iconButton("💖", UI.t("loveLabel"), null, "love-btn"));
-      bottom.appendChild(love);
+      const loveSlot = UI.el("div", "love-slot");
+      if (this.dayNum >= CONFIG.gameplay.loveOpenDay) {
+        this.loveBtn = UI.iconButton("💖", UI.t("loveLabel"), () => this.useLove(), "love-btn");
+        this.loveFill = UI.el("div", "love-fill");
+        this.loveBtn.appendChild(this.loveFill);
+        loveSlot.appendChild(this.loveBtn);
+      }
+      bottom.appendChild(loveSlot);
       el.appendChild(bottom);
 
       root.appendChild(el);
       this.setZone(this.zone);
       this.updateHud();
-      this.updateHint();
+      this.updateLove();
     }
 
     // ---------------- Vòng lặp ----------------
+    isPaused() { return !this.started || this.over || this.pauseReasons.size > 0; }
+
     loop() {
       let last = performance.now();
       const step = (t) => {
         const dt = Math.min(0.1, (t - last) / 1000);
         last = t;
-        if (this.started && !this.over && this.pauseReasons.size === 0) this.update(dt);
+        if (!this.isPaused()) this.update(dt);
         this.scope.raf(step);
       };
       this.scope.raf(step);
     }
 
     update(dt) {
-      const d = this.dayCfg;
+      const G = CONFIG.gameplay;
+      if (this.freezeLeft > 0) {
+        this.freezeLeft -= dt;
+        if (this.freezeLeft <= 0) { this.freezeLeft = 0; this.front.classList.remove("loving"); }
+      }
+
+      // Sinh khách
       if (this.spawned < this.total) {
         this.spawnTimer -= dt;
         if (this.spawnTimer <= 0) {
           const free = this.seats.findIndex((s) => s === null);
-          if (free >= 0) {
-            this.spawn(free);
-            this.spawnTimer = UI.rand(d.spawn[0], d.spawn[1]);
-          } else {
-            this.spawnTimer = 0; // đầy ghế thì chờ
-          }
+          if (free >= 0) this.spawnNext(free);
+          else this.spawnTimer = 0; // đầy ghế thì chờ
         }
       }
-      this.customers.slice().forEach((c) => c.update(dt));
-      if (this.spawned >= this.total && this.customers.length === 0) this.finish(false);
+
+      // Bếp nướng
+      let warn = false;
+      const zones = BT.Tray.cookZones();
+      this.grills.forEach((g) => {
+        if (g.updateCook(dt) === "burnt") {
+          g.render();
+          BT.Audio.play("angry");
+          BT.Audio.vibrate(G.vibrateBad);
+          UI.toast(UI.t("burntNow"));
+          this.updateHint();
+        }
+        if (g.cooking && g.cook >= zones[3].from) warn = true;
+        const q = g.cookState() || "";
+        if (g.el.dataset.q !== q) g.el.dataset.q = q;
+      });
+      if (this.tabEls.nuong) this.tabEls.nuong.classList.toggle("warn", warn && this.zone !== "nuong");
+
+      this.customers.slice().forEach((c) => c.update(dt, this.freezeLeft > 0));
+      if (this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0) this.finish(false);
     }
 
     countdown() {
@@ -203,31 +271,107 @@ window.BT = window.BT || { Screens: {} };
       steps.forEach((txt, i) => {
         this.scope.timeout(() => {
           layer.innerHTML = "";
-          const n = UI.el("div", "count-num" + (i === steps.length - 1 ? " go" : ""), txt);
-          layer.appendChild(n);
+          layer.appendChild(UI.el("div", "count-num" + (i === steps.length - 1 ? " go" : ""), txt));
           BT.Audio.play(i === steps.length - 1 ? "tie" : "tap");
         }, i * ms);
       });
       this.scope.timeout(() => {
         layer.remove();
         this.started = true;
+        if (this.helped) UI.toast(UI.t("retryHelp"), 2600);
       }, steps.length * ms);
     }
 
     // ---------------- Khách ----------------
-    pickDish() {
-      const unlockToday = this.dayCfg.unlock || [];
-      return UI.weighted(this.dishPool, (r) => (unlockToday.includes(r.id) ? CONFIG.gameplay.newDishWeight : 1)).id;
+    dishWeight(r) {
+      const d = this.dayCfg;
+      let w = (d.unlock || []).includes(r.id) ? CONFIG.gameplay.newDishWeight : 1;
+      if (d.drinkWeight && r.zone === "nuoc") w *= d.drinkWeight;
+      if (d.grillWeight && r.zone === "nuong") w *= d.grillWeight;
+      return w;
     }
 
-    spawn(seat) {
-      const typeId = UI.pick(this.typePool);
+    makeRequests(dishId) {
+      const G = CONFIG.gameplay;
+      if (this.dayNum < G.specialRequestFromDay) return [];
+      const byDay = (map) => {
+        let v = 0;
+        Object.keys(map).map(Number).sort((a, b) => a - b).forEach((k) => { if (this.dayNum >= k) v = map[k]; });
+        return v;
+      };
+      if (Math.random() >= byDay(G.specialRequestRate)) return [];
+      const n = UI.randInt(1, byDay(G.specialRequestMax));
+      const req = BT.Tray.requirements({ id: dishId, reqs: [] });
+      const r = req.r;
+      const unlocked = (id) => UI.ing(id).openDay <= this.dayNum;
+      const options = CONFIG.specialRequests.filter((q) => {
+        if (q.type === "remove") return req.need[q.ing] !== undefined || req.finishIngs.includes(q.ing);
+        if (q.type === "double") return req.need[q.ing] !== undefined;
+        if (q.type === "crispy") return r.zone === "nuong";
+        if (q.type === "spicy") return (r.zone === "tron" && unlocked("sa_te")) || (r.zone === "nuong" && unlocked("tuong_ot"));
+        return false;
+      });
+      const out = [];
+      const used = new Set();
+      for (let i = 0; i < n && options.length; i++) {
+        const q = options.splice(Math.floor(Math.random() * options.length), 1)[0];
+        if (q.ing && used.has(q.ing)) continue;
+        if (q.ing) used.add(q.ing);
+        out.push({ id: q.id, type: q.type, ing: q.ing, n: q.type === "spicy" ? UI.randInt(1, G.spicyMax) : undefined });
+      }
+      return out;
+    }
+
+    makeOrder() {
+      const G = CONFIG.gameplay;
+      const r = UI.weighted(this.dishPool, (x) => this.dishWeight(x));
+      if (r.combo) return { items: r.combo.map((id) => ({ id, reqs: [] })), combo: true };
+      const items = [{ id: r.id, reqs: this.makeRequests(r.id) }];
+      if (this.dayNum >= G.twoDishFromDay && r.zone !== "nuoc" && Math.random() < G.twoDishRate) {
+        const drinks = this.dishPool.filter((x) => x.zone === "nuoc");
+        if (drinks.length) {
+          const dr = UI.weighted(drinks, (x) => this.dishWeight(x));
+          items.push({ id: dr.id, reqs: this.makeRequests(dr.id) });
+        }
+      }
+      return { items, combo: false };
+    }
+
+    spawnNext(seat) {
+      const G = CONFIG.gameplay;
+      const d = this.dayCfg;
+      // Mèo hoang hiếm (không tính vào số khách của ngày)
+      const cat = CONFIG.customerTypes.meo_hoang;
+      if (this.groupPending === 0 && this.dayNum >= cat.openDay && this.catsToday < G.catMaxPerDay && Math.random() < cat.rareRate) {
+        this.catsToday++;
+        this.spawn(seat, "meo_hoang", { items: [] });
+        this.spawnTimer = UI.rand(d.spawn[0], d.spawn[1]);
+        return;
+      }
+      // Học sinh tan trường: giữa ca có nhóm học sinh đến cùng lúc
+      if (d.groupOf && !this.groupDone && this.spawned >= Math.floor(this.total / 2)) {
+        this.groupDone = true;
+        this.groupPending = Math.min(d.groupOf, this.total - this.spawned);
+        UI.toast(UI.t("groupArrive"));
+      }
+      let typeId = UI.pick(this.typePool);
+      if (this.groupPending > 0) { typeId = "hoc_sinh"; this.groupPending--; }
+      const order = this.makeOrder();
+      order.reviewer = this.spawned === this.reviewerAt;
+      this.spawn(seat, typeId, order);
+      this.spawned++;
+      this.spawnTimer = this.groupPending > 0 ? G.groupSpawnGapSec : UI.rand(d.spawn[0], d.spawn[1]);
+    }
+
+    spawn(seat, typeId, order) {
       const c = new BT.Customer({
         typeId,
-        order: [this.pickDish()],
+        items: order.items,
+        combo: order.combo,
+        reviewer: order.reviewer,
         seat,
         centerPct: CONFIG.gameplay.seatCenters[this.seatCount][seat],
-        patienceMult: this.dayCfg.patienceMult,
+        patienceMult: this.patienceMult,
         area: this.custArea,
         scope: this.scope,
         onWalkout: (cc) => this.onWalkout(cc),
@@ -235,20 +379,26 @@ window.BT = window.BT || { Screens: {} };
       });
       this.seats[seat] = c;
       this.customers.push(c);
-      this.spawned++;
       c.el.addEventListener("click", () => this.onCustomerTap(c));
       c.enter();
       this.updateTabDots();
       this.updateHud();
+      return c;
     }
 
     onWalkout(c) {
       const G = CONFIG.gameplay;
       c.state = "leaving";
+      if (c.isCat) {
+        c.react(UI.t("catLeave"));
+        c.leave(G.angryLeaveDelaySec);
+        return;
+      }
       c.react(UI.t("angry"), "😠");
       this.stats.walkouts++;
-      this.stats.ratings.push(G.ratingWalkout);
+      this.addRating(G.ratingWalkout, c);
       this.done++;
+      this.combo = 0;
       this.hearts = Math.max(0, this.hearts - 1);
       BT.Audio.play("angry");
       BT.Audio.vibrate(G.vibrateBad);
@@ -265,83 +415,170 @@ window.BT = window.BT || { Screens: {} };
       this.updateTabDots();
     }
 
+    addRating(stars, c) {
+      this.stats.ratings.push(stars);
+      this.stats.weights.push(c && c.reviewer ? this.dayCfg.ratingWeight || 1 : 1);
+    }
+
+    avgRating() {
+      const r = this.stats.ratings;
+      if (!r.length) return 0;
+      let s = 0;
+      let w = 0;
+      r.forEach((x, i) => { s += x * this.stats.weights[i]; w += this.stats.weights[i]; });
+      return s / w;
+    }
+
     onCustomerTap(c) {
-      if (this.over || !this.started) return;
-      const tray = this.selected !== null ? this.trays[this.selected] : null;
-      if (!tray) { UI.toast(UI.t("pickTrayFirst")); return; }
-      this.deliver(c, tray);
+      if (this.isPaused()) return;
+      if (c.isCat) { this.feedCat(c); return; }
+      if (!this.selected) { UI.toast(UI.t("pickTrayFirst")); return; }
+      this.deliver(c, this.selected);
+    }
+
+    feedCat(c) {
+      if (c.state !== "waiting") return;
+      if (!this.eggInHand) { UI.toast(UI.t("catLine")); return; }
+      this.eggInHand = false;
+      c.state = "served";
+      c.el.classList.add("happy");
+      c.react("😻💕");
+      this.hearts++;
+      UI.toast(UI.t("catFed"));
+      BT.Audio.play("star");
+      c.leave(CONFIG.gameplay.happyLeaveDelaySec);
+      this.updateHud();
     }
 
     deliver(c, tray) {
       const G = CONFIG.gameplay;
       if (c.state === "entering") { UI.toast(UI.t("notArrived")); return; }
-      if (c.state !== "waiting") return;
+      if (c.state !== "waiting" || c.isCat) return;
       if (tray.isEmpty()) { UI.toast(UI.t("trayIsEmpty")); return; }
 
-      const res = BT.Tray.evaluate(tray, c.order[0]);
-      if (!res.ok) {
-        const vars = c.vars({ ing: res.ing ? UI.ing(res.ing).short : "" });
-        const key = { notOrdered: "wrongNotOrdered", missing: "wrongMissing", extra: "wrongExtra", notMixed: "wrongNotMixed" }[res.reason];
+      const pending = c.pending();
+      let match = null;
+      let res = null;
+      for (const it of pending) {
+        const r = BT.Tray.evaluate(tray, it);
+        if (r.ok) { match = it; res = r; break; }
+      }
+      if (!match) {
+        // Lấy lý do từ món cùng khu với khay (nếu có)
+        const same = pending.find((it) => UI.recipe(it.id).zone === tray.zone) || pending[0];
+        const bad = BT.Tray.evaluate(tray, same);
+        const vars = c.vars({ ing: bad.ing ? UI.ing(bad.ing).short : "" });
+        const key = {
+          notOrdered: "wrongNotOrdered", missing: "wrongMissing", extra: "wrongExtra", notMixed: "wrongNotMixed",
+          notRolled: "wrongNotRolled", notCooked: "wrongNotCooked", burnt: "wrongBurnt", notCrispy: "wrongNotCrispy"
+        }[bad.reason];
         c.react(UI.t(key, vars), "😕", G.reactionShowSec);
         c.penalize(G.wrongPatiencePenalty);
         c.wrongOnce = true;
+        this.combo = 0;
         UI.shake(tray.el);
         UI.shake(c.bubble);
         BT.Audio.play("wrong");
+        this.updateHud();
         return;
       }
 
-      // Giao đúng
+      // Đúng một món
+      match.crispy = res.crispy;
+      c.markDone(match);
+      this.combo = Math.min(G.comboMax, this.combo + 1);
+      if (this.dayNum >= G.loveOpenDay) this.love = Math.min(1, this.love + G.loveChargePerDish);
+      tray.clear();
+      tray.render();
+      this.select(null);
+      BT.Audio.vibrate(G.vibrateGood);
+
+      if (c.pending().length > 0) {
+        c.react(UI.t("partialOk"), "😋", G.reactionShowSec);
+        BT.Audio.play("add");
+        const p = UI.center(c.el);
+        UI.floatText(p.x, p.y - 30, "✓", "stars");
+      } else {
+        this.complete(c);
+      }
+      this.updateLove();
+      this.updateHud();
+      this.updateTabDots();
+      this.updateHint();
+    }
+
+    // Khách nhận đủ món: tính tiền, đánh giá
+    complete(c) {
+      const G = CONFIG.gameplay;
+      const M = CONFIG.money;
+      const up = this.S.upgrades;
       const p = c.pct();
       const speed = p > G.patienceHigh ? G.speedFactor.fast : p >= G.patienceLow ? G.speedFactor.normal : G.speedFactor.slow;
-      const pay = Math.round(UI.recipePrice(c.order[0]) * speed);
-      const tip = Math.round(UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1));
-      let stars = G.ratingSteps.find((s) => p >= s.min).stars;
+      let base = 0;
+      if (c.combo) base = UI.recipe("combo_tinh_yeu").price;
+      else c.items.forEach((it) => { base += UI.recipePrice(it.id) * (it.crispy ? 1 + G.crispyBonus : 1); });
+      const pay = Math.round(base * speed);
+      let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1);
+      if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
+      const reqTip = c.hasRequests() ? M.specialRequestTip : 0;
+      tip = Math.round(tip + reqTip);
+      const comboBonus = Math.round(pay * G.comboStepBonus * Math.max(0, this.combo - 1));
+      const fiveMin = G.ratingSteps[0].min - (up.quat > 0 ? CONFIG.upgrades.quat.fiveStarDrop : 0);
+      let stars = p >= fiveMin ? 5 : G.ratingSteps.find((s) => p >= s.min).stars;
       if (c.wrongOnce) stars = Math.min(stars, G.ratingAfterWrongMax);
 
-      this.stats.revenue += pay;
+      this.stats.revenue += pay + comboBonus;
       this.stats.tips += tip;
       this.stats.served++;
-      this.stats.ratings.push(stars);
-      this.S.wallet += pay + tip;
+      this.addRating(stars, c);
+      this.S.wallet += pay + comboBonus + tip;
       this.done++;
 
       c.state = "served";
       c.el.classList.add("happy");
-      c.react(p > G.patienceHigh ? UI.t("fast") : UI.t("praise"), "😍");
+      let line = p > G.patienceHigh ? UI.t("fast") : UI.t("praise");
+      if (reqTip) line = UI.t("requestPraise", c.vars());
+      c.react(line, "😍");
       const from = UI.center(c.el);
-      UI.floatText(from.x, from.y - 30, "+" + UI.money(pay + tip), "money");
+      UI.floatText(from.x, from.y - 30, "+" + UI.money(pay + comboBonus + tip), "money");
       UI.floatText(from.x, from.y - 60, "⭐".repeat(stars), "stars");
       UI.fly(from, UI.center(this.hudMoney), "🪙", 0.6);
       BT.Audio.play("coin");
-      BT.Audio.vibrate(G.vibrateGood);
-
-      tray.clear();
-      tray.render();
-      this.select(null);
       c.leave(G.happyLeaveDelaySec);
-      this.updateHud();
-      this.updateTabDots();
     }
 
-    // ---------------- Khay ----------------
+    // ---------------- Khay & vỉ ----------------
     bindTray(t) {
       const G = CONFIG.gameplay;
       let start = null;
       let ghost = null;
+      let holdCtl = null;
       const el = t.el;
 
       el.addEventListener("pointerdown", (e) => {
-        if (e.target.closest("[data-action='shake']")) return;
-        start = { x: e.clientX, y: e.clientY, id: e.pointerId };
+        if (e.target.closest("[data-action]")) return;
+        start = { x: e.clientX, y: e.clientY, id: e.pointerId, held: false };
         try { el.setPointerCapture(e.pointerId); } catch (err) { /* bỏ qua */ }
+        // Vỉ nướng: nhấn giữ để tán trứng
+        if (t.needsCrack() && !this.isPaused()) {
+          this.select(t);
+          const s = start;
+          holdCtl = UI.hold(e, {
+            el,
+            sec: G.crackHoldSec,
+            isPaused: () => this.isPaused(),
+            onDone: () => { holdCtl = null; s.held = true; this.crack(t); },
+            onCancel: () => { holdCtl = null; }
+          });
+        }
       });
       el.addEventListener("pointermove", (e) => {
         if (!start || start.id !== e.pointerId) return;
         const dx = e.clientX - start.x;
         const dy = e.clientY - start.y;
-        if (!ghost && Math.hypot(dx, dy) > G.dragStartPx && !t.isEmpty() && this.started && !this.over) {
-          this.select(t.index);
+        if (!ghost && Math.hypot(dx, dy) > G.dragStartPx && !t.isEmpty() && !this.isPaused()) {
+          if (holdCtl) { holdCtl.cancel(); holdCtl = null; }
+          this.select(t);
           ghost = UI.el("div", "drag-ghost");
           ghost.appendChild(el.querySelector(".bag").cloneNode(true));
           UI.app().appendChild(ghost);
@@ -355,7 +592,9 @@ window.BT = window.BT || { Screens: {} };
       const end = (e) => {
         if (!start || start.id !== e.pointerId) return;
         const wasDrag = !!ghost;
+        const held = start.held;
         start = null;
+        if (holdCtl) { holdCtl.cancel(); holdCtl = null; }
         if (wasDrag) {
           ghost.remove();
           ghost = null;
@@ -369,26 +608,62 @@ window.BT = window.BT || { Screens: {} };
           } else if (target && target.closest(".trash")) {
             this.trashSelected();
           }
-        } else if (e.type === "pointerup") {
-          this.select(t.index);
-          BT.Audio.play("tap");
+        } else if (e.type === "pointerup" && !held) {
+          this.tapContainer(t);
         }
       };
       el.addEventListener("pointerup", end);
       el.addEventListener("pointercancel", end);
       el.addEventListener("click", (e) => {
-        if (e.target.closest("[data-action='shake']")) { this.select(t.index); this.openShake(t); }
+        const btn = e.target.closest("[data-action]");
+        if (!btn) return;
+        this.select(t);
+        this.openGesture(t, btn.dataset.action);
       });
     }
 
-    select(index) {
-      this.selected = index;
-      this.trays.forEach((t) => t.el.classList.toggle("selected", t.index === index));
+    tapContainer(t) {
+      if (t.kind === "grill" && t.cooking && !this.isPaused()) {
+        const q = t.fold();
+        if (q === "raw") {
+          this.select(t);
+          UI.toast(UI.t("notCookedYet"));
+          const bar = t.el.querySelector(".cookbar");
+          if (bar) { bar.classList.remove("blink"); void bar.offsetWidth; bar.classList.add("blink"); }
+          return;
+        }
+        if (q) {
+          t.render();
+          this.select(t);
+          if (q === "burnt") { UI.toast(UI.t("burntTrash")); BT.Audio.play("angry"); }
+          else {
+            const p = UI.center(t.el);
+            UI.floatText(p.x, p.y - 20, q === "good" ? UI.t("foldGood") : UI.t("foldOk"), q === "good" ? "money" : "stars");
+            BT.Audio.play(q === "good" ? "star" : "tie");
+          }
+          this.updateHint();
+          return;
+        }
+      }
+      this.select(t);
+      BT.Audio.play("tap");
+    }
+
+    crack(t) {
+      if (!t.crack()) return;
+      t.render();
+      BT.Audio.play("tie");
+      this.updateHint();
+    }
+
+    select(t) {
+      this.selected = t || null;
+      this.containers().forEach((x) => x.el.classList.toggle("selected", x === this.selected));
       this.updateHint();
     }
 
     trashSelected() {
-      const t = this.selected !== null ? this.trays[this.selected] : null;
+      const t = this.selected;
       if (!t || t.isEmpty()) { UI.toast(UI.t("trashNothing")); return; }
       t.clear();
       t.render();
@@ -399,20 +674,52 @@ window.BT = window.BT || { Screens: {} };
     }
 
     // ---------------- Nguyên liệu ----------------
-    onStationTap(ingId, cell) {
-      if (this.over || !this.started) return;
-      if (BT.Save.stock(ingId) <= 0) { UI.toast(UI.t("outOfStock", { ing: UI.ing(ingId).short })); UI.shake(cell); return; }
+    // Khay/vỉ mà nguyên liệu sẽ rơi vào
+    targetFor(ingId) {
+      const pool = this.zone === "nuong" ? this.grills : this.trays;
       const role = BT.Tray.roleOf(ingId, this.zone);
-      let tray = this.selected !== null ? this.trays[this.selected] : null;
-      if (!tray || (role === "base" && !tray.isEmpty())) {
-        const empty = this.trays.find((t) => t.isEmpty());
-        if (!empty) {
-          if (!tray) { this.trays.forEach((t) => UI.shake(t.el)); UI.toast(UI.t("noTray")); return; }
-        } else {
-          tray = empty;
-          this.select(empty.index);
-        }
+      let t = this.selected && pool.includes(this.selected) ? this.selected : null;
+      // Khay đang chọn thuộc khu khác → chuyển sang khay đang làm dở của khu hiện tại
+      if (t && !t.isEmpty() && t.kind === "tray" && t.zone !== this.zone) {
+        t = pool.find((x) => !x.isEmpty() && x.zone === this.zone) || null;
+        if (t && role !== "base") return { tray: t, auto: true };
       }
+      if (!t || (role === "base" && !t.isEmpty())) {
+        const empty = pool.find((x) => x.isEmpty());
+        if (empty) return { tray: empty, auto: true };
+        if (!t) return { tray: null };
+      }
+      return { tray: t };
+    }
+
+    canHold(ingId) {
+      if (this.isPaused()) return UI.t("pauseTitle");
+      const { tray } = this.targetFor(ingId);
+      if (!tray) return UI.t("noTray");
+      if (tray.isEmpty()) return UI.t("needCup");
+      if (tray.zone !== "nuoc") return UI.t("notThisZone");
+      if (tray.poured) return UI.t("alreadyPoured");
+      this.select(tray);
+      return null;
+    }
+
+    onStationTap(ingId, cell, fromHold) {
+      if (this.isPaused()) return;
+      if (BT.Save.stock(ingId) <= 0) { UI.toast(UI.t("outOfStock", { ing: UI.ing(ingId).short })); if (cell) UI.shake(cell); return; }
+      if (!fromHold && CONFIG.gameplay.holdSec[ingId] !== undefined) { UI.toast(UI.t("holdToPour")); return; }
+      const { tray, auto } = this.targetFor(ingId);
+      // Mèo hoang đang chờ: cầm trứng cút lên tay
+      const catWaiting = this.customers.some((c) => c.isCat && c.state === "waiting");
+      if (ingId === "trung_cut" && catWaiting && !this.eggInHand && (!tray || tray.isEmpty())) {
+        this.eggInHand = true;
+        this.S.inventory[ingId] = BT.Save.stock(ingId) - 1;
+        this.grid.refresh();
+        UI.toast(UI.t("eggInHand"));
+        BT.Audio.play("add");
+        return;
+      }
+      if (!tray) { this.containers().forEach((t) => UI.shake(t.el)); UI.toast(UI.t("noTray")); return; }
+      if (auto) this.select(tray);
       const r = tray.add(ingId, this.zone);
       if (!r.ok) {
         UI.shake(tray.el);
@@ -420,15 +727,19 @@ window.BT = window.BT || { Screens: {} };
         BT.Audio.play("wrong");
         return;
       }
+      this.select(tray);
       this.S.inventory[ingId] = BT.Save.stock(ingId) - 1;
       this.grid.refresh();
-      UI.fly(UI.center(cell), UI.center(tray.el), UI.ing(ingId).emoji, CONFIG.gameplay.flySec);
-      this.scope.timeout(() => {
+      const done = () => {
         tray.render();
         tray.el.classList.remove("bounce"); void tray.el.offsetWidth; tray.el.classList.add("bounce");
         this.updateHint();
-      }, CONFIG.gameplay.flySec * 1000);
-      BT.Audio.play("add");
+      };
+      if (cell && cell.isConnected) {
+        UI.fly(UI.center(cell), UI.center(tray.el), UI.ing(ingId).emoji, CONFIG.gameplay.flySec);
+        this.scope.timeout(done, CONFIG.gameplay.flySec * 1000);
+      } else done();
+      BT.Audio.play(fromHold ? "tie" : "add");
     }
 
     onQuickBuy(ingId) {
@@ -444,67 +755,94 @@ window.BT = window.BT || { Screens: {} };
       UI.toast(UI.t("bought", { q: M.quickBuyQty, name: UI.ing(ingId).name }));
     }
 
-    // ---------------- Lắc bịch ----------------
-    openShake(tray) {
-      if (!tray.canShake() || this.over) return;
+    // ---------------- Lắc bịch / Cuốn bánh ----------------
+    openGesture(tray, mode) {
+      if (this.over) return;
+      if (mode === "shake" && !tray.canShake()) return;
+      if (mode === "roll" && !tray.canRoll()) return;
+      if (this.shakeLayer) this.shakeLayer.close();
       const G = CONFIG.gameplay;
+      const roll = mode === "roll";
       const need = this.S.upgrades.lac_nhanh > 0 ? G.shakeNeededUpgraded : G.shakeNeeded;
-      const layer = UI.el("div", "shake-layer");
-      layer.appendChild(UI.el("div", "shake-title", UI.t("shakeTitle")));
+      const layer = UI.el("div", "shake-layer" + (roll ? " roll" : ""));
+      layer.appendChild(UI.el("div", "shake-title", UI.t(roll ? "rollTitle" : "shakeTitle")));
       const zone = UI.el("div", "shake-zone");
-      const bag = UI.el("div", "big-bag");
-      bag.appendChild(tray.el.querySelector(".bag-items").cloneNode(true));
+      const bag = UI.el("div", roll ? "big-paper" : "big-bag");
+      const items = tray.el.querySelector(".bag-items");
+      if (items) bag.appendChild(items.cloneNode(true));
       zone.appendChild(bag);
       layer.appendChild(zone);
       const meter = UI.el("div", "meter");
       const fill = UI.el("div", "meter-fill");
       meter.appendChild(fill);
-      layer.appendChild(UI.el("div", "meter-label", UI.t("shakeMeter")));
+      if (!roll) layer.appendChild(UI.el("div", "meter-label", UI.t("shakeMeter")));
       layer.appendChild(meter);
-      layer.appendChild(UI.el("div", "shake-hint", UI.t("shakeHint", { n: need })));
-      const later = UI.button(UI.t("btnLater"), "btn-white small", () => close());
-      layer.appendChild(later);
+      const hint = UI.el("div", "shake-hint", roll ? UI.t("rollHint") : UI.t("shakeHint", { n: need }));
+      layer.appendChild(hint);
+      layer.appendChild(UI.button(UI.t("btnLater"), "btn-white small", () => close()));
       layer.style.setProperty("--shake-top", this.counter.offsetTop + "px");
       this.el.appendChild(layer);
-      this.shakeLayer = layer;
 
       let count = tray.shakeCount;
+      let progress = 0;
       let down = null;
       let dir = 0;
       let lastX = 0;
+      let startY = 0;
       let swiped = false;
+      let finished = false;
       const show = () => {
-        fill.style.width = Math.min(100, (count / need) * 100) + "%";
-        bag.style.transform = `rotate(${count % 2 ? G.shakeTiltDeg : -G.shakeTiltDeg}deg)`;
-      };
-      const bump = () => {
-        if (tray.tied) return;
-        count++;
-        tray.shakeCount = count;
-        BT.Audio.play("shake");
-        show();
-        if (count >= need) {
-          tray.tied = true;
-          bag.appendChild(UI.el("div", "big-tie", "🎀"));
-          layer.classList.add("done");
-          layer.querySelector(".shake-hint").textContent = UI.t("shakeDone");
-          BT.Audio.play("tie");
-          this.scope.timeout(() => close(), 450);
+        if (roll) {
+          fill.style.width = Math.min(100, progress * 100) + "%";
+          bag.style.setProperty("--roll", String(Math.min(1, progress)));
+        } else {
+          fill.style.width = Math.min(100, (count / need) * 100) + "%";
+          bag.style.transform = `rotate(${count % 2 ? G.shakeTiltDeg : -G.shakeTiltDeg}deg)`;
         }
       };
       const close = () => {
         if (!layer.parentNode) return;
         layer.remove();
-        this.shakeLayer = null;
+        if (this.shakeLayer === layer) this.shakeLayer = null;
         tray.render();
         this.updateHint();
       };
+      const complete = () => {
+        finished = true;
+        if (roll) { tray.rolled = true; hint.textContent = UI.t("rollDone"); }
+        else {
+          tray.tied = true;
+          bag.appendChild(UI.el("div", "big-tie", "🎀"));
+          hint.textContent = UI.t("shakeDone");
+        }
+        layer.classList.add("done");
+        BT.Audio.play("tie");
+        this.scope.timeout(close, 450);
+      };
+      const bump = () => {
+        if (finished || this.isPaused()) return;
+        count++;
+        tray.shakeCount = count;
+        BT.Audio.play("shake");
+        show();
+        if (count >= need) complete();
+      };
+      layer.close = close;
+      this.shakeLayer = layer;
+
       zone.addEventListener("pointerdown", (e) => {
-        down = e.pointerId; lastX = e.clientX; dir = 0; swiped = false;
+        down = e.pointerId; lastX = e.clientX; startY = e.clientY; dir = 0; swiped = false;
         try { zone.setPointerCapture(e.pointerId); } catch (err) { /* bỏ qua */ }
       });
       zone.addEventListener("pointermove", (e) => {
-        if (down !== e.pointerId) return;
+        if (down !== e.pointerId || finished || this.isPaused()) return;
+        if (roll) {
+          const h = bag.offsetHeight || 1;
+          progress = Math.max(progress, (startY - e.clientY) / (h * G.rollDistance));
+          show();
+          if (progress >= 1) complete();
+          return;
+        }
         const dx = e.clientX - lastX;
         if (Math.abs(dx) >= G.shakeSwipePx) {
           const nd = Math.sign(dx);
@@ -515,11 +853,36 @@ window.BT = window.BT || { Screens: {} };
       const up = (e) => {
         if (down !== e.pointerId) return;
         down = null;
-        if (!swiped && e.type === "pointerup") bump();
+        if (!roll && !swiped && e.type === "pointerup") bump();
       };
       zone.addEventListener("pointerup", up);
       zone.addEventListener("pointercancel", up);
       show();
+    }
+
+    // ---------------- Năng lượng yêu thương ----------------
+    updateLove() {
+      if (!this.loveBtn) return;
+      this.loveFill.style.height = (this.love * 100) + "%";
+      this.loveBtn.classList.toggle("ready", this.love >= 1);
+    }
+
+    useLove() {
+      if (this.isPaused()) return;
+      if (this.love < 1) { UI.toast(Math.round(this.love * 100) + "% 💖"); return; }
+      this.love = 0;
+      this.freezeLeft = CONFIG.gameplay.loveFreezeSec;
+      this.front.classList.add("loving");
+      UI.toast(UI.t("loveActive"));
+      BT.Audio.play("win");
+      for (let i = 0; i < 14; i++) {
+        const h = UI.el("div", "love-heart", UI.pick(["💖", "💕", "💗"]));
+        h.style.left = UI.rand(5, 95) + "%";
+        h.style.animationDelay = UI.rand(0, 1.5) + "s";
+        this.loveFx.appendChild(h);
+        this.scope.timeout(() => h.remove(), 4000);
+      }
+      this.updateLove();
     }
 
     // ---------------- Khu làm món ----------------
@@ -538,7 +901,13 @@ window.BT = window.BT || { Screens: {} };
       Object.keys(this.tabEls).forEach((k) => this.tabEls[k].classList.toggle("active", k === id));
       const z = CONFIG.zones.find((x) => x.id === id);
       this.zoneLabel.textContent = z.icon + " " + z.name;
+      const grill = id === "nuong";
+      this.trayGroup.style.display = grill ? "none" : "";
+      this.grillGroup.style.display = grill ? "" : "none";
+      const sel = this.selected;
+      if (sel && ((sel.kind === "grill") !== grill || (!grill && !sel.isEmpty() && sel.zone !== id))) this.select(null);
       this.grid.show(id);
+      this.updateHint();
     }
 
     stepZone(delta) {
@@ -563,7 +932,7 @@ window.BT = window.BT || { Screens: {} };
     updateTabDots() {
       const waiting = new Set();
       this.customers.forEach((c) => {
-        if (c.state === "waiting" || c.state === "entering") c.order.forEach((id) => waiting.add(UI.recipe(id).zone));
+        if (c.state === "waiting" || c.state === "entering") c.zones().forEach((z) => waiting.add(z));
       });
       Object.keys(this.tabEls).forEach((k) => this.tabEls[k].classList.toggle("has-dot", waiting.has(k)));
     }
@@ -573,58 +942,68 @@ window.BT = window.BT || { Screens: {} };
 
     updateHud() {
       this.hudCust.textContent = UI.t("hudCustomers", { d: this.done, t: this.total });
-      const r = this.stats.ratings;
-      this.hudRate.textContent = "⭐ " + (r.length ? UI.rating(r.reduce((a, b) => a + b, 0) / r.length) : "–");
+      const avg = this.avgRating();
+      this.hudRate.textContent = "⭐ " + (avg ? UI.rating(avg) : "–");
       this.hudMoney.textContent = "🪙 " + UI.money(this.income()) + " / " + UI.money(this.dayCfg.target);
       this.hudMoney.classList.toggle("reached", this.income() >= this.dayCfg.target);
+      this.hudCombo.textContent = UI.t("comboLabel", { n: this.combo });
+      this.hudCombo.style.display = this.combo >= 2 ? "" : "none";
       let h = "";
-      for (let i = 0; i < CONFIG.gameplay.hearts; i++) h += i < this.hearts ? "❤️" : "🤍";
+      const max = Math.max(CONFIG.gameplay.hearts, this.hearts);
+      for (let i = 0; i < max; i++) h += i < this.hearts ? "❤️" : "🤍";
       this.hudHearts.textContent = h;
     }
 
     updateHint() {
-      if (!this.dayCfg.hints) return;
+      if (!this.dayCfg.hints || !this.hintEl) return;
       const H = CONFIG.texts.hints;
-      const t = this.selected !== null ? this.trays[this.selected] : this.trays.find((x) => !x.isEmpty());
-      let msg = H.start;
-      if (t && !t.isEmpty()) {
-        if (t.tied) msg = H.deliver;
-        else if (t.finish.length) msg = H.shake;
-        else if (Object.keys(t.items).length >= 2) msg = H.finish;
-        else msg = H.toppings;
+      const z = this.zone;
+      const pool = z === "nuong" ? this.grills : this.trays;
+      const t = this.selected && pool.includes(this.selected) ? this.selected : pool.find((x) => !x.isEmpty() && (z === "nuong" || x.zone === z));
+      const has = t && !t.isEmpty() && (z === "nuong" || t.zone === z);
+      let key;
+      if (z === "tron") {
+        key = !has ? "start" : t.tied ? "deliver" : t.finish.length ? "shake" : Object.keys(t.items).length >= 2 ? "finish" : "toppings";
+      } else if (z === "nuoc") {
+        key = !has ? "nuoc_start" : !t.poured ? "nuoc_pour" : t.finish.includes("da") ? "nuoc_deliver" : "nuoc_ice";
+      } else if (z === "nuong") {
+        key = !has ? "nuong_start" : !t.cracked ? "nuong_egg" : !t.folded ? "nuong_cook" : Object.keys(t.sauces).length ? "nuong_deliver" : "nuong_sauce";
+      } else {
+        key = !has ? "cuon_start" : !t.rolled ? (Object.keys(t.items).length >= 2 ? "cuon_roll" : "cuon_toppings") : t.finish.length ? "cuon_deliver" : "cuon_sauce";
       }
-      this.hintEl.textContent = UI.fmt(msg);
+      this.hintEl.textContent = UI.fmt(H[key]);
     }
 
     // ---------------- Sổ công thức ----------------
     openBook() {
       if (this.over) return;
-      const pause = this.dayNum <= CONFIG.gameplay.recipeBookPauseUntilDay;
-      if (pause) this.pauseReasons.add("book");
+      if (this.dayNum <= CONFIG.gameplay.recipeBookPauseUntilDay) this.pauseReasons.add("book");
+      const steps = CONFIG.texts.stepNames;
+      const name = (s) => (CONFIG.ingredients[s] ? UI.ing(s).emoji + " " + UI.ing(s).name : steps[s] || s);
       const list = UI.el("div", "book");
       this.dishPool.forEach((r) => {
-        const row = UI.el("div", "book-row" + (r.id === window.PERSONAL.favoriteDish ? " fav" : ""));
+        const row = UI.el("div", "book-row" + (r.id === window.PERSONAL.favoriteDish || r.combo ? " fav" : ""));
         const head = UI.el("div", "book-head");
         head.appendChild(UI.el("span", "book-emoji", r.emoji));
         head.appendChild(UI.el("span", "book-name", r.name));
-        head.appendChild(UI.el("span", "book-price", UI.money(UI.recipePrice(r.id))));
+        head.appendChild(UI.el("span", "book-price", UI.money(r.combo ? r.price : UI.recipePrice(r.id))));
         row.appendChild(head);
-        const line = (label, ids) => {
+        const line = (label, text) => {
           const l = UI.el("div", "book-line");
           l.appendChild(UI.el("b", "", label + ": "));
-          l.appendChild(document.createTextNode(ids.map((id) => UI.ing(id).emoji + " " + UI.ing(id).name).join(", ")));
+          l.appendChild(document.createTextNode(text));
           row.appendChild(l);
         };
-        line(UI.t("bookBase"), [r.base]);
-        line(UI.t("bookToppings"), r.toppings);
-        const fin = r.finish.map((s) => (CONFIG.ingredients[s] ? UI.ing(s).emoji + " " + UI.ing(s).name : s === "lac" ? "💫 " + UI.t("bookShake") : s));
-        const l = UI.el("div", "book-line");
-        l.appendChild(UI.el("b", "", UI.t("bookFinish") + ": "));
-        l.appendChild(document.createTextNode(fin.join(" → ")));
-        row.appendChild(l);
+        if (r.combo) {
+          line("🎁", r.combo.map((id) => UI.recipe(id).name).join(" + "));
+        } else {
+          line(UI.t("bookBase"), name(r.base));
+          if (r.toppings.length) line(UI.t("bookToppings"), r.toppings.map(name).join(", "));
+          line(UI.t("bookFinish"), r.finish.map(name).join(" → "));
+        }
         list.appendChild(row);
       });
-      this.bookModal = UI.modal({
+      UI.modal({
         title: UI.t("bookTitle"),
         body: list,
         dismissable: true,
@@ -640,7 +1019,7 @@ window.BT = window.BT || { Screens: {} };
       this.pauseReasons.add("menu");
       BT.Audio.suspend();
       const resume = () => { this.pauseReasons.delete("menu"); BT.Audio.resume(); };
-      this.pauseModal = UI.modal({
+      UI.modal({
         title: UI.t("pauseTitle"),
         body: UI.t("leaveConfirm"),
         dismissable: true,
@@ -656,6 +1035,7 @@ window.BT = window.BT || { Screens: {} };
     abandon(where) {
       this.over = true;
       BT.Save.restoreDay();
+      BT.Save.persist();
       if (where === "retry") this.router.go("Prep", { day: this.dayNum }, { replace: true });
       else this.router.backTo("Map");
     }
@@ -680,16 +1060,22 @@ window.BT = window.BT || { Screens: {} };
         kept = Math.round(income * M.loseKeepRatio);
         this.S.wallet -= income - kept;
       }
-      const r = this.stats.ratings;
-      const avg = r.length ? r.reduce((a, b) => a + b, 0) / r.length : 0;
-      const firstClear = passed && !(this.S.days[this.dayNum] && this.S.days[this.dayNum].stars > 0);
+      const avg = this.avgRating();
+      const prev = this.S.days[this.dayNum];
+      const firstClear = passed && !(prev && prev.stars > 0);
 
-      const rec = this.S.days[this.dayNum] || { stars: 0, bestRevenue: 0, avgRating: 0 };
+      const rec = prev || { stars: 0, bestRevenue: 0, avgRating: 0 };
       rec.stars = Math.max(rec.stars, stars);
       rec.bestRevenue = Math.max(rec.bestRevenue, income);
       if (avg > rec.avgRating) rec.avgRating = Math.round(avg * 10) / 10;
       this.S.days[this.dayNum] = rec;
+      this.S.goldHearts = Object.keys(this.S.days).filter((k) => k !== "secret" && this.S.days[k].stars === 3).length;
       if (passed && typeof this.dayNum === "number") this.S.unlockedDay = Math.max(this.S.unlockedDay, this.dayNum + 1);
+      // Đếm số lần thua liên tiếp ở cùng một ngày
+      if (passed) this.S.loseStreak = null;
+      else if (this.S.loseStreak && this.S.loseStreak.day === this.dayNum) this.S.loseStreak.n++;
+      else this.S.loseStreak = { day: this.dayNum, n: 1 };
+      this.S.xp += Math.round(income / 10);
       if (this.S.dayBackup) this.S.dayBackup.finished = true;
       this.S.today = null;
       BT.Save.persist();
@@ -712,7 +1098,7 @@ window.BT = window.BT || { Screens: {} };
     onBack() {
       if (this.over) return true;
       if (UI.modals.length) { UI.closeTopModal(); return true; }
-      if (this.shakeLayer) { this.shakeLayer.querySelector(".btn").click(); return true; }
+      if (this.shakeLayer) { this.shakeLayer.close(); return true; }
       this.openPause();
       return true;
     }

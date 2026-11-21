@@ -1,20 +1,28 @@
-// Customer.js — Khách hàng: đi vào, bong bóng gọi món, thanh kiên nhẫn, phản ứng, đi ra.
-// Giai đoạn 1: khách thường (Học sinh). Yêu cầu riêng, khách quen, Hiếu (Tomortle) và bạn bè
-// sẽ thêm ở Giai đoạn 2–3.
+// Customer.js — Khách hàng: đi vào, bong bóng gọi món (1–2 món, yêu cầu riêng màu cam),
+// thanh kiên nhẫn, phản ứng, đi ra. Mèo hoang chỉ xin 1 trứng cút.
+// Khách Hiếu (Tomortle), nhóm bạn & khách quen có cốt truyện sẽ thêm ở Giai đoạn 3.
 window.BT = window.BT || { Screens: {} };
 
 (function () {
   const UI = BT.UI;
   let nextId = 1;
 
+  function reqText(q) {
+    const def = CONFIG.specialRequests.find((x) => x.id === q.id);
+    return UI.fmt(def.text, { n: q.n });
+  }
+
   class Customer {
-    // opts: { typeId, order: [recipeId], seat, centerPct, patienceMult, area, scope, onWalkout, onGone }
+    // opts: { typeId, items: [{id, reqs}], combo, reviewer, seat, centerPct, patienceMult, area, scope, onWalkout, onGone }
     constructor(opts) {
       const type = CONFIG.customerTypes[opts.typeId];
       this.id = nextId++;
       this.typeId = opts.typeId;
       this.type = type;
-      this.order = opts.order;
+      this.isCat = type.kind === "cat";
+      this.items = (opts.items || []).map((x) => ({ id: x.id, reqs: x.reqs || [], done: false }));
+      this.combo = !!opts.combo;
+      this.reviewer = !!opts.reviewer;
       this.seat = opts.seat;
       this.area = opts.area;
       this.scope = opts.scope;
@@ -23,48 +31,78 @@ window.BT = window.BT || { Screens: {} };
 
       const variant = type.variants ? UI.pick(type.variants) : null;
       this.avatar = variant ? variant.avatar : type.avatar;
-      this.self = variant ? variant.self : type.self;
-      this.call = UI.fmt(type.call);
+      this.self = variant ? variant.self : type.self || "";
+      this.call = UI.fmt(type.call || "");
 
       this.max = type.patience * opts.patienceMult;
       this.patience = this.max;
       this.state = "entering";
       this.wrongOnce = false;
-      this.lowShown = false;
 
       this.build(opts.centerPct);
     }
 
-    vars(extra) {
-      return Object.assign({ self: this.self, call: this.call }, extra || {});
+    vars(extra) { return Object.assign({ self: this.self, call: this.call }, extra || {}); }
+    pct() { return this.max === Infinity ? 1 : Math.max(0, this.patience / this.max); }
+    pending() { return this.items.filter((x) => !x.done); }
+    hasRequests() { return this.items.some((x) => x.reqs.length > 0); }
+    zones() { return this.pending().map((x) => UI.recipe(x.id).zone); }
+
+    dishLabel() {
+      if (this.combo) return UI.t("comboName");
+      return this.items.map((x) => UI.recipe(x.id).name.toLowerCase()).join(" với ");
     }
 
-    pct() { return this.max === Infinity ? 1 : Math.max(0, this.patience / this.max); }
-
     build(centerPct) {
-      const el = UI.el("div", "customer");
+      const el = UI.el("div", "customer" + (this.isCat ? " cat" : ""));
       el.dataset.cid = String(this.id);
-      el.dataset.order = this.order.join(",");
+      el.dataset.order = this.items.map((x) => x.id).join(",");
       el.style.left = centerPct + "%";
 
       const bubble = UI.el("div", "bubble");
-      const r = UI.recipe(this.order[0]);
-      if (this.order[0] === window.PERSONAL.favoriteDish) bubble.classList.add("fav");
+      if (this.items.some((x) => x.id === window.PERSONAL.favoriteDish) || this.combo) bubble.classList.add("fav");
 
-      const speech = UI.el("div", "speech", UI.fmt(UI.pick(this.type.lines), this.vars({ dish: r.name })));
+      let speechText;
+      if (this.isCat) speechText = UI.t("catLine");
+      else {
+        speechText = UI.fmt(UI.pick(this.type.lines), this.vars({ dish: this.dishLabel() }));
+      }
+      const speech = UI.el("div", "speech", speechText);
       const card = UI.el("div", "order-card");
-      const dishRow = UI.el("div", "dish-row");
-      dishRow.appendChild(UI.el("span", "dish-emoji", r.emoji));
-      dishRow.appendChild(UI.el("span", "dish-name", r.short));
-      card.appendChild(dishRow);
-      const ings = UI.el("div", "dish-ings");
-      [r.base].concat(r.toppings, r.finish.filter((s) => CONFIG.ingredients[s])).forEach((id) => {
-        ings.appendChild(UI.el("span", "", UI.ing(id).emoji));
-      });
-      if (r.finish.includes("lac")) ings.appendChild(UI.el("span", "mini-step", "💫"));
-      card.appendChild(ings);
+      if (this.isCat) {
+        const row = UI.el("div", "dish-row");
+        row.appendChild(UI.el("span", "dish-emoji", "🥚"));
+        card.appendChild(row);
+      } else {
+        if (this.combo) card.appendChild(UI.el("div", "combo-tag", UI.t("comboName")));
+        this.rows = this.items.map((it) => {
+          const r = UI.recipe(it.id);
+          const box = UI.el("div", "dish-box");
+          const dishRow = UI.el("div", "dish-row");
+          dishRow.appendChild(UI.el("span", "dish-emoji", r.emoji));
+          dishRow.appendChild(UI.el("span", "dish-name", r.short));
+          box.appendChild(dishRow);
+          if (this.items.length === 1) {
+            const ings = UI.el("div", "dish-ings");
+            const req = BT.Tray.requirements(it);
+            const list = [r.base];
+            if (req.pour) list.push(req.pour);
+            const tops = [];
+            Object.keys(req.need).forEach((id) => { for (let i = 0; i < req.need[id]; i++) tops.push(id); });
+            // Quầy nước: ly → rót → đá → topping; các khu khác: topping → bước kết thúc
+            if (r.zone === "nuoc") list.push(...req.finishIngs, ...tops);
+            else list.push(...tops, ...req.finishIngs);
+            Object.keys(req.sauces).forEach((id) => { for (let i = 0; i < req.sauces[id]; i++) list.push(id); });
+            list.forEach((id) => ings.appendChild(UI.el("span", "", UI.ing(id).emoji)));
+            if (r.finish.includes("lac")) ings.appendChild(UI.el("span", "mini-step", "💫"));
+            box.appendChild(ings);
+          }
+          if (it.reqs.length) box.appendChild(UI.el("div", "req-note", it.reqs.map(reqText).join(" · ")));
+          card.appendChild(box);
+          return box;
+        });
+      }
       const react = UI.el("div", "react");
-
       const bar = UI.el("div", "pbar");
       const fill = UI.el("div", "pfill");
       bar.appendChild(fill);
@@ -78,7 +116,12 @@ window.BT = window.BT || { Screens: {} };
       const body = UI.el("div", "cbody");
       body.appendChild(UI.el("div", "avatar", this.avatar));
       if (this.type.accessory) body.appendChild(UI.el("div", "accessory", this.type.accessory));
-      const mood = UI.el("div", "mood", "🙂");
+      if (this.reviewer) {
+        const badge = UI.el("div", "badge-review", "📝");
+        badge.title = UI.t("reviewerBadge");
+        body.appendChild(badge);
+      }
+      const mood = UI.el("div", "mood", this.isCat ? "" : "🙂");
       body.appendChild(mood);
       body.appendChild(UI.el("div", "cshadow"));
 
@@ -93,12 +136,17 @@ window.BT = window.BT || { Screens: {} };
       this.updateBar();
     }
 
+    markDone(item) {
+      item.done = true;
+      const i = this.items.indexOf(item);
+      if (this.rows && this.rows[i]) this.rows[i].classList.add("done");
+      this.el.dataset.order = this.pending().map((x) => x.id).join(",");
+    }
+
     enter() {
       const el = this.el;
       this.area.appendChild(el);
-      const areaW = this.area.clientWidth;
-      const left = el.offsetLeft;
-      const off = areaW - left + el.offsetWidth;
+      const off = this.area.clientWidth - el.offsetLeft + el.offsetWidth;
       const sec = this.type.enterSec || CONFIG.gameplay.customerEnterSec;
       el.style.transition = "none";
       el.style.transform = `translateX(${off}px)`;
@@ -120,8 +168,10 @@ window.BT = window.BT || { Screens: {} };
       }, CONFIG.gameplay.speechShowSec * 1000);
     }
 
-    update(dt) {
+    update(dt, frozen) {
       if (this.state !== "waiting" || this.max === Infinity) return;
+      this.el.classList.toggle("frozen", !!frozen);
+      if (frozen) return;
       this.patience -= dt;
       this.updateBar();
       if (this.patience <= 0) {
@@ -138,7 +188,7 @@ window.BT = window.BT || { Screens: {} };
       if (this.fill.dataset.level !== level) {
         this.fill.dataset.level = level;
         this.bubble.classList.toggle("low", level === "low");
-        if (this.state === "waiting") this.setMood(level === "low" ? "😤" : "🙂");
+        if (this.state === "waiting" && !this.isCat) this.setMood(level === "low" ? "😤" : "🙂");
       }
     }
 
@@ -159,15 +209,15 @@ window.BT = window.BT || { Screens: {} };
       if (sec) {
         this.scope.timeout(() => {
           if (this.reactStamp !== stamp || this.state !== "waiting") return;
-          this.bubble.dataset.mode = prev === "react" ? "order" : prev;
-          this.setMood(this.pct() < CONFIG.gameplay.patienceLow ? "😤" : "🙂");
+          this.bubble.dataset.mode = prev === "react" ? "order" : prev === "speech" ? "order" : prev;
+          if (!this.isCat) this.setMood(this.pct() < CONFIG.gameplay.patienceLow ? "😤" : "🙂");
         }, sec * 1000);
       }
     }
 
     leave(delaySec) {
       this.state = "leaving";
-      this.el.classList.remove("arrived");
+      this.el.classList.remove("arrived", "frozen");
       this.scope.timeout(() => {
         const el = this.el;
         const off = el.offsetLeft + el.offsetWidth + 20;
@@ -183,5 +233,6 @@ window.BT = window.BT || { Screens: {} };
     }
   }
 
+  Customer.reqText = reqText;
   BT.Customer = Customer;
 })();

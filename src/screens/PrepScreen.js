@@ -15,6 +15,7 @@ window.BT = window.BT || { Screens: {} };
       if (S.dayBackup && S.dayBackup.day === day && !S.dayBackup.finished) BT.Save.restoreDay();
       else BT.Save.snapshotDay(day);
       S.today = { day, expense: 0 };
+      BT.Save.persist();
 
       const ids = Object.keys(CONFIG.ingredients).filter((id) => {
         const ing = CONFIG.ingredients[id];
@@ -22,6 +23,14 @@ window.BT = window.BT || { Screens: {} };
       });
       const gift = M.freeStockDays.includes(day);
       if (gift) ids.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.freeStockQty); });
+      // Xếp theo khu: Trộn → Nước → Nướng → Cuốn (theo ngày mở)
+      const zones = CONFIG.zones.filter((z) => z.openDay <= day && CONFIG.build.playableZones.includes(z.id)).sort((a, b) => a.openDay - b.openDay);
+      const seen = new Set();
+      const groups = zones.map((z) => {
+        const list = BT.Station.ingredientsFor(z.id, day).filter((id) => !seen.has(id));
+        list.forEach((id) => seen.add(id));
+        return { z, list };
+      }).filter((g) => g.list.length);
 
       const el = UI.el("div", "screen prep");
       el.appendChild(UI.topbar(UI.t("prepTitle", { n: day }), () => router.back()));
@@ -42,7 +51,11 @@ window.BT = window.BT || { Screens: {} };
       body.appendChild(UI.el("h3", "section-title", UI.t("prepStockTitle")));
       const list = UI.el("div", "stock-list");
       const rows = [];
-      ids.forEach((id) => {
+      groups.forEach((g) => {
+        list.appendChild(UI.el("div", "zone-header", UI.t("zoneHeader", { icon: g.z.icon, name: g.z.name })));
+        g.list.forEach((id) => addRow(id));
+      });
+      function addRow(id) {
         const ing = UI.ing(id);
         const row = UI.el("div", "stock-row");
         row.appendChild(UI.el("div", "stock-emoji", ing.emoji));
@@ -57,12 +70,13 @@ window.BT = window.BT || { Screens: {} };
           S.inventory[id] = BT.Save.stock(id) + M.buyPackQty;
           S.today.expense += ing.price;
           BT.Audio.play("coin");
+          BT.Save.persist();
           refresh();
         });
         row.appendChild(btn);
         list.appendChild(row);
         rows.push({ id, ing, n, btn });
-      });
+      }
       body.appendChild(list);
       el.appendChild(body);
 

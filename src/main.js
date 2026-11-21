@@ -82,6 +82,7 @@ window.BT = window.BT || { Screens: {} };
   // ---------------- Khởi động ----------------
   function start() {
     applyColors();
+    BT.Save.load();
     document.title = window.PERSONAL.shopName;
     document.getElementById("rotate-text").textContent = UI.t("rotate");
     Router.root = UI.app();
