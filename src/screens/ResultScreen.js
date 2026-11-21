@@ -88,6 +88,29 @@ window.BT = window.BT || { Screens: {} };
       row(UI.t("statRating"), s.avgRating ? "⭐ " + UI.rating(s.avgRating) : "–");
       body.appendChild(table);
 
+      // Anh Hiếu: chương "Sau giờ đóng cửa"
+      if (s.helperChapter !== null && s.helperChapter !== undefined) {
+        const ch = (window.PERSONAL.helperChapters || [])[s.helperChapter];
+        if (ch) {
+          const hb = UI.el("div", "helper-chapter");
+          hb.appendChild(UI.el("div", "card2-head", UI.t("helperChapterTitle", { n: s.helperChapter + 1 })));
+          hb.appendChild(UI.el("div", "card2-text", UI.fmt(ch.text)));
+          const row = UI.el("div", "helper-choices");
+          ch.choices.forEach((c) => row.appendChild(UI.button(UI.fmt(c.label), "btn-white small", () => {
+            if (row.dataset.done) return;
+            row.dataset.done = "1";
+            const eff = c.effect || {};
+            if (eff.wallet) S.wallet += eff.wallet;
+            S.helper.chapters = Math.max(S.helper.chapters, s.helperChapter + 1);
+            BT.Save.persist();
+            UI.toast(UI.fmt(c.reply) + (eff.wallet ? " · +" + UI.money(eff.wallet) : ""), 2800);
+            row.querySelectorAll("button").forEach((x) => { x.disabled = true; });
+          })));
+          hb.appendChild(row);
+          body.appendChild(hb);
+        }
+      }
+
       // Tiến độ mốc
       let msFill = null, msTarget = 0;
       if (s.progress) {

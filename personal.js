@@ -168,6 +168,40 @@ window.PERSONAL = {
   // Kỷ niệm Mùa 2 (tuỳ chọn). Thêm như memories ở trên, phần tử thứ k mở ở mốc lớn thứ k của Mùa 2.
   memories2: [],
 
+  // ---------------- Anh Hiếu phụ tiệm (Mùa 2) ----------------
+  // Câu anh nói khi đang phụ tiệm (bong bóng thoại)
+  helperLines: [
+    "Bà chủ ơi, khách bàn hai khen chè ngon kìa!",
+    "Anh rửa ly xong rồi nè, khen anh đi 😌",
+    "Em làm nhanh quá, anh theo không kịp luôn.",
+    "Nghỉ tay uống miếng nước đi em.",
+    "Ai cho em dễ thương dữ vậy, tập trung bán hàng đi chứ!",
+    "Anh mới học được cách xếp chè ba màu, giỏi chưa?",
+    "Hôm nay đông ghê, tối anh đấm lưng cho nha.",
+    "Khách hỏi anh có phải chủ tiệm không, anh nói anh là chồng... à nhầm, là nhân viên.",
+    "Trân châu hết thì kêu anh nha.",
+    "Em cười cái là khách quay lại liền á.",
+    "Anh xin nghỉ trưa 5 phút để ngắm bà chủ.",
+    "Ly này anh bưng, em cứ làm ly kế đi.",
+    "Mệt hông? Mệt thì để anh lo.",
+    "Anh làm đổ có xíu nước thôi, em đừng nhìn anh vậy 😅",
+    "Hôm nay mình bán được nhiều ghê, tối ăn gì ăn đi!",
+    "Sương sáo này đen như... à thôi, anh không dám so.",
+    "Anh phụ tiệm không lương mà vui nhất thế giới.",
+    "Em có thấy anh chạy bàn chuyên nghiệp chưa?",
+    "Khách đi rồi, giờ tới lượt anh được em phục vụ hông?",
+    "Mai mình mở sớm hơn chút nha, anh dậy sớm được."
+  ],
+  // Chương "Sau giờ đóng cửa": chương 1 khi anh vào phụ, chương 2/3 khi lên cấp ăn ý
+  helperChapters: [
+    {"text": "Đóng cửa xong, anh ngồi lau từng cái ly, còn em đếm tiền trong hộp. Anh hỏi: \"Hôm nay em có vui không?\"", "choices": [{"label": "Vui chứ, có anh phụ mà", "reply": "Anh cười tít mắt, lau ly nhanh gấp đôi.", "effect": {"wallet": 20}}, {"label": "Mệt nhưng vui", "reply": "Anh lấy ghế cho em ngồi, tự đếm tiền giùm.", "effect": {"wallet": 10}}]},
+    {"text": "Trời đổ mưa lúc dọn tiệm. Anh lấy cái áo mưa duy nhất trùm cho em, còn mình thì ướt nhẹp. \"Không sao, anh khoẻ mà.\"", "choices": [{"label": "Che chung đi, ngốc", "reply": "Hai người chen chúc dưới một cái áo mưa, đi về chậm hơn mọi hôm.", "effect": {"wallet": 30}}, {"label": "Lau đầu cho anh", "reply": "Anh đứng im ngoan ngoãn, mặt đỏ hơn ly chè đậu đỏ.", "effect": {"wallet": 30}}]},
+    {"text": "Tối nay anh khoá cửa tiệm rồi kéo em ra đầu hẻm ăn khuya. \"Cả mùa em làm giỏi quá, hôm nay để anh bao.\"", "choices": [{"label": "Ăn bánh tráng nướng tiệm khác thử", "reply": "Ăn xong hai người kết luận: tiệm mình vẫn ngon nhất.", "effect": {"wallet": 50}}, {"label": "Về tiệm ăn chè anh làm", "reply": "Anh làm ly chè hơi sai thứ tự, nhưng em vẫn ăn hết.", "effect": {"wallet": 50}}]}
+  ],
+  helperIntro: "Anh xin vào phụ tiệm nha bà chủ. Lương anh là được đứng gần em là đủ rồi 😌",
+  helperLate: "Anh tới trễ xíu, kẹt xe quá trời, em thông cảm nha 🙏",
+  helperSpill: "Ui da... anh lỡ làm đổ một chút {ing}, để anh dọn liền!",
+
   // Lời nhắn mỗi ngày: mở một câu khi chơi Thử thách hôm nay lần đầu trong ngày (lần lượt, hết thì quay lại).
   // Sửa thoải mái; thêm câu mới thì thêm vào cuối.
   dailyNotes: [

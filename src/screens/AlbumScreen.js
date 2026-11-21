@@ -86,6 +86,25 @@ window.BT = window.BT || { Screens: {} };
           buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
       });
       scroll.appendChild(tbook);
+      // Anh Hiếu phụ tiệm
+      if (S.helper && S.helper.unlocked) {
+        const hc = UI.el("button", "flirt-book-card helper-card");
+        hc.type = "button";
+        hc.appendChild(UI.icon("tomortle"));
+        hc.appendChild(UI.el("span", "fb-label", UI.t("helperTitle") + " · " + UI.t("helperLevel", { n: BT.Helper.level(), s: S.helper.shifts })));
+        hc.addEventListener("click", () => {
+          BT.Audio.play("pop");
+          const list = UI.el("div", "fb-list");
+          (P.helperChapters || []).forEach((c, i) => {
+            const row = UI.el("div", "fb-item " + (i < S.helper.chapters ? "solved" : "locked"));
+            if (i < S.helper.chapters) { row.appendChild(UI.el("div", "fb-answer", UI.t("helperChapterTitle", { n: i + 1 }))); row.appendChild(UI.el("div", "fb-line", UI.fmt(c.text))); }
+            else row.appendChild(UI.el("div", "fb-locked", "🔒 " + UI.t("helperLocked")));
+            list.appendChild(row);
+          });
+          UI.modal({ title: UI.t("helperTitle"), body: list, className: "modal-flirt-book modal-helper", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+        });
+        scroll.appendChild(hc);
+      }
       // Mùa 2: Sổ công thức + kỷ niệm Mùa 2 (tự mở cho mốc lớn đã qua nếu người tặng thêm sau)
       if (S.s2 && S.s2.started) {
         const MS = BT.MS;

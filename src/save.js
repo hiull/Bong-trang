@@ -47,6 +47,7 @@ window.BT = window.BT || { Screens: {} };
       ms: { index: 1, progress: 0, cleared: 0, shifts: 0, best: {}, firstDone: {}, lastEvent: null }, // mốc hiện tại & tiến độ
       daily: { lastDate: null, streak: 0, played: {}, noteNext: 0, notesSeen: [], best: {} }, // thử thách mỗi ngày
       endless: { best: 0, bestIncome: 0, rewards: {} }, // ca vô tận
+      helper: { unlocked: false, role: "waiter", shifts: 0, chapters: 0 }, // anh Hiếu phụ tiệm
       talesSeen: [],      // chuyện vặt đã xem (theo thứ tự)
       flirt: { next: 0, solved: {} }, // câu thính: câu kế tiếp, câu đã giải ("self" tự giải / "told" anh nói)
       welcomeSeen: false

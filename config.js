@@ -471,6 +471,13 @@ window.CONFIG = {
     ]
   },
 
+  // Anh Hiếu phụ tiệm (Mùa 2). levelAt = số ca làm chung để lên cấp 1/2/3; *Sec = thời gian theo cấp.
+  helper: {
+    fromSeason: 2, fromMilestone: 3, levelAt: [0, 8, 20],
+    waiterSec: [1.5, 1.1, 0.8], drinkSec: [6, 5, 4], cheSec: [1.2, 0.9, 0.6], patienceSlow: 0.1,
+    drinks: ["tra_da", "tra_tac", "nuoc_mia_ly"], eventRate: 0.1, lateShare: 0.2, bubbleEverySec: [14, 22]
+  },
+
   // Ca vô tận: khách đến mãi, nhanh dần; 3 tim. rewards: số khách → thưởng một lần (k).
   endless: {
     fromMilestone: 7,
@@ -878,6 +885,17 @@ window.CONFIG = {
     dayNames: { secret: "bí mật" },
     runMs: "Mốc {n}",
     runMsSeason: "Mùa {s} · Mốc {n}",
+    helperPick: "Hôm nay anh Hiếu phụ…",
+    helperRole_waiter: "Chạy bàn",
+    helperRole_drinks: "Pha nước",
+    helperRole_che: "Phụ chè",
+    helperRole_off: "Anh nghỉ",
+    helperBusyNote: "Hôm nay anh Hiếu bận, không phụ được",
+    helperNoStock: "Anh Hiếu: hết nguyên liệu pha nước rồi em ơi",
+    helperTitle: "Anh phụ tiệm",
+    helperLevel: "Ăn ý cấp {n} · {s} ca làm chung",
+    helperChapterTitle: "Sau giờ đóng cửa · Chương {n}",
+    helperLocked: "Chương này mở khi hai người ăn ý hơn",
     card2Get: "Thẻ công thức mới!",
     memory2Get: "Có kỷ niệm mới, chạm để mở 💌",
     seasonCardTitle: "Mùa 2 mở rồi! 🍧",

@@ -19,6 +19,7 @@ window.BT = window.BT || { Screens: {} };
       this.dayNum = run.level;                 // cấp mốc: so với ngày mở món
       this.secret = run.mode === "secret";
       this.endless = run.mode === "endless";
+      this.helperOn = BT.Helper.working(run);   // anh Hiếu phụ tiệm ca này
       this.dayCfg = run.cfg;
       this.scope = UI.scope();
       this.pauseReasons = new Set();
@@ -77,6 +78,7 @@ window.BT = window.BT || { Screens: {} };
         this.catsToday = G.catMaxPerDay;
       }
       this.build(root);
+      if (this.helperOn) BT.Helper.attach(this);
       this.loop();
       this.countdown();
       BT.Audio.music(this.dayCfg.weather === CONFIG.audio.rainWeather ? "rain" : "game");
@@ -115,7 +117,7 @@ window.BT = window.BT || { Screens: {} };
       if (this.dayCfg.tomoVisits) {
         this.tomoWanted = this.dayCfg.tomoVisits;
         for (let k = 0; k < this.tomoWanted; k++) this.plan[Math.floor((k + 0.5) * this.total / this.tomoWanted)] = { kind: "tomortle" };
-      } else if (this.dayNum >= G.tomortleFromDay) {
+      } else if (this.dayNum >= G.tomortleFromDay && !this.helperOn) {
         this.tomoWanted = 1;
         this.plan[UI.randInt(1, Math.max(1, this.total - G.tomortleForceWhenLeft - 1))] = { kind: "tomortle" };
       }
@@ -331,7 +333,9 @@ window.BT = window.BT || { Screens: {} };
       });
       if (this.tabEls.nuong) this.tabEls.nuong.classList.toggle("warn", warn && this.zone !== "nuong");
 
-      this.customers.slice().forEach((c) => c.update(dt, this.freezeLeft > 0 || !!this.tut));
+      const cdt = this.helper && this.helper.role === "waiter" ? dt * (1 - CONFIG.helper.patienceSlow) : dt;
+      this.customers.slice().forEach((c) => c.update(cdt, this.freezeLeft > 0 || !!this.tut));
+      if (this.helper && !this.tut) BT.Helper.tick(this, dt);
       this.tickTutorial();
       const allServed = this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0;
       // Tới mốc thả thính (hoặc hết khách mà còn lượt chưa ghé) → anh Hiếu vào khi tiệm đang rảnh tay
@@ -451,7 +455,7 @@ window.BT = window.BT || { Screens: {} };
       let special = this.groupPending > 0 ? null : this.plan[this.spawned];
       // Anh Hiếu chưa ghé mà chỉ còn vài khách cuối → ép anh tới ở lượt này
       if (!special && this.groupPending === 0 && this.tomoCame < this.tomoWanted && left <= G.tomortleForceWhenLeft) special = { kind: "tomortle" };
-      if (this.endless && !special && this.dayNum >= G.tomortleFromDay && this.spawned > 0 && this.spawned % CONFIG.endless.tomoEvery === 0 && this.dishPool.some((r) => r.zone !== "nuoc" && !r.combo)) special = { kind: "tomortle" };
+      if (this.endless && !special && !this.helperOn && this.dayNum >= G.tomortleFromDay && this.spawned > 0 && this.spawned % CONFIG.endless.tomoEvery === 0 && this.dishPool.some((r) => r.zone !== "nuoc" && !r.combo)) special = { kind: "tomortle" };
       if (special && special.kind === "tomortle" && this.tomoCame >= this.tomoWanted) special = null;
       if (special && special.kind === "tomortle") this.spawnTomortle(seat);
       else if (special && special.kind === "regular") this.spawnRegular(seat, special);
@@ -1574,7 +1578,7 @@ window.BT = window.BT || { Screens: {} };
     applyCleared(progress) {
       const S = this.S;
       const MS = BT.MS;
-      let newMemory = null, minor = null, ending = false, card2 = null, newMemory2 = null;
+      let newMemory = null, minor = null, ending = false, card2 = null, newMemory2 = null, helperChapter = null;
       const sid = S.season || 1;
       if (progress && progress.cleared) {
         const m = MS.get(progress.cleared);
@@ -1596,8 +1600,12 @@ window.BT = window.BT || { Screens: {} };
           minor = { coins, tale };
         }
         ending = progress.cleared === MS.count() && !(sid === 1 ? S.endingSeen : S.s2.endingSeen);
+        if (sid >= CONFIG.helper.fromSeason && progress.cleared === CONFIG.helper.fromMilestone - 1 && !S.helper.unlocked) {
+          S.helper.unlocked = true;
+          helperChapter = 0;
+        }
       }
-      return { newMemory, minor, ending, card2, newMemory2 };
+      return { newMemory, minor, ending, card2, newMemory2, helperChapter };
     }
 
     // Kết thúc Ca vô tận: không có mục tiêu, giữ toàn bộ tiền, cộng tiến độ theo số khách
@@ -1609,7 +1617,9 @@ window.BT = window.BT || { Screens: {} };
       const units = BT.Endless.units(served);
       S.ms.shifts++;
       const progress = MS.addProgress(units);
-      const { newMemory, minor, ending, card2, newMemory2 } = this.applyCleared(progress);
+      const { newMemory, minor, ending, card2, newMemory2, helperChapter: hc0 } = this.applyCleared(progress);
+      const hr = this.helperOn ? BT.Helper.onShiftEnd(this) : null;
+      const helperChapter = hc0 !== null ? hc0 : hr ? hr.chapter : null;
       const avg = this.avgRating();
       const lvBefore = BT.Progress.level(S.xp).level;
       S.xp += Math.round(income / 10);
@@ -1623,7 +1633,7 @@ window.BT = window.BT || { Screens: {} };
       const summary = {
         day: this.dayId, run: this.run, title: UI.runTitle(this.run), endless: true, passed: true, lostHearts: false, stars: 0,
         served, best: S.endless.best, newBest: claim.newBest, coins: claim.coins, rewardMarks: claim.milestones,
-        memory: newMemory, ending, minor, card2, memory2: newMemory2, units, progress, need: MS.need(progress.before.index), levelUp,
+        memory: newMemory, ending, minor, card2, memory2: newMemory2, helperChapter, units, progress, need: MS.need(progress.before.index), levelUp,
         income, kept: income, target: 0, revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
         net: income - this.stats.expense, total: served, walkouts: this.stats.walkouts, avgRating: avg
       };
@@ -1659,7 +1669,7 @@ window.BT = window.BT || { Screens: {} };
       const MS = BT.MS;
       const run = this.run;
       // Tiến độ mốc (ca bí mật không tính)
-      let units = 0, progress = null, newMemory = null, minor = null, ending = false, daily = null, card2 = null, newMemory2 = null;
+      let units = 0, progress = null, newMemory = null, minor = null, ending = false, daily = null, card2 = null, newMemory2 = null, helperChapter = null;
       const goldBefore = [S.goldHearts, S.s2.goldHearts];
       S.ms.shifts++;
       if (run.mode === "daily") {
@@ -1677,7 +1687,8 @@ window.BT = window.BT || { Screens: {} };
         units = MS.units({ passed, stars, income, target: d.target });
         progress = MS.addProgress(units, { replay: run.mode === "replay" });
       }
-      ({ newMemory, minor, ending, card2, newMemory2 } = this.applyCleared(progress));
+      ({ newMemory, minor, ending, card2, newMemory2, helperChapter } = this.applyCleared(progress));
+      if (this.helperOn) { const hr = BT.Helper.onShiftEnd(this); if (helperChapter === null) helperChapter = hr.chapter; }
       // Tim vàng tính riêng từng mùa
       S.goldHearts = MS.goldHearts(1);
       S.s2.goldHearts = MS.goldHearts(2);
@@ -1704,7 +1715,7 @@ window.BT = window.BT || { Screens: {} };
 
       const summary = {
         day: this.dayId, run, title: UI.runTitle(run), passed, lostHearts, stars, secret: this.secret,
-        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason,
+        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter,
         memory: newMemory, newGold, allGold, ending, levelUp,
         income, kept, target: d.target,
         revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,

@@ -49,6 +49,28 @@ window.BT = window.BT || { Screens: {} };
       if (rescued && !gift) card.appendChild(UI.el("div", "gift", UI.t("prepRescue")));
       body.appendChild(card);
 
+      // Anh Hiếu phụ tiệm: chọn việc cho ca này
+      if (BT.Helper.unlocked() && run.mode !== "secret") {
+        const hp = UI.el("div", "helper-pick");
+        hp.appendChild(UI.el("div", "helper-pick-title", UI.t("helperPick")));
+        if (run.cfg.helperOff) hp.appendChild(UI.el("div", "info-note", UI.t("helperBusyNote")));
+        else {
+          const row = UI.el("div", "helper-pick-row");
+          ["waiter", "drinks", "che", "off"].forEach((role) => {
+            const b = UI.button(UI.t("helperRole_" + role), "btn-white small" + (S.helper.role === role ? " active" : ""), () => {
+              S.helper.role = role;
+              BT.Save.persist();
+              row.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x.dataset.role === role));
+              BT.Audio.play("tap");
+            });
+            b.dataset.role = role;
+            row.appendChild(b);
+          });
+          hp.appendChild(row);
+        }
+        body.appendChild(hp);
+      }
+
       const wallet = UI.el("div", "prep-wallet");
       const spent = UI.el("div", "prep-spent");
       const money = UI.el("div", "prep-money");
