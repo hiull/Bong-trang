@@ -141,7 +141,7 @@ window.PERSONAL = {
   ],
 
   // Câu thả thính dễ thương (nói lái / chơi chữ) — anh Hiếu ghé tiệm buông câu, Bống gõ "ý thật".
-  // lines: các dòng của câu · answers: cả câu "ý thật". Bống chỉ cần gõ những chữ bị đổi (gõ không dấu cũng được).
+  // lines: các dòng của câu · answers: cả câu "ý thật". Bống phải gõ cả câu (gõ không dấu, viết hoa cũng được).
   // Thêm câu mới thì chép một dòng { lines: [...], answers: [...] }, và luôn THÊM VÀO CUỐI danh sách.
   flirtLines: [
     { lines: ["dùng câu từ đùa vì anh đã muốn của từ đầu"], answers: ["dùng câu từ đùa vì anh đã muốn cua từ đầu"] },

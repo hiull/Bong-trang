@@ -310,27 +310,6 @@ window.BT = window.BT || { Screens: {} };
       const clue = item.lines.join(" ");
       const echo = has(this.normalize(clue), got);       // bỏ dấu đi thì input nằm trong câu đố
       const inSoft = this.soft(input);
-      // Chỉ cần gõ những chữ bị đổi (đúng thứ tự). Chữ chỉ khác dấu với câu đố thì phải gõ đúng dấu.
-      const clueS = this.soft(clue).split(" ");
-      const clueH = this.normalize(clue).split(" ");
-      const inS = inSoft.split(" ");
-      const inH = got.split(" ");
-      const changedWords = (a) => {
-        const aS = this.soft(a).split(" ");
-        if (aS.length !== clueS.length) return null;
-        const out = [];
-        aS.forEach((w, k) => { if (w !== clueS[k]) out.push({ s: w, h: this.normalize(w), clueH: clueH[k] }); });
-        return out.length ? out : null;
-      };
-      const typedChanged = (want) => {
-        let k = 0;
-        for (let j = 0; j < inS.length && k < want.length; j++) {
-          const w = want[k];
-          if (inS[j] === w.s || (inH[j] === w.h && w.h !== w.clueH)) k++;
-        }
-        return k === want.length;
-      };
-      if (item.answers.some((a) => { const want = changedWords(a); return want && typedChanged(want); })) return true;
       return item.answers.some((a) => {
         const wantH = this.normalize(a);
         const wantS = this.soft(a);

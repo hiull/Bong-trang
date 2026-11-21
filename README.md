@@ -201,9 +201,9 @@ Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (v�
 
 ## 9. Anh Hiếu thả thính 💕 & Sổ thính
 - Từ **Ngày 3**, mỗi ngày anh Hiếu ghé **3 lần** chỉ để thả thính (Ngày bí mật **10 lần**), ngoài lần ghé mua hàng như cũ. Tiệm tạm dừng, khách đứng chờ không mất kiên nhẫn.
-- Anh buông một câu **thả thính chơi chữ dễ thương**, Bống gõ "ý thật" vào ô chữ: **chỉ cần gõ những chữ bị đổi** theo đúng thứ tự (vd. "xa không thể tỉnh" → gõ `xinh tả`), gõ cả câu cũng được. Gõ không dấu, viết hoa đều được; riêng chữ chỉ khác dấu với câu đố (vd. "của" → "cua") thì phải gõ đúng dấu. **Đúng: +20k và +1 tim.** Bấm **"Chịu, anh nói đi"**: anh nói đáp án, vẫn **+10k**.
+- Anh buông một câu **thả thính chơi chữ dễ thương**, Bống gõ **cả câu "ý thật"** vào ô chữ (vd. "xa không thể tỉnh" → gõ `xinh không thể tả`). Gõ không dấu, viết hoa đều được; riêng câu mà bỏ dấu thì trùng câu đố (vd. "của" → "cua") thì phải gõ đúng dấu. **Đúng: +20k và +1 tim.** Bấm **"Chịu, anh nói đi"**: anh nói đáp án, vẫn **+10k**.
 - Câu chưa giải được ưu tiên trước; giải hết rồi mới quay lại từ đầu. **Album → Sổ thính** xem các câu đã giải.
-- **Thêm / sửa câu:** mở `personal.js`, tìm `flirtLines`. Mỗi câu có `lines` (các dòng) và `answers` (cả câu "ý thật"; game tự so với câu đố để biết những chữ bị đổi, nên câu đáp án nên có cùng số chữ với câu đố). Muốn thêm câu mới, chép một dòng `{ lines: ["…"], answers: ["…"] },` và **luôn thêm vào cuối danh sách** (Sổ thính ghi nhớ câu theo thứ tự, chèn vào giữa sẽ làm lệch).
+- **Thêm / sửa câu:** mở `personal.js`, tìm `flirtLines`. Mỗi câu có `lines` (các dòng) và `answers` (cả câu "ý thật" Bống phải gõ). Muốn thêm câu mới, chép một dòng `{ lines: ["…"], answers: ["…"] },` và **luôn thêm vào cuối danh sách** (Sổ thính ghi nhớ câu theo thứ tự, chèn vào giữa sẽ làm lệch).
 - Số lần ghé và mức thưởng chỉnh trong `config.js` (`tomoFlirtPerDay`, `tomoFlirtSecret`, `flirtRewardTip`, `flirtGiveUpTip`).
 
 ## 10. Sao lưu tiến trình
