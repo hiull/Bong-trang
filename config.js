@@ -51,6 +51,9 @@ window.CONFIG = {
     specialRequestTip: 5,     // Làm đúng yêu cầu riêng: +5k (từ Ngày 3)
     // Quỹ cứu trợ: đầu ngày nếu ví không đủ tiền nhập đủ hàng tối thiểu,
     // anh tặng mỗi nguyên liệu đang thiếu đủ rescueQty phần để tiệm không bao giờ bị kẹt
+    flirtRewardTip: 20,       // giải đúng câu thính: +20k
+    flirtRewardHearts: 1,     // … và +1 tim tiệm
+    flirtGiveUpTip: 10,       // bấm "Chịu, anh nói đi": vẫn +10k
     rescueMinStock: 5,
     rescueQty: 5
   },
@@ -131,7 +134,12 @@ window.CONFIG = {
     tomortleForceWhenLeft: 3,     // còn 3 khách cuối mà anh chưa tới thì ép anh tới ở lượt kế tiếp
     tomortleHearts: 10,           // số trái tim bay lên khi anh nhận món
     tomortleHeartsSec: 1.5,
-    secretTomortleVisits: 3,      // Ngày bí mật: anh ghé 3 lần, còn lại là nhóm bạn
+    secretTomortleVisits: 3,
+    // Anh Hiếu ghé chỉ để thả thính (không mua, không chiếm ghế, không tính vào số khách)
+    tomoFlirtFromDay: 3,
+    tomoFlirtPerDay: 3,
+    tomoFlirtSecret: 10,
+    tomoFlirtWindow: [0.15, 0.9],   // rải các lượt ghé trong khoảng 15%–90% tiến độ ca      // Ngày bí mật: anh ghé 3 lần, còn lại là nhóm bạn
     friendFromDay: 4,
     friendWeight: 0.6,            // tỉ lệ bạn bè so với 1 loại khách thường
     regularChapters: 4,
@@ -531,7 +539,8 @@ window.CONFIG = {
     { id: "income", text: "Thu về {x} trong một ca", n: 250, reward: 60, best: true, money: true },
     { id: "req", text: "Làm đúng {n} yêu cầu riêng", n: 5, reward: 50, fromDay: 3 },
     { id: "tomo", text: "Phục vụ anh {me} {n} lần", n: 2, reward: 40, fromDay: 3 },
-    { id: "days", text: "Hoàn thành {n} ca bán hàng", n: 2, reward: 50 }
+    { id: "days", text: "Hoàn thành {n} ca bán hàng", n: 2, reward: 50 },
+    { id: "flirt", text: "Giải {n} câu thính của anh {me}", n: 3, reward: 50, fromDay: 3 }
   ],
 
   // Sự cố nhỏ trong ca (tối đa 1 lần/ngày)
@@ -750,6 +759,20 @@ window.CONFIG = {
     tomoAnswers: ["Anh cũng vậy, nhớ từng chút một luôn ❤️ (+5k tip)", "Tại anh thương em quá nên hỏi hoài đó 😚 (+1 tim tiệm)"],
     tomoThanks: "Ngon nhất quả đất luôn! Cảm ơn bà chủ {her} 💕",
     // Khách quen
+    // Anh Hiếu thả thính
+    flirtGreet: "Bà chủ ơi, anh không mua gì đâu, anh ghé thả thính thôi 😈",
+    flirtTitle: "{nick} thả thính 😈",
+    flirtPlaceholder: "Gõ ý thật của câu này vào đây…",
+    flirtSubmit: "Trả lời",
+    flirtGiveUp: "Chịu, anh nói đi",
+    flirtEmpty: "Gõ gì đó đi bé ơi 😏",
+    flirtWrong: "Chưa đúng ý anh rồi, thử lại nha 😜",
+    flirtRight: "Đúng ý anh luôn! Bé hư quá 😈💕",
+    flirtReveal: "Ý anh là: {a} 😚",
+    flirtBookTitle: "Sổ thính của {nick} 😈",
+    flirtBookCount: "Sổ thính · đã giải {a}/{b}",
+    flirtLocked: "Chưa gặp câu này",
+    flirtByHim: "anh nói",
     regularOrder: "{Call} ơi, cho {self} {dish} như mọi khi nha!",
     regularTitle: "{name} · Chương {c}/{t}",
     regularLoyal: "{name} trở thành Khách ruột ❤️ của tiệm!",
