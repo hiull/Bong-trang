@@ -1,2 +1,2 @@
-Thư mục nhạc nền (music_menu.mp3, music_game.mp3, music_rain.mp3, music_ending.mp3).
-Giai đoạn 5 sẽ thêm.
+Thư mục nhạc nền.
+Game hiện tạo 4 bản nhạc nền bằng code (src/audio.js) nên thư mục này để trống.

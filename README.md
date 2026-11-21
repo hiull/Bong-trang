@@ -3,7 +3,10 @@
 Game nấu ăn – quản lý thời gian bán bánh tráng, làm tặng **Bống (Sarose)** từ **Hiếu (Tomortle)**.
 Chạy trên trình duyệt, không cần cài đặt, không quảng cáo, không gửi dữ liệu đi đâu cả.
 
-> **Trạng thái hiện tại: Giai đoạn 4 / 6 — Cửa hàng, Đánh giá & Sự kiện.**
+> **Trạng thái hiện tại: Giai đoạn 5 / 6 — Hoạt ảnh, Âm thanh & Hướng dẫn.**
+> Nhạc nền & hiệu ứng âm thanh (tạo bằng code), hoạt ảnh làm món, bộ 7 thẻ "Cách chơi", hướng dẫn tương tác Ngày 1, 2, 4, 7, Cài đặt âm thanh/rung.
+>
+> *(Giai đoạn 4 — Cửa hàng, Đánh giá & Sự kiện:)*
 > Cửa hàng nâng cấp, trang trí, thú cưng, 5 giao diện mùa, Sổ đánh giá, sự cố nước đổ, điểm danh 7 ngày, nhiệm vụ hằng ngày, cấp độ tiệm.
 >
 > *(Giai đoạn 3 — Cá nhân hoá & Kỷ niệm:)*
@@ -93,12 +96,20 @@ Bạn chỉ cần máy tính có **Google Chrome** (hoặc Microsoft Edge) và c
 - [ ] **Nhiệm vụ 📋:** mỗi ngày thật có 3 nhiệm vụ (phục vụ khách, đạt combo, nướng giòn…), xong bấm **Nhận** để lấy tiền. Nút có chấm đỏ khi có quà chưa nhận.
 - [ ] **Cấp độ tiệm:** màn hình chính hiện *Cấp N* + danh hiệu (*Gánh hàng nhỏ → Tiệm đầu ngõ → Tiệm quen khu phố → Tiệm nổi tiếng → Bống tráng — Nhất quả đất*) và thanh kinh nghiệm.
 
+### Bước 9 — Kiểm tra Giai đoạn 5 (âm thanh, hoạt ảnh, hướng dẫn)
+- [ ] **Bật loa.** Sau lần chạm đầu tiên có nhạc nền nhẹ ở tiệm; vào ca đổi sang nhạc vui hơn; Ngày 10 (trời mưa) có nhạc mưa + tiếng mưa; màn kết thúc có nhạc riêng.
+- [ ] Tiếng chạm, thêm nguyên liệu, lắc bịch, đập trứng, xèo xèo, rót nước, cuốn, bánh chín, bánh cháy, đồng xu, sao, mở thư, trái tim…
+- [ ] **Lần đầu mở game** (cửa sổ ẩn danh): popup chào mừng → **7 thẻ "Cách chơi"** (bấm Tiếp hoặc vuốt) → Chuẩn bị Ngày 1.
+- [ ] **Hướng dẫn tương tác:** Ngày 1 (Quầy trộn), Ngày 2 (Quầy nước), Ngày 4 (Bếp nướng), Ngày 7 (Quầy cuốn) — màn tối lại, khoét sáng chỗ cần chạm, bàn tay 👆 chỉ dẫn (chạm / nhấn giữ / vuốt / kéo thả). Trong lúc hướng dẫn, khách đứng chờ không mất kiên nhẫn. Có nút **Bỏ qua**. Mỗi hướng dẫn chỉ hiện một lần.
+- [ ] Hoạt ảnh: topping xáo trộn khi lắc, tia nước khi rót xong, lòng đỏ lan khi tán trứng, bánh phồng + khói khi nướng, ✨ khi kim ở vùng xanh, khói xám khi cháy.
+- [ ] **⚙️ Cài đặt:** công tắc Nhạc nền / Âm thanh / Rung (rung chỉ hiện trên máy hỗ trợ), nút **Cách chơi 📖** xem lại 7 thẻ.
+
 ### Muốn chơi lại từ đầu?
 Tiến trình được lưu trong trình duyệt. Để thử lại từ Ngày 1, mở một **cửa sổ ẩn danh** (**Ctrl + Shift + N**, Mac: **Cmd + Shift + N**) rồi kéo file `index.html` vào cửa sổ đó. *(Nút "Xoá dữ liệu" trong Cài đặt sẽ có ở Giai đoạn 6.)*
 
 ### Lưu ý
-- Nhạc nền, hiệu ứng âm thanh thật và bộ 7 thẻ "Cách chơi" sẽ thêm ở Giai đoạn 5.
-- Nút ⚙️ Cài đặt (âm thanh, rung, sao lưu mã TIEM1-, xoá dữ liệu) sẽ có ở Giai đoạn 6.
+- Âm thanh & nhạc đều tạo bằng code nên không cần file trong `assets/sfx` và `assets/music`.
+- Trong Cài đặt, **Sao lưu & Khôi phục (mã TIEM1-)** và **Xoá dữ liệu** sẽ có ở Giai đoạn 6.
 - **Âm thanh:** mới có tiếng "tít" ngắn tạo bằng code. Nhạc nền & hiệu ứng thật ở Giai đoạn 5.
 - Các nút **Nâng cấp, Kỷ niệm, Đánh giá, Điểm danh, Nhiệm vụ, ⚙️** hiện thông báo *"sắp có"*.
 - Mở trên điện thoại thật qua link web sẽ làm ở Giai đoạn 6 (GitHub Pages).
@@ -152,6 +163,6 @@ CREDITS.md          Nguồn tài nguyên & giấy phép
 | 1 | Lõi bán hàng & Chuẩn bị (Ngày 1, Quầy trộn) | ✅ Xong |
 | 2 | Đủ 4 khu & 15 Ngày, lưu game | ✅ Xong |
 | 3 | Cá nhân hoá & Kỷ niệm, khách Hiếu (Tomortle), Ending | ✅ Xong |
-| 4 | Cửa hàng, Đánh giá & Sự kiện | ✅ Xong, chờ xác nhận |
-| 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ⏳ |
+| 4 | Cửa hàng, Đánh giá & Sự kiện | ✅ Xong |
+| 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ✅ Xong, chờ xác nhận |
 | 6 | Hoàn thiện, PWA & đưa lên GitHub Pages | ⏳ |

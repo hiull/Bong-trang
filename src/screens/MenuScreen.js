@@ -20,7 +20,7 @@ window.BT = window.BT || { Screens: {} };
       stats.appendChild(UI.el("div", "pill", "⭐ " + (rating ? UI.rating(rating) : "–")));
       stats.appendChild(UI.el("div", "pill", UI.t("goldHearts", { a: S.goldHearts, b: CONFIG.build.maxPlayableDay })));
       top.appendChild(stats);
-      top.appendChild(UI.iconButton("⚙️", UI.t("btnSettings"), () => UI.toast(UI.t("comingSoonShort")), "settings-btn"));
+      top.appendChild(UI.iconButton("⚙️", UI.t("btnSettings"), () => openSettings(), "settings-btn"));
       el.appendChild(top);
 
       // Mặt tiền
@@ -73,6 +73,39 @@ window.BT = window.BT || { Screens: {} };
         questBtn.classList.toggle("has-dot", Pr.questsClaimable() > 0);
       }
       refreshDots();
+
+      // ---------- Cài đặt ----------
+      function openSettings() {
+        const body = UI.el("div", "settings");
+        const toggle = (key, label) => {
+          const row = UI.el("div", "set-row");
+          row.appendChild(UI.el("span", "set-label", label));
+          const btn = UI.el("button", "switch" + (S.settings[key] ? " on" : ""));
+          btn.type = "button";
+          btn.setAttribute("role", "switch");
+          btn.setAttribute("aria-label", label);
+          btn.appendChild(UI.el("span", "switch-text", S.settings[key] ? UI.t("on") : UI.t("off")));
+          btn.addEventListener("click", () => {
+            S.settings[key] = !S.settings[key];
+            btn.classList.toggle("on", S.settings[key]);
+            btn.firstChild.textContent = S.settings[key] ? UI.t("on") : UI.t("off");
+            BT.Audio.applySettings();
+            BT.Save.persist();
+            BT.Audio.play("tap");
+            if (key === "vibrate" && S.settings.vibrate) BT.Audio.vibrate(CONFIG.gameplay.vibrateGood);
+          });
+          row.appendChild(btn);
+          body.appendChild(row);
+        };
+        toggle("music", UI.t("setMusic"));
+        toggle("sfx", UI.t("setSfx"));
+        if (navigator.vibrate) toggle("vibrate", UI.t("setVibrate"));
+        body.appendChild(UI.button(UI.t("setHowTo"), "btn-purple small", () => { m.close(true); UI.howTo(); }));
+        body.appendChild(UI.button(UI.t("setBackup"), "btn-white small", () => UI.toast(UI.t("comingSoonShort"))));
+        body.appendChild(UI.button(UI.t("setWipe"), "btn-white small danger", () => UI.toast(UI.t("comingSoonShort"))));
+        body.appendChild(UI.el("div", "set-footer", UI.t("footer")));
+        const m = UI.modal({ title: UI.t("settingsTitle"), body, dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+      }
 
       // ---------- Điểm danh 7 ngày ----------
       function openCheckin() {
@@ -170,7 +203,18 @@ window.BT = window.BT || { Screens: {} };
           title: UI.t("welcomeTitle"),
           body: P.welcomeMessage,
           className: "modal-welcome",
-          buttons: [{ label: UI.t("btnWelcome"), cls: "btn-pink", onClick: () => router.go("Prep", { day: 1 }) }]
+          buttons: [{
+            label: UI.t("btnWelcome"),
+            cls: "btn-pink",
+            onClick: () => {
+              // Bộ 7 thẻ "Cách chơi" → tự vào Chuẩn bị Ngày 1
+              UI.howTo(() => {
+                S.tutorialDone.cards = true;
+                BT.Save.persist();
+                router.go("Prep", { day: 1 });
+              });
+            }
+          }]
         });
       }
 

@@ -15,6 +15,8 @@ window.BT = window.BT || { Screens: {} };
       UI.closeAllModals();
       this.root.innerHTML = "";
       const screen = BT.Screens[entry.name];
+      const map = CONFIG.audio.screenMusic;
+      if (Object.prototype.hasOwnProperty.call(map, entry.name)) BT.Audio.music(map[entry.name]);
       this.current = screen.mount(this.root, entry.params || {}, this) || {};
       this.root.scrollTop = 0;
     },

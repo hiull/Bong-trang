@@ -90,7 +90,7 @@ window.BT = window.BT || { Screens: {} };
       function openLetter(after) {
         if (!envelope) return;
         envelope.classList.add("opened");
-        BT.Audio.play("pop");
+        BT.Audio.play("letter");
         UI.openMemory(s.memory, {
           typing: true,
           onClose: () => {

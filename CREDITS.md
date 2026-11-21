@@ -9,7 +9,8 @@ Game là sản phẩm gốc, không dùng tên, nhân vật, hình, nhạc hay m
 | Font **Dancing Script** | Google Fonts (Impallari Type) | SIL Open Font License 1.1 |
 | Biểu tượng emoji (nguyên liệu, khách, mèo Miu…) | Bộ emoji có sẵn của hệ điều hành người chơi, không đóng gói kèm game | Theo hệ điều hành |
 | Mặt tiền tiệm, mái hiên, dây đèn, hoa giấy, ghế nhựa, khay, thanh kiên nhẫn | Tự vẽ bằng CSS trong `style.css` | Thuộc dự án |
-| Âm thanh "tít" ngắn | Tự tạo bằng code (Web Audio API) trong `src/audio.js` | Thuộc dự án |
+| Toàn bộ hiệu ứng âm thanh (chạm, xèo xèo, rót, đập trứng, xu, sao…) | Tự tạo bằng code (Web Audio API) trong `src/audio.js` | Thuộc dự án |
+| 4 bản nhạc nền (tiệm, trong ca, trời mưa, màn kết thúc) | Tự soạn & phát bằng code (Web Audio API) trong `src/audio.js` | Thuộc dự án |
 
-Giai đoạn 1 chưa dùng file hình, nhạc hay âm thanh nào tải từ bên ngoài.
-Khi thêm file (Giai đoạn 5), mỗi file sẽ được ghi tên, tác giả, đường dẫn và giấy phép (ưu tiên CC0) vào bảng trên.
+Game không dùng file hình, nhạc hay âm thanh nào tải từ bên ngoài.
+Nếu sau này thêm file vào `assets/`, ghi tên, tác giả, đường dẫn và giấy phép (ưu tiên CC0) vào bảng trên.

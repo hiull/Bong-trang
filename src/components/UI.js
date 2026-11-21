@@ -367,6 +367,18 @@ window.BT = window.BT || { Screens: {} };
     });
   };
 
+  // Tia nước / lòng đỏ lan tròn tại một điểm
+  UI.splash = function (p, color) {
+    let fx = document.getElementById("fx");
+    if (!fx) { fx = UI.el("div"); fx.id = "fx"; UI.app().appendChild(fx); }
+    const e = UI.el("div", "splash");
+    e.style.left = p.x + "px";
+    e.style.top = p.y + "px";
+    e.style.setProperty("--c", color || "#FFD54F");
+    fx.appendChild(e);
+    setTimeout(() => e.remove(), 600);
+  };
+
   // Trái tim bay khắp màn hình
   UI.heartBurst = function (count, sec) {
     let fx = document.getElementById("fx");
@@ -415,6 +427,93 @@ window.BT = window.BT || { Screens: {} };
       pets.appendChild(b);
     });
     front.appendChild(pets);
+  };
+
+  // ---------- Bộ 7 thẻ "Cách chơi" ----------
+  UI.howTo = function (onDone) {
+    const cards = CONFIG.texts.howto;
+    let i = 0;
+    const wrap = UI.el("div", "howto");
+    const render = () => {
+      wrap.innerHTML = "";
+      const c = cards[i];
+      wrap.appendChild(UI.el("div", "howto-icon", c.icon));
+      wrap.appendChild(UI.el("div", "howto-title", UI.fmt(c.title)));
+      wrap.appendChild(UI.el("div", "howto-text", UI.fmt(c.text)));
+      const dots = UI.el("div", "howto-dots");
+      cards.forEach((x, k) => dots.appendChild(UI.el("span", "howto-dot" + (k === i ? " on" : ""))));
+      wrap.appendChild(dots);
+      const row = UI.el("div", "howto-nav");
+      const prev = UI.button(UI.t("howtoPrev"), "btn-white small", () => { i = Math.max(0, i - 1); render(); });
+      if (i === 0) prev.disabled = true;
+      row.appendChild(prev);
+      row.appendChild(UI.button(i === cards.length - 1 ? UI.t("howtoStart") : UI.t("howtoNext"), "btn-pink small", () => {
+        if (i < cards.length - 1) { i++; render(); } else { m.close(); }
+      }));
+      wrap.appendChild(row);
+    };
+    let sx = null;
+    wrap.addEventListener("pointerdown", (e) => { sx = e.clientX; });
+    wrap.addEventListener("pointerup", (e) => {
+      if (sx === null) return;
+      const dx = e.clientX - sx;
+      sx = null;
+      if (Math.abs(dx) > 60) { i = Math.min(cards.length - 1, Math.max(0, i + (dx < 0 ? 1 : -1))); render(); }
+    });
+    render();
+    const m = UI.modal({ title: UI.t("howtoTitle"), body: wrap, className: "modal-howto", dismissable: true, onClose: onDone });
+    return m;
+  };
+
+  // ---------- Hướng dẫn tương tác: lớp phủ tối khoét sáng vùng cần thao tác + bàn tay 👆 ----------
+  // hand: "tap" | "hold" | "swipe-x" | "swipe-up" | "drag" | null
+  UI.coach = {
+    layer: null,
+    show(opts) {
+      this.hide();
+      const layer = UI.el("div", "coach");
+      const hole = UI.el("div", "coach-hole");
+      const hand = UI.el("div", "coach-hand", "👆");
+      const box = UI.el("div", "coach-box");
+      box.appendChild(UI.el("div", "coach-text", opts.text));
+      const row = UI.el("div", "coach-buttons");
+      if (opts.onNext) row.appendChild(UI.button(UI.t("tutNext"), "btn-pink small", opts.onNext));
+      if (opts.onSkip) row.appendChild(UI.button(UI.t("tutSkip"), "btn-white small", opts.onSkip));
+      box.appendChild(row);
+      layer.appendChild(hole);
+      layer.appendChild(hand);
+      layer.appendChild(box);
+      UI.app().appendChild(layer);
+      this.layer = layer;
+      this.hole = hole;
+      this.hand = hand;
+      this.box = box;
+      this.opts = opts;
+      hand.className = "coach-hand " + (opts.hand ? "h-" + opts.hand : "hidden");
+      this.update();
+    },
+    update() {
+      if (!this.layer) return;
+      const target = this.opts.target && this.opts.target();
+      const a = UI.app().getBoundingClientRect();
+      if (!target || !target.isConnected) { this.hole.style.display = "none"; this.hand.style.display = "none"; this.box.style.top = "40%"; return; }
+      const r = target.getBoundingClientRect();
+      const pad = 6;
+      const x = r.left - a.left - pad;
+      const y = r.top - a.top - pad;
+      const w = r.width + pad * 2;
+      const h = r.height + pad * 2;
+      Object.assign(this.hole.style, { display: "block", left: x + "px", top: y + "px", width: w + "px", height: h + "px" });
+      Object.assign(this.hand.style, { display: "", left: x + w / 2 + "px", top: y + h / 2 + "px" });
+      // Hộp chữ: ở trên vùng sáng nếu vùng sáng nằm nửa dưới, ngược lại ở dưới
+      const below = y + h / 2 < a.height / 2;
+      this.box.style.top = below ? Math.min(a.height - 140, y + h + 14) + "px" : "";
+      this.box.style.bottom = below ? "" : Math.min(a.height - 140, a.height - y + 14) + "px";
+    },
+    hide() {
+      if (this.layer) this.layer.remove();
+      this.layer = null;
+    }
   };
 
   BT.UI = UI;

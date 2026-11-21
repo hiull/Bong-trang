@@ -11,7 +11,7 @@ window.CONFIG = {
   // Phạm vi đã làm xong theo lộ trình (Mục 23). Giai đoạn 2: đủ 4 khu, Ngày 1 → 15.
   // Ngày bí mật mở ở Giai đoạn 3 (cùng khách Hiếu & nhóm bạn).
   build: {
-    stage: 4,
+    stage: 5,
     maxPlayableDay: 15,
     playableZones: ["tron", "nuong", "cuon", "nuoc"],
     secretPlayable: true
@@ -327,6 +327,21 @@ window.CONFIG = {
       lines: ["Như mọi khi nha em, anh đang vội giao đơn!"], openDay: 6, enterSec: 0.6, kind: "normal" },
     meo_hoang: { name: "Mèo hoang", avatar: "🐈", patience: 20, tip: [0, 0], heartBonus: 1, rareRate: 0.05,
       openDay: 7, enterSec: 0.6, kind: "cat" }
+  },
+
+  // Âm thanh: pool kênh cho tiếng chạm liên tục, bản nhạc nền của từng màn hình
+  audio: {
+    poolSize: 4,
+    screenMusic: { Boot: null, Menu: "menu", Map: "menu", Prep: "menu", Shop: "menu", Album: "menu", Review: "menu", Result: "menu", Game: "game", Ending: "ending" },
+    rainWeather: "rain"            // ngày có thời tiết này dùng nhạc trời mưa
+  },
+
+  // Hướng dẫn tương tác (Ngày 1, 2, 4, 7): khu cần dạy và lúc bắt đầu
+  tutorials: {
+    1: { zone: "tron", key: "day1" },
+    2: { zone: "nuoc", key: "day2" },
+    4: { zone: "nuong", key: "day4" },
+    7: { zone: "cuon", key: "day7" }
   },
 
   // Yêu cầu riêng của khách (Mục 7.4)
@@ -799,6 +814,56 @@ window.CONFIG = {
     // Cấp độ
     levelLabel: "Cấp {n}",
     levelUp: "Tiệm lên cấp {n}: {title}! 🎉",
+    // Cài đặt
+    settingsTitle: "Cài đặt ⚙️",
+    setMusic: "Nhạc nền",
+    setSfx: "Âm thanh",
+    setVibrate: "Rung",
+    setHowTo: "Cách chơi 📖",
+    setBackup: "Sao lưu & Khôi phục 💾",
+    setWipe: "Xoá dữ liệu",
+    on: "Bật",
+    off: "Tắt",
+    // Bộ 7 thẻ "Cách chơi"
+    howtoTitle: "Cách chơi",
+    howtoNext: "Tiếp",
+    howtoPrev: "Trước",
+    howtoStart: "Bắt đầu thôi!",
+    howto: [
+      { icon: "🥗", title: "Mỗi ngày một ca bán hàng", text: "{her} mở tiệm {shop} 15 ngày. Mỗi ngày có số khách cố định và một mục tiêu doanh thu — phục vụ hết khách, đạt mục tiêu là qua ngày!" },
+      { icon: "📦", title: "Chuẩn bị đầu ngày", text: "Xem dự báo thời tiết, sự kiện rồi nhập nguyên liệu. Trong ca hết hàng thì bấm \"Nhập nhanh\" (giá gấp đôi)." },
+      { icon: "🥣", title: "Làm món đúng thứ tự", text: "Đế đặt trước (bánh tráng, ly…) → topping theo bong bóng của khách, thứ tự tuỳ ý → bước kết thúc làm sau cùng (lắc, gấp, cuốn, rót…)." },
+      { icon: "👆", title: "4 kiểu thao tác", text: "Chạm để thêm nguyên liệu · Nhấn giữ để rót nước, tán trứng · Vuốt qua lại để lắc bịch, vuốt lên để cuốn · Canh kim vào vùng xanh rồi chạm vỉ để gấp bánh." },
+      { icon: "🥰", title: "Giao món cho khách", text: "Chạm khay rồi chạm khách, hoặc kéo thả khay lên khách. Giao nhanh khi thanh kiên nhẫn còn xanh để được nhiều tiền và 5 sao!" },
+      { icon: "❤️", title: "Tim, combo & chiêu đặc biệt", text: "Khách bỏ đi mất 1 tim, hết 3 tim là thua ngày. Giao đúng liên tiếp được combo. Từ Ngày 6, chạm 💖 để khách đứng yên 8 giây. Dòng chữ cam là yêu cầu riêng, làm đúng được thêm tip." },
+      { icon: "💌", title: "Quà từ {nick}", text: "Qua mỗi ngày mở một thẻ kỷ niệm. Đạt 3 sao nhận Trái tim vàng 💛. Thắng hết 15 ngày sẽ có một bất ngờ đang chờ {her} đó!" }
+    ],
+    // Hướng dẫn tương tác
+    tutSkip: "Bỏ qua",
+    tutNext: "Hiểu rồi",
+    tutDone: "Giỏi quá! Giờ {her} tự làm nha 💕",
+    tut: {
+      bubble: "Khách gọi món ở đây: món, nguyên liệu và thanh kiên nhẫn. Khi hướng dẫn, khách sẽ chờ {her} nha!",
+      tabNuoc: "Khách gọi nước nè! Chạm tab 🧋 Nước (hoặc vuốt ngang khu nguyên liệu) để sang Quầy nước",
+      tabNuong: "Khách gọi bánh nướng! Chạm tab 🔥 Nướng để sang Bếp nướng",
+      tabCuon: "Khách gọi bánh cuốn! Chạm tab 🌯 Cuốn để sang Quầy cuốn",
+      base: "Chạm {name} để bắt đầu",
+      toppings: "Chạm các topping giống trong bong bóng của khách (thứ tự tuỳ ý)",
+      tac: "Đủ topping rồi, vắt Tắc 🍋 nha",
+      shakeBtn: "Bấm \"Lắc!\" để trộn đều",
+      shakeZone: "Vuốt qua lại (hoặc chạm nhanh) cho thanh Độ đều đầy",
+      deliver: "Chạm khay rồi chạm khách để giao (hoặc kéo thả khay lên khách)",
+      pour: "Nhấn giữ Bình trà 🫖 (hoặc Nước mía 🎋) đến khi vòng tròn đầy",
+      ice: "Chạm Đá 🧊, rồi thêm Tắc 🍋 nếu món có",
+      egg: "Chạm Trứng cút 🥚 để đập trứng lên bánh",
+      crack: "Nhấn giữ vỉ nướng đến khi vòng tròn đầy để tán trứng",
+      grillTop: "Thêm topping khi kim còn ở vùng xám",
+      fold: "Đợi kim chạy vào vùng XANH rồi chạm vỉ để gấp bánh",
+      sauce: "Chạm sốt Mayonnaise 🥫 hoặc Tương ớt 🔴 theo món",
+      rollBtn: "Bấm \"Cuốn!\" để cuốn bánh",
+      rollZone: "Vuốt từ dưới lên trên bánh tráng",
+      dip: "Chạm Nước chấm me 🫙"
+    },
     stepNames: { lac: "💫 Lắc", nuong: "🔥 Canh lửa", gap: "🫓 Gấp bánh", cuon: "🌯 Cuốn", "rot:tra": "🫖 Rót trà (giữ 2 giây)", "rot:nuoc_mia": "🎋 Rót nước mía (giữ 2 giây)" },
     zonePrev: "Khu trước",
     zoneNext: "Khu sau",

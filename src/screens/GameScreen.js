@@ -76,6 +76,7 @@ window.BT = window.BT || { Screens: {} };
       this.build(root);
       this.loop();
       this.countdown();
+      BT.Audio.music(this.dayCfg.weather === CONFIG.audio.rainWeather ? "rain" : "game");
     }
 
     // Lên lịch khách đặc biệt: Hiếu (Tomortle), khách quen có cốt truyện, khách ruột
@@ -267,6 +268,7 @@ window.BT = window.BT || { Screens: {} };
         const dt = Math.min(0.1, (t - last) / 1000);
         last = t;
         if (!this.isPaused()) this.update(dt);
+        if (this.tut) UI.coach.update();
         this.scope.raf(step);
       };
       this.scope.raf(step);
@@ -295,7 +297,7 @@ window.BT = window.BT || { Screens: {} };
       this.grills.forEach((g) => {
         if (g.updateCook(this.spillLeft > 0 ? dt * (1 - CONFIG.incidents.spillSlow) : dt) === "burnt") {
           g.render();
-          BT.Audio.play("angry");
+          BT.Audio.play("burn");
           BT.Audio.vibrate(G.vibrateBad);
           UI.toast(UI.t("burntNow"));
           this.updateHint();
@@ -306,7 +308,8 @@ window.BT = window.BT || { Screens: {} };
       });
       if (this.tabEls.nuong) this.tabEls.nuong.classList.toggle("warn", warn && this.zone !== "nuong");
 
-      this.customers.slice().forEach((c) => c.update(dt, this.freezeLeft > 0));
+      this.customers.slice().forEach((c) => c.update(dt, this.freezeLeft > 0 || !!this.tut));
+      this.tickTutorial();
       if (this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0) this.finish(false);
     }
 
@@ -657,11 +660,116 @@ window.BT = window.BT || { Screens: {} };
       c.leave(G.happyLeaveDelaySec);
       if (c.isTomortle) {
         UI.heartBurst(G.tomortleHearts, G.tomortleHeartsSec);
-        BT.Audio.play("star");
+        BT.Audio.play("heart");
         this.scope.timeout(() => this.tomortleStory(), G.tomortleHeartsSec * 700);
       } else if (c.regularId && c.chapter >= 0) {
         this.scope.timeout(() => this.regularStory(c.regularId, c.chapter), 600);
       }
+    }
+
+    // ---------------- Hướng dẫn tương tác (Ngày 1, 2, 4, 7) ----------------
+    tickTutorial() {
+      if (this.tut) { this.stepTutorial(); return; }
+      const T = CONFIG.tutorials[this.dayId];
+      if (!T || this.tutDone || this.S.tutorialDone[T.key]) return;
+      const c = this.customers.find((x) => x.state === "waiting" && !x.isCat && x.pending().some((it) => UI.recipe(it.id).zone === T.zone));
+      if (c) this.startTutorial(T, c);
+    }
+
+    startTutorial(T, c) {
+      const item = c.pending().find((it) => UI.recipe(it.id).zone === T.zone);
+      const r = UI.recipe(item.id);
+      const req = BT.Tray.requirements(item);
+      const tt = CONFIG.texts.tut;
+      const cell = (id) => () => this.grid.cells && this.grid.cells[id];
+      const tray = () => this.tutTray();
+      const toppingsOk = () => {
+        const t = tray();
+        return !!t && Object.keys(req.need).every((id) => (t.items[id] || 0) >= req.need[id]);
+      };
+      const onZone = { id: "tab", text: UI.fmt(tt["tab" + T.zone.charAt(0).toUpperCase() + T.zone.slice(1)] || ""), target: () => this.tabEls[T.zone], hand: "tap", done: () => this.zone === T.zone };
+      const base = { id: "base", text: UI.fmt(tt.base, { name: UI.ing(r.base).emoji + " " + UI.ing(r.base).name }), target: cell(r.base), hand: "tap", done: () => !!tray() };
+      const deliver = { id: "deliver", text: UI.fmt(tt.deliver), target: () => (tray() || {}).el, hand: "drag", done: () => item.done || c.state !== "waiting" };
+      const steps = [];
+      if (T.zone === "tron") {
+        steps.push({ id: "bubble", text: UI.fmt(tt.bubble), target: () => c.bubble, info: true });
+        steps.push(base, { id: "toppings", text: UI.fmt(tt.toppings), target: () => this.grid.el, hand: "tap", done: toppingsOk });
+        if (req.finishIngs.includes("tac")) steps.push({ id: "tac", text: UI.fmt(tt.tac), target: cell("tac"), hand: "tap", done: () => tray() && tray().finish.includes("tac") });
+        steps.push({ id: "shakeBtn", text: UI.fmt(tt.shakeBtn), target: () => tray() && tray().el.querySelector("[data-action]"), hand: "tap", done: () => !!this.shakeLayer || (tray() && tray().tied) });
+        steps.push({ id: "shakeZone", text: UI.fmt(tt.shakeZone), target: () => this.shakeLayer && this.shakeLayer.querySelector(".shake-zone"), hand: "swipe-x", done: () => tray() && tray().tied && !this.shakeLayer });
+      } else if (T.zone === "nuoc") {
+        steps.push(onZone, base);
+        steps.push({ id: "pour", text: UI.fmt(tt.pour), target: cell(req.pour), hand: "hold", done: () => tray() && !!tray().poured });
+        steps.push({ id: "ice", text: UI.fmt(tt.ice), target: cell(req.finishIngs.includes("da") ? "da" : Object.keys(req.need)[0] || "da"), hand: "tap",
+          done: () => tray() && toppingsOk() && req.finishIngs.every((id) => tray().finish.includes(id)) });
+      } else if (T.zone === "nuong") {
+        const sauce = Object.keys(req.sauces)[0] || "mayo";
+        steps.push(onZone, base);
+        steps.push({ id: "egg", text: UI.fmt(tt.egg), target: cell("trung_cut"), hand: "tap", done: () => tray() && !!tray().items.trung_cut });
+        steps.push({ id: "crack", text: UI.fmt(tt.crack), target: () => (tray() || {}).el, hand: "hold", done: () => tray() && tray().cracked });
+        steps.push({ id: "grillTop", text: UI.fmt(tt.grillTop), target: () => this.grid.el, hand: "tap", done: () => toppingsOk() || (tray() && tray().folded) });
+        steps.push({ id: "fold", text: UI.fmt(tt.fold), target: () => (tray() || {}).el, hand: "tap", done: () => tray() && (tray().folded || tray().burnt) });
+        steps.push({ id: "sauce", text: UI.fmt(tt.sauce), target: cell(sauce), hand: "tap", done: () => tray() && Object.keys(req.sauces).every((id) => (tray().sauces[id] || 0) >= req.sauces[id]) });
+      } else if (T.zone === "cuon") {
+        steps.push(onZone, base, { id: "toppings", text: UI.fmt(tt.toppings), target: () => this.grid.el, hand: "tap", done: toppingsOk });
+        steps.push({ id: "rollBtn", text: UI.fmt(tt.rollBtn), target: () => tray() && tray().el.querySelector("[data-action]"), hand: "tap", done: () => !!this.shakeLayer || (tray() && tray().rolled) });
+        steps.push({ id: "rollZone", text: UI.fmt(tt.rollZone), target: () => this.shakeLayer && this.shakeLayer.querySelector(".shake-zone"), hand: "swipe-up", done: () => tray() && tray().rolled && !this.shakeLayer });
+        steps.push({ id: "dip", text: UI.fmt(tt.dip), target: cell("nuoc_cham"), hand: "tap", done: () => tray() && tray().finish.includes("nuoc_cham") });
+      }
+      steps.push(deliver);
+      this.tut = { T, c, item, zone: T.zone, base: r.base, steps, i: -1 };
+      this.showTutStep(0);
+    }
+
+    // Khay/vỉ đang dùng cho hướng dẫn
+    tutTray() {
+      const t = this.tut;
+      if (!t) return null;
+      if (t.tray && !t.tray.isEmpty() && t.tray.base === t.base) return t.tray;
+      const pool = t.zone === "nuong" ? this.grills : this.trays;
+      const sel = this.selected && pool.includes(this.selected) && this.selected.base === t.base ? this.selected : null;
+      t.tray = sel || pool.find((x) => x.base === t.base) || null;
+      return t.tray;
+    }
+
+    showTutStep(i) {
+      const t = this.tut;
+      t.i = i;
+      const st = t.steps[i];
+      UI.coach.show({
+        text: st.text,
+        target: st.target,
+        hand: st.hand,
+        onNext: st.info ? () => this.showTutStep(i + 1) : null,
+        onSkip: () => this.endTutorial(true)
+      });
+    }
+
+    stepTutorial() {
+      const t = this.tut;
+      if (!t || t.ending) return;
+      if (t.c.state !== "waiting" && !t.item.done) { this.endTutorial(true); return; }
+      const st = t.steps[t.i];
+      if (st && !st.info && st.done()) {
+        // nhảy qua các bước đã xong sẵn
+        let j = t.i + 1;
+        while (j < t.steps.length && !t.steps[j].info && t.steps[j].done()) j++;
+        if (j >= t.steps.length) this.endTutorial(false);
+        else this.showTutStep(j);
+      }
+    }
+
+    endTutorial(skipped) {
+      const t = this.tut;
+      if (!t) return;
+      this.S.tutorialDone[t.T.key] = true;
+      this.tutDone = true;
+      BT.Save.persist();
+      if (skipped) { UI.coach.hide(); this.tut = null; return; }
+      t.ending = true;
+      UI.coach.show({ text: UI.t("tutDone"), target: null, hand: null });
+      BT.Audio.play("star");
+      this.scope.timeout(() => { UI.coach.hide(); this.tut = null; }, 1800);
     }
 
     // ---------------- Sự cố: nước đổ ----------------
@@ -849,7 +957,7 @@ window.BT = window.BT || { Screens: {} };
           else {
             const p = UI.center(t.el);
             UI.floatText(p.x, p.y - 20, q === "good" ? UI.t("foldGood") : UI.t("foldOk"), q === "good" ? "money" : "stars");
-            BT.Audio.play(q === "good" ? "star" : "tie");
+            BT.Audio.play(q === "good" ? "ready" : "sizzle");
           }
           this.updateHint();
           return;
@@ -862,7 +970,9 @@ window.BT = window.BT || { Screens: {} };
     crack(t) {
       if (!t.crack()) return;
       t.render();
-      BT.Audio.play("tie");
+      UI.splash(UI.center(t.el), "#FFD54F");
+      BT.Audio.play("crack");
+      BT.Audio.play("sizzle");
       this.updateHint();
     }
 
@@ -949,7 +1059,8 @@ window.BT = window.BT || { Screens: {} };
         UI.fly(UI.center(cell), UI.center(tray.el), UI.ing(ingId).emoji, CONFIG.gameplay.flySec);
         this.scope.timeout(done, CONFIG.gameplay.flySec * 1000);
       } else done();
-      BT.Audio.play(fromHold ? "tie" : "add");
+      if (fromHold) UI.splash(UI.center(tray.el), ingId === "nuoc_mia" ? "#C5E1A5" : "#A1887F");
+      BT.Audio.play(fromHold ? "pour" : "add");
     }
 
     onQuickBuy(ingId) {
@@ -1019,7 +1130,7 @@ window.BT = window.BT || { Screens: {} };
       };
       const complete = () => {
         finished = true;
-        if (roll) { tray.rolled = true; hint.textContent = UI.t("rollDone"); }
+        if (roll) { tray.rolled = true; hint.textContent = UI.t("rollDone"); BT.Audio.play("roll"); }
         else {
           tray.tied = true;
           bag.appendChild(UI.el("div", "big-tie", "🎀"));
@@ -1035,6 +1146,10 @@ window.BT = window.BT || { Screens: {} };
         tray.shakeCount = count;
         BT.Audio.play("shake");
         show();
+        // topping xáo trộn trong bịch
+        bag.querySelectorAll(".bag-item").forEach((it) => {
+          it.style.transform = `translate(${UI.rand(-6, 6)}px, ${UI.rand(-5, 5)}px) rotate(${UI.rand(-25, 25)}deg)`;
+        });
         if (count >= need) complete();
       };
       layer.close = close;
@@ -1342,6 +1457,7 @@ window.BT = window.BT || { Screens: {} };
     destroy() {
       this.scope.clear();
       UI.closeAllModals();
+      UI.coach.hide();
     }
   }
 
