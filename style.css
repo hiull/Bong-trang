@@ -605,7 +605,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   position: absolute;
   left: 1%;
   bottom: 2%;
-  z-index: 6;
+  z-index: 4;
   background: none;
   border: none;
   padding: 0;
@@ -1286,7 +1286,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .mem-ph-title { font-family: var(--font-hand); font-weight: 700; color: var(--pink-dark); font-size: 20px; line-height: 1.15; }
 .mem-photo.thumb .mem-heart { font-size: 30px; }
 .mem-photo.thumb .mem-ph-title { display: none; }
-.mem-photo.big { max-height: 46vh; width: auto; margin: 0 auto; }
+.mem-photo.big { width: min(100%, 38vh); margin: 0 auto; flex: none; }
 .mem-view { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .mem-title { font-family: var(--font-title); font-weight: 800; font-size: max(20px, calc(var(--u) * 36)); color: var(--pink-dark); line-height: 1.2; margin-top: 4px; }
 .mem-date { font-size: var(--fs-s); opacity: 0.8; }
@@ -1376,7 +1376,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   position: absolute;
   left: 6%;
   right: 6%;
-  top: 14%;
+  top: 30%;
   z-index: 5;
   background: rgba(255, 246, 236, 0.95);
   border: var(--border) solid var(--pink);

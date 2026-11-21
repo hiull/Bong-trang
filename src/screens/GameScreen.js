@@ -385,7 +385,7 @@ window.BT = window.BT || { Screens: {} };
       const d = this.dayCfg;
       // Mèo hoang hiếm (không tính vào số khách của ngày)
       const cat = CONFIG.customerTypes.meo_hoang;
-      if (this.groupPending === 0 && this.dayNum >= cat.openDay && this.catsToday < G.catMaxPerDay && Math.random() < cat.rareRate) {
+      if (!this.secret && this.groupPending === 0 && this.dayNum >= cat.openDay && this.catsToday < G.catMaxPerDay && Math.random() < cat.rareRate) {
         this.catsToday++;
         this.spawn(seat, "meo_hoang", { items: [] });
         this.spawnTimer = UI.rand(d.spawn[0], d.spawn[1]);
