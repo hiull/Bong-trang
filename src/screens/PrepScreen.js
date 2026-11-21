@@ -131,6 +131,23 @@ window.BT = window.BT || { Screens: {} };
       }
       refresh();
 
+      // Bác Sáu ghé thu tiền mặt bằng
+      const due = BT.Rent.due(run);
+      if (due) {
+        if (S.wallet <= 0) {
+          const r = BT.Rent.pay(S.rent.deferredOnce ? "pay" : "defer", due);
+          UI.toast(r.paid ? UI.t("landlordAutoPaid", { x: UI.money(r.paid), y: UI.money(r.owed) }) : UI.t("landlordAuto"), 3000);
+          refresh();
+        } else {
+          const lb = UI.el("div", "story");
+          lb.appendChild(UI.el("div", "story-text", UI.fmt(UI.pick(window.PERSONAL.landlordLines || [""]))));
+          lb.appendChild(UI.el("div", "info-line", UI.t("landlordAmount", { x: UI.money(due.total) }) + (due.owed ? " " + UI.t("landlordOwed", { x: UI.money(due.owed) }) : "")));
+          const buttons = [{ label: UI.t("landlordPay", { x: UI.money(Math.min(S.wallet, due.total)) }), cls: "btn-pink", onClick: () => { BT.Rent.pay("pay", due); BT.Audio.play("coin"); refresh(); } }];
+          if (!S.rent.deferredOnce) buttons.push({ label: UI.t("landlordDefer"), cls: "btn-white", onClick: () => { BT.Rent.pay("defer", due); refresh(); } });
+          UI.modal({ title: UI.t("landlordTitle"), body: lb, className: "modal-landlord", buttons });
+        }
+      }
+
       // Rời màn Chuẩn bị mà không mở ca: giữ nguyên tiền & kho hiện tại (lần sau vào lại chụp điểm khôi phục mới)
       return { destroy() { if (!started && S.dayBackup && S.dayBackup.day === day) { S.dayBackup.finished = true; S.today = null; BT.Save.persist(); } } };
     }

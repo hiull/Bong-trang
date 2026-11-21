@@ -478,6 +478,11 @@ window.CONFIG = {
     drinks: ["tra_da", "tra_tac", "nuoc_mia_ly"], eventRate: 0.1, lateShare: 0.2, bubbleEverySec: [14, 22]
   },
 
+  // Bác Sáu chủ nhà (Mùa 2): ghé thu tiền mặt bằng ở ca đầu các mốc lớn chẵn từ ngày fromDay.
+  landlord: { fromDay: 18, rent: { 18: 50, 22: 80, 26: 100, 30: 120 } },
+  // Xe chè đối thủ (Mùa 2): xuất hiện giữa ca (window = khoảng tiến độ ca), khách mất kiên nhẫn nhanh hơn.
+  rival: { fromDay: 22, rate: 0.25, window: [0.35, 0.65], patienceFaster: 0.15, beatStreak: 5, beatReward: 30 },
+
   // Ca vô tận: khách đến mãi, nhanh dần; 3 tim. rewards: số khách → thưởng một lần (k).
   endless: {
     fromMilestone: 7,
@@ -886,6 +891,16 @@ window.CONFIG = {
     runMs: "Mốc {n}",
     runMsSeason: "Mùa {s} · Mốc {n}",
     helperPick: "Hôm nay anh Hiếu phụ…",
+    landlordTitle: "Bác Sáu chủ nhà ghé",
+    landlordAmount: "Tiền mặt bằng: {x}",
+    landlordOwed: "(gồm {x} còn nợ)",
+    landlordPay: "Gửi bác {x}",
+    landlordDefer: "Khất bác tuần sau",
+    landlordAuto: "Ví hết tiền, bác Sáu cho khất tới lần sau nè",
+    landlordAutoPaid: "Gửi bác được {x}, còn nợ {y}",
+    rivalArrive: "Xe chè đối thủ đậu bên kia đường! Phục vụ liền {n} khách để giữ khách nha",
+    rivalWin: "Xe chè đối thủ chịu thua, dọn đi rồi! +{x}",
+    rivalBanner: "Xe chè đối thủ · còn {n} khách nữa",
     helperRole_waiter: "Chạy bàn",
     helperRole_drinks: "Pha nước",
     helperRole_che: "Phụ chè",

@@ -1760,3 +1760,6 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .helper-chapter { margin-top: 12px; padding: 10px 12px; border: var(--border) solid var(--brown); border-radius: 14px; background: var(--pink-light); }
 .helper-choices { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 .helper-card .dd { width: 28px; height: 28px; }
+
+/* Xe chè đối thủ */
+.rival { position: absolute; left: 50%; transform: translateX(-50%); top: calc(64px + env(safe-area-inset-top, 0px)); z-index: 30; background: #FFF3CD; border: 2px solid var(--brown); border-radius: 12px; padding: 3px 10px; font-weight: 800; font-size: 13px; white-space: nowrap; pointer-events: none; }

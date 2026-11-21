@@ -331,6 +331,38 @@ window.BT = window.BT || { Screens: {} };
   };
   BT.Endless = Endless;
 
+  // ---------------- Bác Sáu chủ nhà ----------------
+  const Rent = {
+    // Ca đầu (kịch bản) của mốc lớn chẵn Mùa 2 từ ngày fromDay, chưa thu ở ngày đó
+    due(run) {
+      const L = CONFIG.landlord;
+      const S = BT.Save.state;
+      if (!run || run.mode !== "story" || !run.scripted || (run.season || 1) < 2) return null;
+      const day = run.cfg.day;
+      if (day < L.fromDay || day % 2 !== 0 || S.rent.lastDay >= day) return null;
+      let rent = 0;
+      Object.keys(L.rent).map(Number).sort((a, b) => a - b).forEach((k) => { if (day >= k) rent = L.rent[k]; });
+      return { day, rent, owed: S.rent.owed, total: rent + S.rent.owed };
+    },
+    pay(choice, due) {
+      const S = BT.Save.state;
+      const R = S.rent;
+      let paid = 0;
+      if (choice === "defer" && !R.deferredOnce) {
+        R.owed += due.rent;
+        R.deferredOnce = true;
+      } else {
+        paid = Math.max(0, Math.min(S.wallet, due.total));
+        S.wallet -= paid;
+        R.owed = due.total - paid;
+      }
+      R.lastDay = due.day;
+      BT.Save.persist();
+      return { paid, owed: R.owed };
+    }
+  };
+  BT.Rent = Rent;
+
   // Vào Ca vô tận (không qua Chuẩn bị): ghi điểm khôi phục như ca thường rồi vào màn bán hàng
   BT.startEndless = function (router, opts) {
     const S = BT.Save.state;

@@ -202,6 +202,22 @@ window.PERSONAL = {
   helperLate: "Anh tới trễ xíu, kẹt xe quá trời, em thông cảm nha 🙏",
   helperSpill: "Ui da... anh lỡ làm đổ một chút {ing}, để anh dọn liền!",
 
+  // Bác Sáu chủ nhà & xe chè đối thủ (Mùa 2)
+  landlordLines: [
+    "Bác Sáu đây, ghé lấy tiền mặt bằng nè con. Thấy tiệm đông bác cũng mừng.",
+    "Con bán chè ngon ghê, cháu bác ở quê lên khen hoài. Tiền nhà tháng này nha con.",
+    "Bác đi ngang tiện ghé, con gửi bác tiền mặt bằng nha. Ly chè đậu đỏ hôm bữa bác ăn còn nhớ.",
+    "Tiệm con sơn lại đẹp quá, bác giữ giá cũ cho đó. Gửi bác tiền nhà nha.",
+    "Mưa gió vậy mà tiệm vẫn mở, bác nể con. Tiền mặt bằng tuần này nha con.",
+    "Bác Sáu ghé nè. Thằng nhỏ phụ tiệm của con siêng ghê ha, bác thấy nó lau bàn hoài."
+  ],
+  rivalLines: [
+    "Ê bà chủ, chè bên này rẻ hơn nè, khách qua đây đi!",
+    "Xe chè Cô Tư tới rồi đây, chè ba màu siêu khổng lồ!",
+    "Bên kia làm chậm quá, qua đây ăn liền nè các bạn!",
+    "Hôm nay Cô Tư khuyến mãi, mua một tặng... một nụ cười!"
+  ],
+
   // Lời nhắn mỗi ngày: mở một câu khi chơi Thử thách hôm nay lần đầu trong ngày (lần lượt, hết thì quay lại).
   // Sửa thoải mái; thêm câu mới thì thêm vào cuối.
   dailyNotes: [

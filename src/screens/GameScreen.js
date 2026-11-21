@@ -20,6 +20,10 @@ window.BT = window.BT || { Screens: {} };
       this.secret = run.mode === "secret";
       this.endless = run.mode === "endless";
       this.helperOn = BT.Helper.working(run);   // anh Hiếu phụ tiệm ca này
+      const RV = CONFIG.rival;
+      this.rivalPlan = run.mode === "story" && !run.scripted && (run.season || 1) >= 2 && run.cfg.day >= RV.fromDay && Math.random() < RV.rate;
+      this.rival = null;
+      this.rivalDone = false;
       this.dayCfg = run.cfg;
       this.scope = UI.scope();
       this.pauseReasons = new Set();
@@ -333,7 +337,14 @@ window.BT = window.BT || { Screens: {} };
       });
       if (this.tabEls.nuong) this.tabEls.nuong.classList.toggle("warn", warn && this.zone !== "nuong");
 
-      const cdt = this.helper && this.helper.role === "waiter" ? dt * (1 - CONFIG.helper.patienceSlow) : dt;
+      // Xe chè đối thủ: xuất hiện trong khoảng giữa ca
+      if (this.rivalPlan && !this.rivalDone && this.total !== Infinity) {
+        const pr = this.done / this.total;
+        if (!this.rival && pr >= CONFIG.rival.window[0] && pr < CONFIG.rival.window[1]) this.rivalOn();
+        else if (this.rival && pr >= CONFIG.rival.window[1]) this.rivalOff(false);
+      }
+      let cdt = this.helper && this.helper.role === "waiter" ? dt * (1 - CONFIG.helper.patienceSlow) : dt;
+      if (this.rival) cdt *= 1 + CONFIG.rival.patienceFaster;
       this.customers.slice().forEach((c) => c.update(cdt, this.freezeLeft > 0 || !!this.tut));
       if (this.helper && !this.tut) BT.Helper.tick(this, dt);
       this.tickTutorial();
@@ -472,6 +483,35 @@ window.BT = window.BT || { Screens: {} };
       this.spawnTimer = this.groupPending > 0 ? G.groupSpawnGapSec : this.nextGap();
     }
 
+    // ---------------- Xe chè đối thủ ----------------
+    rivalOn() {
+      if (this.rival || this.over) return;
+      this.rival = { streak: 0 };
+      const el = UI.el("div", "rival");
+      this.rival.el = el;
+      this.el.appendChild(el);
+      this.rivalBanner();
+      UI.toast(UI.fmt(UI.pick(window.PERSONAL.rivalLines || [""])), 2600);
+      this.scope.timeout(() => { if (this.rival) UI.toast(UI.t("rivalArrive", { n: CONFIG.rival.beatStreak }), 2600); }, 2700);
+    }
+
+    rivalBanner() {
+      if (this.rival) UI.setText(this.rival.el, UI.t("rivalBanner", { n: Math.max(0, CONFIG.rival.beatStreak - this.rival.streak) }));
+    }
+
+    rivalOff(won) {
+      if (!this.rival) return;
+      this.rival.el.remove();
+      this.rival = null;
+      this.rivalDone = true;
+      if (won) {
+        const x = CONFIG.rival.beatReward;
+        this.S.wallet += x;
+        UI.toast(UI.t("rivalWin", { x: UI.money(x) }), 2600);
+        BT.Audio.play("win");
+      }
+    }
+
     nextGap() {
       const sp = this.endless ? BT.Endless.spawnRange(this.stats.served, this.run.cfg.spawn) : this.dayCfg.spawn;
       return UI.rand(sp[0], sp[1]);
@@ -593,6 +633,7 @@ window.BT = window.BT || { Screens: {} };
       }
       c.react(UI.t("angry"), "😠");
       this.stats.walkouts++;
+      if (this.rival) { this.rival.streak = 0; this.rivalBanner(); }
       this.addRating(G.ratingWalkout, c);
       this.done++;
       this.combo = 0;
@@ -715,6 +756,11 @@ window.BT = window.BT || { Screens: {} };
     // Khách nhận đủ món: tính tiền, đánh giá
     complete(c) {
       const G = CONFIG.gameplay;
+      if (this.rival) {
+        this.rival.streak++;
+        if (this.rival.streak >= CONFIG.rival.beatStreak) this.rivalOff(true);
+        else this.rivalBanner();
+      }
       const M = CONFIG.money;
       const up = this.S.upgrades;
       const p = c.pct();

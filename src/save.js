@@ -48,6 +48,7 @@ window.BT = window.BT || { Screens: {} };
       daily: { lastDate: null, streak: 0, played: {}, noteNext: 0, notesSeen: [], best: {} }, // thử thách mỗi ngày
       endless: { best: 0, bestIncome: 0, rewards: {} }, // ca vô tận
       helper: { unlocked: false, role: "waiter", shifts: 0, chapters: 0 }, // anh Hiếu phụ tiệm
+      rent: { owed: 0, deferredOnce: false, lastDay: 0 }, // tiền mặt bằng bác Sáu
       talesSeen: [],      // chuyện vặt đã xem (theo thứ tự)
       flirt: { next: 0, solved: {} }, // câu thính: câu kế tiếp, câu đã giải ("self" tự giải / "told" anh nói)
       welcomeSeen: false
