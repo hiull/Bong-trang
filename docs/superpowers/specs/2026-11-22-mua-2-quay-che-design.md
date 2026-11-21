@@ -1,24 +1,24 @@
 # Mùa 2 · Quầy Chè & Sữa chua — Thiết kế
 
-Ngày: 2026-11-22 · Trạng thái: chờ duyệt
+Ngày: 2026-11-22 · Trạng thái: đã duyệt (2026-11-22)
 
 ## 1. Ý định
 
-Mùa 1 (30 mốc) đã xong khung. Mùa 2 làm cho Bống có lý do chơi tiếp sau đoạn kết. Theo ý người tặng, đây là **mở rộng kinh doanh**: tiệm thêm quầy chè & sữa chua, món cũ vẫn bán. Tiệm cũng có thêm **nhân viên** và vài nhân vật không phải khách mua, cho có hồn và để 5 quầy không quá tải.
+Mùa 1 (30 mốc) đã xong khung. Mùa 2 làm cho Bống có lý do chơi tiếp sau đoạn kết. Theo ý người tặng, đây là **mở rộng kinh doanh**: tiệm thêm quầy chè & sữa chua, món cũ vẫn bán. **Anh Hiếu vào phụ tiệm** để 5 quầy không quá tải. Tiệm cũng có thêm vài nhân vật không phải khách mua.
 
 Đã chốt với người tặng:
 - **Cách xây:** quầy chè là khu thứ 5, mùa mới nối tiếp mùa cũ (cách 1).
 - **Không có ảnh kỷ niệm Mùa 2.** Mốc lớn mở **chương truyện khách quen + thẻ công thức**. Album Mùa 2 có sẵn chỗ cho kỷ niệm, khi nào người tặng thêm ảnh vào `personal.js` thì tự hiện, không bao giờ để ô trống.
 - **Đoạn kết Mùa 2:** Claude viết nháp một lá thư, người tặng sửa.
-- **Nhân viên giúp mức "vừa vừa":** làm phần phụ, Bống vẫn làm món chính.
-- **Bác chủ nhà và xe chè đối thủ:** làm dưới dạng sự kiện nhỏ (Claude hiểu như vậy; người tặng có thể bảo bỏ ra).
+- **Người phụ là anh Hiếu** (chính người tặng), giúp mức "vừa vừa": mỗi ca phụ một việc, Bống vẫn làm món chính. Không thuê nhân viên khác.
+- **Giữ sự kiện** Bác chủ nhà và Xe chè đối thủ.
 
 ## 2. Mục tiêu / Không làm / Điều cấm
 
 **Mục tiêu**
 - 30 mốc Mùa 2 (cấp 16–30). Thời lượng tương đương Mùa 1, khoảng 3–4 tuần.
 - Cách chơi mới thật sự: **xếp lớp đúng thứ tự**.
-- Thêm 3 nhân viên có tính cách, mỗi người 3 chương truyện.
+- Anh Hiếu phụ tiệm, với 3 cấp độ ăn ý và 3 chương "Sau giờ đóng cửa".
 - Khung mùa chạy được Mùa 3+ chỉ bằng thêm dữ liệu.
 
 **Không làm**
@@ -28,9 +28,9 @@ Mùa 1 (30 mốc) đã xong khung. Mùa 2 làm cho Bống có lý do chơi tiế
 
 **Điều cấm** (ngoài Mục 0 và Mục 24 của đặc tả gốc)
 - Không làm hỏng hay đổi cân bằng Mùa 1.
-- Nhân viên không được tự chơi thay Bống.
+- Anh Hiếu không được tự chơi thay Bống.
 - Không có ô trống "chờ ảnh".
-- Không phạt khi không thuê người.
+- Không phạt khi cho anh Hiếu nghỉ.
 
 ## 3. Các cách đã cân nhắc
 
@@ -132,30 +132,25 @@ Mốc 29 không có món mới, chỉ có biến cố (lễ hội).
 - **Ngày 16 tặng hàng:** tặng 15 phần mỗi nguyên liệu chè (như quà khai trương Mùa 1).
 - **Chặn quá tải:** các mốc lớn 16–18 giảm trọng số món chè mới (`newDishWeight`) để khách không dồn hết vào quầy chè.
 
-### 4.4 Nhân viên (mở ở Mùa 2 · Mốc 3)
+### 4.4 Anh Hiếu phụ tiệm (mở ở Mùa 2 · Mốc 3)
 
-**Thuê:**
-- Thuê trong màn Nâng cấp, mục **"Nhân viên"**.
-- Thuê một lần (`hireCost`), rồi mỗi ca trả **lương** (`wage`) trừ vào tiền thu. Dòng lương hiện trong bảng tổng kết.
-- Ở màn Chuẩn bị, mỗi nhân viên có công tắc **"Đi làm ca này"**. Tắt thì không trả lương ca đó.
-- Có **cấp 2** (huấn luyện, tốn tiền một lần): làm nhanh hơn.
+- **Mở:** qua Mùa 2 · Mốc 2 thì hiện một đoạn truyện ngắn: anh Hiếu xin vào phụ tiệm. Không thuê, không lương (anh đùa "lương anh là được ở gần bà chủ").
+- **Chọn việc mỗi ca:** ở màn Chuẩn bị có hàng nút "Hôm nay anh phụ…", chọn một trong bốn. Lựa chọn được nhớ cho ca sau.
 
-**Ba vị trí:**
+| Lựa chọn | Anh làm gì | Cấp 1 / 2 / 3 |
+|---|---|---|
+| **Chạy bàn** | Khay đã **làm đúng** món của một khách đang chờ, sau một lúc mà Bống chưa giao thì anh tự mang tới. Khách đang chờ có kiên nhẫn giảm chậm hơn 10%. | 1,5 / 1,1 / 0,8 giây |
+| **Pha nước** | Tự pha **Trà đá, Trà tắc, Nước mía** khi có khách gọi, một ly một lúc, dùng hàng trong kho. Không pha trà sữa. | 6 / 5 / 4 giây mỗi ly |
+| **Phụ quầy chè** | Cốc chè đã đủ lớp thì anh tự thêm lớp phủ (đá, dừa nạo) đúng công thức. Không xếp lớp hộ. | 1,2 / 0,9 / 0,6 giây |
+| **Hôm nay anh nghỉ** | Anh ghé làm khách như Mùa 1 | — |
 
-| Vị trí | Nhân vật | Việc (vừa phải) | Thuê / lương / cấp 2 |
-|---|---|---|---|
-| Chạy bàn | **Bé Na**: xin làm thêm buổi tối kiếm tiền học | Khay đã **làm đúng** món của một khách đang chờ, sau 1,5 giây (cấp 2: 0,8 giây) mà Bống chưa giao thì Na tự mang tới. Khách đang chờ có kiên nhẫn giảm chậm hơn 10%. | 200 / 15 / 300 |
-| Phụ quầy nước | **Anh Tín shipper**: nghỉ chạy đơn ghé phụ | Tự pha **Trà đá, Trà tắc, Nước mía** khi có khách gọi, mỗi ly 6 giây (cấp 2: 4 giây), một ly một lúc, dùng hàng trong kho. Không pha trà sữa. | 250 / 20 / 350 |
-| Phụ quầy chè | **Út Mai**: cháu gái chú Tư, nghỉ hè | Cốc chè đã đủ lớp thì Mai tự thêm lớp phủ (đá, dừa nạo) đúng công thức sau 1 giây. Không xếp lớp hộ. | 200 / 15 / 300 |
-
-**Cho có hồn:**
-- Nhân viên đang đi làm hiện hình nhỏ ở góc quầy. Thỉnh thoảng có bong bóng thoại, 15 câu mỗi người, Claude viết nháp.
-- Mỗi người có **3 chương truyện** (hộp chọn như khách quen), mở sau 3 / 8 / 15 ca đi làm.
-- **Sự kiện nhỏ**, tối đa 1 lần mỗi ca, tỉ lệ thấp:
-  - "Đi trễ": nhân viên vắng 20% đầu ca.
-  - "Làm rớt ly": mất một phần nguyên liệu.
-  - "Xin tăng lương": chọn đồng ý (+2k lương, thêm tim) hoặc hẹn lần sau.
-- Album có mục **"Nhân viên"**: thẻ từng người, chương đã mở.
+- **Hình trong tiệm:** ca anh đi làm thì hình anh Hiếu (doodle `tomortle`) đứng ở góc quầy đang phụ. Thỉnh thoảng có bong bóng thoại: 20 câu vui, thả thính nhẹ, chọc Bống; Claude viết nháp.
+- **Thả thính:** ca anh đi làm thì anh không ghé mua, nhưng lượt thả thính vẫn diễn ra như cũ (anh đứng ở quầy), cùng số lượt và cùng ô nhập đáp án.
+- **Độ ăn ý (3 cấp):** cấp 2 sau 8 ca làm chung, cấp 3 sau 20 ca. Lên cấp thì mở một chương **"Sau giờ đóng cửa"** (hộp truyện như khách quen, có lựa chọn và thưởng tim hoặc tiền). Chương 1 mở ngay khi anh vào phụ. Claude viết nháp 3 chương.
+- **Sự kiện nhỏ**, tối đa 1 lần mỗi ca, tỉ lệ 10%:
+  - "Anh đi trễ" (vắng 20% đầu ca, kèm câu xin lỗi dễ thương);
+  - "Anh làm đổ ly" (mất 1 phần nguyên liệu, kèm câu thoại).
+- **Album:** mục **"Anh phụ tiệm"** gồm cấp ăn ý, số ca làm chung, các chương đã mở.
 
 ### 4.5 Bác chủ nhà và Xe chè đối thủ (sự kiện nhỏ)
 
@@ -191,8 +186,8 @@ Mốc 29 không có món mới, chỉ có biến cố (lễ hội).
 - **Mốc nhỏ Mùa 2:** như Mùa 1 (tiền + chuyện vặt). `PERSONAL.minorTales` thêm 15 câu, có cả nhân viên.
 - **Thử thách hôm nay:** thêm 2 luật vui.
   - "Ngày chè" (món chủ đạo luôn là món chè).
-  - "Nhân viên nghỉ phép" (không có nhân viên, thưởng +50%).
-- **Ca vô tận:** nhân viên đã thuê và đang bật vẫn đi làm, trả lương một lần mỗi ca.
+  - "Anh Hiếu bận" (anh không phụ ca này, thưởng +50%).
+- **Ca vô tận:** anh Hiếu phụ theo lựa chọn đã nhớ.
 
 ## 5. Nội dung Claude viết nháp (người tặng sửa)
 
@@ -202,8 +197,8 @@ Mốc 29 không có món mới, chỉ có biến cố (lễ hội).
 - 15 thẻ công thức.
 - Truyện:
   - 6 chương khách quen cũ, 3 chương cô Hạnh;
-  - 9 chương nhân viên;
-  - 45 câu thoại nhân viên;
+  - 3 chương "Sau giờ đóng cửa";
+  - 20 câu thoại anh Hiếu khi phụ tiệm;
   - 6 câu bác Sáu, 4 câu xe chè;
   - 15 chuyện vặt.
 
@@ -213,9 +208,9 @@ Giọng văn: dễ thương, đời thường, không sến.
 
 - Hình doodle:
   - 11 nguyên liệu mới, 14 món chè, cốc chè có dải màu;
-  - 3 nhân viên, bác Sáu, xe chè, cô Hạnh.
+  - bác Sáu, xe chè, cô Hạnh (anh Hiếu dùng hình có sẵn).
   - Vẽ bằng `tools/doodle/gen.py`, cùng nét với bộ hiện có.
-- Bố cục hình nhân viên trong màn bán hàng, để không che khách và khay.
+- Bố cục hình anh Hiếu trong màn bán hàng, để không che khách và khay.
 - Âm thanh: tiếng "lách cách" khi xếp lớp (âm tổng hợp như các âm hiện có).
 
 ## 7. Kiểm thử (tối thiểu)
@@ -231,12 +226,13 @@ Giọng văn: dễ thương, đời thường, không sến.
   - Thiếu hoặc thừa lớp phủ thì sai.
   - `remove` / `double` đúng.
   - Không thêm lớp phủ trước khi có lớp.
-- **Nhân viên:**
+- **Anh Hiếu phụ tiệm:**
   - Chạy bàn chỉ giao khay đúng món.
-  - Phụ nước chỉ pha 3 món đơn giản, trừ kho.
+  - Pha nước chỉ pha 3 món đơn giản, có trừ kho.
   - Phụ chè không xếp lớp hộ.
-  - Lương trừ mỗi ca, tắt thì không trừ.
-  - Ví không đủ lương thì nhân viên nghỉ, kèm thông báo nhẹ, không âm ví.
+  - Chọn "nghỉ" thì anh ghé làm khách.
+  - Lựa chọn được nhớ.
+  - Cấp ăn ý lên đúng mốc ca.
 - **Bác Sáu:** khất tối đa 1 lần; ví không đủ thì tự khất; không âm ví.
 - **Xe chè:** phục vụ 5 khách liền thì xe đi và có thưởng.
 - **Bố cục:** thanh 5 quầy ở 360×640 và iPad dọc/ngang không tràn.
