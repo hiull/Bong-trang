@@ -42,6 +42,7 @@ window.BT = window.BT || { Screens: {} };
       bonusCustomers: 0,  // khách thêm cho lần chơi tới (từ lựa chọn cốt truyện)
       bonusNext: 0,
       bonusSeen: false,   // đã xem lời nhắn bí mật (đủ 15 tim vàng)
+      flirt: { next: 0, solved: {} }, // câu thính: câu kế tiếp, câu đã giải ("self" tự giải / "told" anh nói)
       welcomeSeen: false
     };
   }
@@ -283,4 +284,48 @@ window.BT = window.BT || { Screens: {} };
   };
 
   BT.Progress = Progress;
+
+  // ---------------- Câu thính của anh Hiếu ----------------
+  const Flirt = {
+    list() { return (window.PERSONAL && window.PERSONAL.flirtLines) || []; },
+
+    // chữ thường, bỏ dấu tiếng Việt, bỏ ký tự lạ, gộp khoảng trắng
+    normalize(s) {
+      return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d")
+        .replace(/[^a-z0-9]+/g, " ").trim();
+    },
+
+    // đúng nếu khớp hẳn một đáp án, hoặc chứa trọn một đáp án dài từ 4 ký tự
+    check(index, input) {
+      const item = this.list()[index];
+      const got = this.normalize(input);
+      if (!item || !got) return false;
+      return item.answers.some((a) => {
+        const want = this.normalize(a);
+        return want && (got === want || (want.length >= 4 && (" " + got + " ").indexOf(" " + want + " ") >= 0));
+      });
+    },
+
+    // câu kế tiếp theo thứ tự, hết danh sách thì quay lại từ đầu
+    take() {
+      const f = Save.state.flirt;
+      const n = this.list().length;
+      if (!n) return -1;
+      const i = ((f.next % n) + n) % n;
+      f.next = (i + 1) % n;
+      return i;
+    },
+
+    mark(index, how) {
+      const solved = Save.state.flirt.solved;
+      if (solved[index] !== "self") solved[index] = how;
+      Save.persist();
+    },
+
+    count() {
+      return { solved: Object.keys(Save.state.flirt.solved).length, total: this.list().length };
+    }
+  };
+
+  BT.Flirt = Flirt;
 })();
