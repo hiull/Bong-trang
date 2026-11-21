@@ -624,10 +624,10 @@ window.CONFIG = {
     rotate: "Xoay dọc điện thoại để chơi nhé 📱",
 
     // Bản đồ & Chuẩn bị
-    mapTitle: "Bản đồ 15 ngày",
+    mapTitle: "Đường mốc",
     dayLockedPrev: "Qua Ngày {p} để mở nha",
     dayLockedBuild: "Ngày {n} sẽ mở ở bản cập nhật tới 💕",
-    secretLocked: "Qua Ngày 15 để mở Ngày bí mật ★",
+    secretLocked: "Đi hết Mùa 1 để mở Ca bí mật ★",
     forecast: "{icon} {weather} · Dự kiến {c} khách",
     newDishes: "Món mới: {list}",
     noNewDishes: "Không có món mới",
@@ -786,6 +786,13 @@ window.CONFIG = {
     msCleared: "Qua {t}! 🎉",
     msMinorCoins: "Thưởng qua mốc: +{x}",
     msTaleTitle: "Chuyện vặt 💬",
+    msMajorLabel: "Mốc lớn · cấp {k}",
+    msMinorLabel: "Mốc nhỏ · cấp {k}",
+    msCustomers: "Khoảng {c} khách",
+    msLocked: "Đi tới Mốc {n} để mở nha",
+    msSeasonDone: "Đã đi hết mùa 🎉",
+    btnOpenShift: "Mở ca bán",
+    btnReplay: "Chơi lại",
     // Khách Hiếu (Tomortle)
     tomoTag: "{nick} 💕",
     tomoAsk: "{Her} còn nhớ \"{title}\" không?",

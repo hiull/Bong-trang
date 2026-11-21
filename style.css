@@ -1671,3 +1671,19 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .ms-tale { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: var(--cream); }
 .ms-tale-who { font-weight: 800; color: var(--pink-dark); font-size: var(--fs-s); }
 .ms-tale-text { margin-top: 2px; }
+
+/* ---------------- Đường mốc ---------------- */
+.ms-card { flex: none; margin: 4px 12px 6px; padding: 10px 12px; border: var(--border) solid var(--brown); border-radius: 16px; background: var(--white); box-shadow: 0 4px 0 var(--brown); display: flex; flex-direction: column; gap: 6px; }
+.ms-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ms-card-name { font-family: var(--font-title); color: var(--pink-dark); font-size: calc(var(--fs) * 1.15); }
+.ms-card-count { font-size: var(--fs-s); font-weight: 800; }
+.ms-card .ms-bar { margin-top: 0; }
+.ms-card-new { color: var(--orange); font-weight: 800; font-size: var(--fs-s); }
+.map-node.minor { width: 46px; height: 46px; background: var(--pink-light); color: var(--pink-dark); box-shadow: 0 3px 0 var(--brown); }
+.map-node.minor.cleared { background: var(--green); color: var(--white); }
+.map-node.minor.locked { background: #E9DCD3; }
+.node-dot { font-weight: 800; font-size: 18px; line-height: 1; }
+.map-node.current { outline: 4px solid transparent; box-shadow: 0 5px 0 var(--brown), 0 0 0 5px var(--white), 0 0 0 9px var(--pink); }
+.map-node.current::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: -14px; height: 6px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--pink) var(--pct, 0%), #EFE3DA var(--pct, 0%)); border: 1.5px solid var(--brown); }
+.map-node.minor.current::after { bottom: -12px; left: -10%; right: -10%; }
