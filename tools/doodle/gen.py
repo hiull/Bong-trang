@@ -1148,6 +1148,123 @@ def _(ic):
     ic.poly([(8, 40), (12, 22), (24, 12), (40, 12), (52, 22), (56, 40)], "#43A047"); ic.rrect(6, 38, 52, 7, 3, "#2E7D32")
     ic.line([(28, 16), (28, 36)], C["white"], 3).line([(22, 26), (34, 26)], C["white"], 3)
 
+
+# ---------------- Mùa 2: quầy chè ----------------
+def che_cup(ic, layers, top=None):
+    # cốc nhựa trong, các lớp màu từ dưới lên
+    ic.poly([(16, 14), (48, 14), (44, 58), (20, 58)], C["lblue"])
+    h = 40.0 / max(1, len(layers))
+    for k, col in enumerate(layers):
+        y1 = 57 - k * h
+        y0 = y1 - h
+        t0 = (y0 - 14) / 44.0
+        t1 = (y1 - 14) / 44.0
+        ic.poly([(16 + 4 * t0 + 1.5, y0), (48 - 4 * t0 - 1.5, y0), (48 - 4 * t1 - 1.5, y1), (16 + 4 * t1 + 1.5, y1)], col, stroke=False, offset=False)
+    ic.rrect(13, 10, 38, 7, 3, C["white"])
+    if top:
+        top(ic)
+    ic.line([(22, 22), (24, 50)], C["white"], 2.2)
+
+@icon("che", "🍧")
+def _(ic):
+    def top(ic):
+        ic.blob(32, 9, 9, "#EAF7FF", lobes=7, depth=0.15)
+    che_cup(ic, ["#E8D27A", "#A2453B", "#7FD1C7", "#FFFDF5"], top)
+
+@icon("sua_chua_ly", "🍦")
+def _(ic):
+    def top(ic):
+        ic.blob(32, 9, 10, C["white"], lobes=8, depth=0.12)
+        ic.dot(29, 7, 1.6, C["hot"]).dot(36, 9, 1.6, C["hot"])
+    che_cup(ic, ["#F6C445", "#FFF8EE", "#FFF8EE"], top)
+
+@icon("combo_he", "🌴")
+def _(ic):
+    ic.line([(30, 58), (32, 26)], C["brown"], 5)
+    for (dx, dy, r) in [(-14, -2, -25), (14, -2, 25), (-10, -10, -60), (10, -10, 60)]:
+        ic.ellipse(32 + dx, 24 + dy, 13, 5, C["green"], rot=r)
+    ic.circle(29, 30, 3, C["tan2"]).circle(35, 30, 3, C["tan2"])
+    ic.circle(50, 14, 6, C["yel"])
+
+@icon("coc_che", "🥃")
+def _(ic):
+    ic.poly([(16, 14), (48, 14), (44, 58), (20, 58)], C["lblue"])
+    ic.rrect(13, 10, 38, 7, 3, C["white"])
+    ic.line([(22, 22), (24, 50)], C["white"], 2.4)
+
+def bowl_of(ic, fill, dots=None, dotc=None):
+    ic.ellipse(32, 46, 24, 10, C["cream"])
+    ic.blob(32, 38, 17, fill, lobes=8, depth=0.12)
+    if dots:
+        for (x, y) in dots:
+            ic.dot(x, y, 2.2, dotc)
+
+@icon("dau_xanh", "🟢")
+def _(ic):
+    bowl_of(ic, "#E8D27A", [(24, 34), (30, 30), (38, 33), (34, 40), (26, 41), (42, 39)], "#C9A93E")
+
+@icon("dau_do", "🫘")
+def _(ic):
+    for (x, y, r) in [(22, 34, -20), (34, 30, 15), (44, 40, -10), (30, 44, 30), (18, 46, 5)]:
+        ic.ellipse(x, y, 8, 5.5, "#A2453B", rot=r)
+        ic.shine(x - 3, y - 2, 3)
+
+@icon("sua_chua", "🥛")
+def _(ic):
+    ic.rrect(18, 18, 28, 38, 8, C["white"])
+    ic.rrect(16, 12, 32, 8, 3, C["lpink"])
+    ic.rrect(22, 30, 20, 10, 3, C["lpink"], stroke=False, offset=False)
+    ic.dot(32, 35, 2, C["hot"])
+
+@icon("nuoc_cot_dua", "🥥")
+def _(ic):
+    ic.circle(32, 36, 20, "#8D6E63")
+    ic.circle(32, 36, 14, "#FFFDF5", stroke=False, offset=False)
+    ic.dot(26, 22, 1.8, C["black"]).dot(32, 20, 1.8, C["black"]).dot(38, 22, 1.8, C["black"])
+    ic.shine(26, 32, 4)
+
+@icon("suong_sao", "🌑")
+def _(ic):
+    for (x, y) in [(20, 30), (36, 26), (28, 42), (44, 40)]:
+        ic.rrect(x - 7, y - 7, 14, 14, 3, "#3B3030", rot=12)
+        ic.shine(x - 3, y - 4, 3)
+
+@icon("mit", "🍈")
+def _(ic):
+    for (x, y, r) in [(24, 36, -20), (40, 32, 20)]:
+        ic.ellipse(x, y, 11, 15, "#F6C445", rot=r)
+        ic.ellipse(x, y + 1, 5, 9, "#FFE38A", rot=r, stroke=False, offset=False)
+
+@icon("thach", "💠")
+def _(ic):
+    cols = ["#7FD1C7", "#FF9DB8", "#C3A6FF", "#FFD95A"]
+    k = 0
+    for (x, y) in [(18, 28), (34, 24), (26, 42), (42, 40)]:
+        ic.rrect(x - 7, y - 7, 14, 14, 3, cols[k % 4], rot=-8)
+        ic.shine(x - 3, y - 4, 3)
+        k += 1
+
+@icon("nep_cam", "🟣")
+def _(ic):
+    bowl_of(ic, "#6B2E5C", [(24, 34), (30, 30), (38, 33), (34, 40), (26, 41), (42, 39)], "#9C5A8A")
+
+@icon("dua_nao", "☁️", "☁")
+def _(ic):
+    ic.ellipse(32, 46, 22, 8, C["tan"])
+    for k in range(9):
+        x = 16 + (k * 7) % 32
+        y = 30 + (k * 5) % 14
+        ic.rrect(x, y, 9, 3, 1.5, C["white"], rot=(k * 37) % 90 - 45)
+
+@icon("co_hanh", "👩‍🏫")
+def _(ic):
+    hair_long_back(ic, C["hair"])
+    body(ic, "#81C784", collar=C["white"])
+    face(ic)
+    hair_cap(ic, C["hair"])
+    ic.circle(26, 28, 4.5, "none", sw=1.6).circle(38, 28, 4.5, "none", sw=1.6).line([(30.5, 28), (33.5, 28)], OUT, 1.4)
+
+
 if __name__ == "__main__":
     import sys
     out = sys.argv[1]

@@ -29,7 +29,7 @@ window.BT = window.BT || { Screens: {} };
       memoriesUnlocked: [],
       goldHearts: 0,
       reviews: [],
-      regularCustomers: { chu_tu: 0, chi_lan: 0, be_na: 0, tomortle: 0 },
+      regularCustomers: { chu_tu: 0, chi_lan: 0, be_na: 0, tomortle: 0, co_hanh: 0 },
       checkin: { streak: 0, lastDate: "" },
       dailyQuests: { date: "", list: [] },
       settings: { music: true, sfx: true, vibrate: true, fullscreen: true },

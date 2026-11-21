@@ -177,6 +177,16 @@ window.CONFIG = {
           choices: [
             { label: "Chị nhớ ghé nha, em để dành khô bò cho chị!", effect: { tip: 10 } },
             { label: "Tiệm lúc nào cũng có chỗ cho chị hết!", effect: { wallet: 20 } }
+          ] },
+        { fromLevel: 16, text: "Thấy tiệm có quầy chè là chị mừng ghê! Văn phòng chị chiều nào cũng thèm đồ ngọt mà ngại đi xa.",
+          choices: [
+            { label: "Chị đặt luôn cho cả phòng, em làm liền!", effect: { customer: 1 } },
+            { label: "Chị thử chè thập cẩm nha, em xếp kỹ lắm", effect: { tip: 5 } }
+          ] },
+        { fromLevel: 16, text: "Chị được thăng chức rồi em ơi! Bữa nay chị bao cả phòng ăn chè.",
+          choices: [
+            { label: "Chúc mừng chị! Em tặng chị thêm trân châu", effect: { tip: 8 } },
+            { label: "Chị nhớ đừng tăng ca nhiều nữa nha", effect: { customer: 1 } }
           ] }
       ] },
     chu_tu: {
@@ -202,6 +212,16 @@ window.CONFIG = {
           choices: [
             { label: "Con cảm ơn chú nhiều lắm!", effect: { customer: 1 } },
             { label: "Chú với bé Út là khách ruột của tiệm luôn rồi đó!", effect: { tip: 10 } }
+          ] },
+        { fromLevel: 16, text: "Trời nóng chạy xe mệt quá con ơi. Có ly chè đá là chú sống lại liền.",
+          choices: [
+            { label: "Con làm chè sương sáo mát nhất cho chú!", effect: { tip: 5 } },
+            { label: "Chú ngồi nghỉ xíu, con rót trà đá cho", effect: { customer: 1 } }
+          ] },
+        { fromLevel: 16, text: "Út Mai cháu chú nghỉ hè lên chơi, nó đòi ăn sữa chua mít của tiệm con hoài.",
+          choices: [
+            { label: "Con làm hai ly, một ly tặng bé Út!", effect: { tip: 6 } },
+            { label: "Chú dắt bé ghé tiệm chơi nha", effect: { customer: 1 } }
           ] }
       ] },
     be_na: {
@@ -227,6 +247,36 @@ window.CONFIG = {
           choices: [
             { label: "Chúc mừng Na! Chị đợi em về kể chuyện nha", effect: { customer: 1 } },
             { label: "Đi thi nhớ mang theo bánh tráng chị làm nè!", effect: { tip: 5 } }
+          ] },
+        { fromLevel: 16, text: "Chị ơi em thi xong rồi! Em được giải nhì văn toàn thành phố đó!",
+          choices: [
+            { label: "Giỏi quá trời! Chị mời Na ly chè ba màu", effect: { tip: 5 } },
+            { label: "Kể chị nghe đề thi đi Na", effect: { customer: 1 } }
+          ] },
+        { fromLevel: 16, text: "Em sắp lên đại học rồi. Chị cho em xin công thức chè để nhớ tiệm nha.",
+          choices: [
+            { label: "Chị chép cho em liền, nhớ về thăm chị", effect: { tip: 8 } },
+            { label: "Học xa cũng phải ăn uống đầy đủ đó", effect: { customer: 1 } }
+          ] }
+      ] },
+    co_hanh: {
+      name: "Cô giáo Hạnh", avatar: "👩‍🏫", doodle: "co_hanh", self: "cô", call: "em", dish: "che_dau_do",
+      patience: 30, tip: [3, 5], startDay: 17, gap: 2,
+      chapters: [
+        { fromLevel: 17, text: "Cô dạy ở trường cấp hai đầu hẻm. Chấm bài mệt quá, cô ghé ăn ly chè cho tỉnh.",
+          choices: [
+            { label: "Cô ăn chè đậu đỏ nha, em làm ngọt vừa", effect: { tip: 5 } },
+            { label: "Cô chấm bài ở đây cũng được, tiệm mát lắm", effect: { customer: 1 } }
+          ] },
+        { fromLevel: 21, text: "Học trò cô hỏi tiệm chè nào ngon, cô chỉ tiệm em đó. Mai tụi nó kéo nhau tới.",
+          choices: [
+            { label: "Em cảm ơn cô nhiều lắm!", effect: { customer: 1 } },
+            { label: "Em sẽ làm chè ba màu thật đẹp cho tụi nhỏ", effect: { tip: 5 } }
+          ] },
+        { fromLevel: 26, text: "Cô sắp nghỉ hưu rồi. Ngày cuối cô muốn ăn chè ba màu, giống hồi cô còn đi học.",
+          choices: [
+            { label: "Em làm ly đặc biệt nhất cho cô", effect: { tip: 10 } },
+            { label: "Cô nghỉ hưu nhớ ghé tiệm thường xuyên nha", effect: { customer: 1 } }
           ] }
       ] }
   },
@@ -467,7 +517,9 @@ window.CONFIG = {
       { id: "regulars", label: "Bạn bè rủ nhau ghé", friendMult: 5 },
       { id: "hieu5", label: "Anh Hiếu ghé 5 lần", tomoVisits: 5 },
       { id: "picky", label: "Tip gấp đôi nhưng khách khó tính", tipMult: 2, patienceMult: 0.85 },
-      { id: "crowd", label: "Đông khách", extraCustomers: 3 }
+      { id: "crowd", label: "Đông khách", extraCustomers: 3 },
+      { id: "che_day", label: "Ngày chè", cheDay: true, fromLevel: 16 },
+      { id: "hieu_busy", label: "Anh Hiếu bận (thưởng +50%)", helperOff: true, tipMult: 1.5, fromLevel: 18 }
     ]
   },
 
@@ -1006,13 +1058,13 @@ window.CONFIG = {
     effHeart: "+1 tim tiệm ❤️",
     // Kỷ niệm
     envelopeTap: "Có thư nè! Chạm để mở ✉️",
-    memoryLocked: "Qua Ngày {n} để mở",
+    memoryLocked: "Qua mốc lớn thứ {n} để mở",
     albumTitle: "Kỷ niệm 💌",
     albumCount: "Đã mở {a}/{b} thẻ",
     goldHearts: "💛 {a}/{b}",
     bonusTitle: "Lời nhắn bí mật 💛",
     bonusCard: "💛 Lời nhắn bí mật",
-    bonusLocked: "Đạt 3 sao cả 15 ngày để mở lời nhắn bí mật",
+    bonusLocked: "Đạt 3 sao ở cả 15 mốc lớn để mở lời nhắn bí mật",
     goldHeartGet: "Nhận 1 Trái tim vàng 💛",
     btnOpenLetter: "Mở thư",
     btnSurprise: "Xem bất ngờ 💝",
@@ -1105,7 +1157,7 @@ window.CONFIG = {
       { icon: "🥣", title: "Làm món đúng thứ tự", text: "Đế đặt trước (bánh tráng, ly…) → topping theo bong bóng của khách, thứ tự tuỳ ý → bước kết thúc làm sau cùng (lắc, gấp, cuốn, rót…)." },
       { icon: "👆", title: "4 kiểu thao tác", text: "Chạm để thêm nguyên liệu · Nhấn giữ để rót nước, tán trứng · Vuốt qua lại để lắc bịch, vuốt lên để cuốn · Canh kim vào vùng xanh rồi chạm vỉ để gấp bánh." },
       { icon: "🥰", title: "Giao món cho khách", text: "Chạm khay rồi chạm khách, hoặc kéo thả khay lên khách. Giao nhanh khi thanh kiên nhẫn còn xanh để được nhiều tiền và 5 sao!" },
-      { icon: "❤️", title: "Tim, combo & chiêu đặc biệt", text: "Khách bỏ đi mất 1 tim, hết 3 tim là thua ngày. Giao đúng liên tiếp được combo. Từ Ngày 6, chạm 💖 để khách đứng yên 8 giây. Dòng chữ cam là yêu cầu riêng, làm đúng được thêm tip." },
+      { icon: "❤️", title: "Tim, combo & chiêu đặc biệt", text: "Khách bỏ đi mất 1 tim, hết 3 tim là thua ca. Giao đúng liên tiếp được combo. Từ Mốc 11, chạm 💖 để khách đứng yên 8 giây. Dòng chữ cam là yêu cầu riêng, làm đúng được thêm tip." },
       { icon: "💌", title: "Quà từ {nick}", text: "Qua mỗi ngày mở một thẻ kỷ niệm. Đạt 3 sao nhận Trái tim vàng 💛. Thắng hết 15 ngày sẽ có một bất ngờ đang chờ {her} đó!" }
     ],
     // Hướng dẫn tương tác

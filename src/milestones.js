@@ -202,6 +202,13 @@ window.BT = window.BT || { Screens: {} };
       return run;
     },
 
+    // Số chương truyện khách quen có sẵn ở cấp mốc này
+    chaptersAt(id, level) {
+      const def = CONFIG.regulars[id];
+      if (!def || level < def.startDay) return 0;
+      return def.chapters.filter((c) => (c.fromLevel || 0) <= level).length;
+    },
+
     goldHearts(sid) {
       const S = BT.Save.state;
       sid = sid || S.season || 1;
@@ -241,9 +248,14 @@ window.BT = window.BT || { Screens: {} };
       const event = MS.pickEvent(level, null, rng);
       const dishes = CONFIG.recipes.filter((r) => r.openDay <= level && !r.combo);
       const focus = dishes[Math.floor(rng() * dishes.length)].id;
-      const rules = CONFIG.daily.rules;
+      const rules = CONFIG.daily.rules.filter((x) => (x.fromLevel || 0) <= level);
       const rule = rules[Math.floor(rng() * rules.length)];
-      return { event, focus, rule };
+      let fc = focus;
+      if (rule.cheDay) {
+        const ches = dishes.filter((r) => r.zone === "che");
+        if (ches.length) fc = ches[Math.floor(rng() * ches.length)].id;
+      }
+      return { event, focus: fc, rule };
     },
 
     run(key) {
@@ -259,6 +271,7 @@ window.BT = window.BT || { Screens: {} };
       if (r.extraCustomers) cfg.customers += r.extraCustomers;
       if (r.friendMult) cfg.friendMult = r.friendMult;
       if (r.tomoVisits) cfg.tomoVisits = r.tomoVisits;
+      if (r.helperOff) cfg.helperOff = true;
       cfg.focus = ch.focus;
       cfg.focusWeight = CONFIG.daily.focusWeight;
       cfg.rule = r.id;

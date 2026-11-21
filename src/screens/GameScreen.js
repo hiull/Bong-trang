@@ -133,9 +133,10 @@ window.BT = window.BT || { Screens: {} };
         const done = S.regularCustomers[id] || 0;
         const dishOk = this.dishPool.some((r) => r.id === def.dish);
         let entry = null;
-        if (done < G.regularChapters && this.dayNum >= def.startDay && S.ms.shifts >= (S.regularNext[id] || 0) && dishOk) {
+        const avail = BT.MS.chaptersAt(id, this.dayNum);
+        if (done < avail && this.dayNum >= def.startDay && S.ms.shifts >= (S.regularNext[id] || 0) && dishOk) {
           entry = { kind: "regular", id, chapter: done };
-        } else if (done >= G.regularChapters && Math.random() < G.regularLoyalRate) {
+        } else if (done >= avail && avail > 0 && Math.random() < G.regularLoyalRate) {
           entry = { kind: "regular", id, chapter: -1 };
         }
         if (entry) {
@@ -582,7 +583,7 @@ window.BT = window.BT || { Screens: {} };
     spawnRegular(seat, plan) {
       const G = CONFIG.gameplay;
       const def = CONFIG.regulars[plan.id];
-      const loyal = (this.S.regularCustomers[plan.id] || 0) >= G.regularChapters;
+      const loyal = (this.S.regularCustomers[plan.id] || 0) >= BT.MS.chaptersAt(plan.id, this.dayNum);
       const typeDef = {
         name: def.name, avatar: def.avatar, doodle: def.doodle, accessory: def.accessory, patience: def.patience,
         tip: loyal ? def.tip.map((x) => x * G.regularLoyalTipMult) : def.tip,
@@ -1105,14 +1106,14 @@ window.BT = window.BT || { Screens: {} };
       const ch = def.chapters[chapter];
       if (!ch) return;
       const S = this.S;
-      this.storyDialog(UI.t("regularTitle", { name: def.name, c: chapter + 1, t: G.regularChapters }), def.doodle || def.avatar, UI.fmt(ch.text), ch.choices.map((choice) => ({
+      this.storyDialog(UI.t("regularTitle", { name: def.name, c: chapter + 1, t: def.chapters.length }), def.doodle || def.avatar, UI.fmt(ch.text), ch.choices.map((choice) => ({
         label: UI.fmt(choice.label),
         onPick: () => {
           S.regularCustomers[id] = chapter + 1;
           S.regularNext = S.regularNext || {};
           S.regularNext[id] = S.ms.shifts + def.gap;
           this.applyEffect(choice.effect);
-          if (chapter + 1 >= G.regularChapters) this.scope.timeout(() => UI.toast(UI.t("regularLoyal", { name: def.name }), 2800), 900);
+          if (chapter + 1 >= BT.MS.chaptersAt(id, this.dayNum)) this.scope.timeout(() => UI.toast(UI.t("regularLoyal", { name: def.name }), 2800), 900);
         }
       })));
     }

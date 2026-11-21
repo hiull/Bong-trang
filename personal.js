@@ -304,7 +304,22 @@ window.PERSONAL = {
     { who: "Bà cụ", text: "Bà mang cho con mấy trái tắc nhà bà trồng nè, vắt vô ly trà là thơm phức." },
     { who: "Học sinh", text: "Tụi em thi xong rồi chị ơi! Ăn mừng bằng bánh tráng là chuẩn bài." },
     { who: "Chị Lan Kế Toán", text: "Chị tính rồi: một tuần chị ghé tiệm em 5 lần. Thôi coi như đây là… chi phí hạnh phúc." },
-    { who: "Bé Na Lớp 10", text: "Hôm nay em không đói đâu, em ghé chỉ để chào chị thôi đó 👋" }
+    { who: "Bé Na Lớp 10", text: "Hôm nay em không đói đâu, em ghé chỉ để chào chị thôi đó 👋" },
+    { who: "Anh Hiếu", text: "Anh Hiếu lén nếm thử một muỗng chè rồi bảo: chè ngọt, mà không ngọt bằng bà chủ." },
+    { who: "Chị Lan Kế Toán", text: "Cả phòng chị giờ chiều nào cũng hỏi: hôm nay tiệm có chè gì mới không?" },
+    { who: "Chú Tư Xe Ôm", text: "Chú chở khách mà khách đòi ghé mua chè trước, chú chịu thua luôn." },
+    { who: "Bé Na Lớp 10", text: "Em đăng ảnh ly chè ba màu lên mạng, được cả trăm lượt thích đó chị!" },
+    { who: "Cô giáo Hạnh", text: "Cô cho cả lớp viết văn tả món ăn yêu thích, nửa lớp tả chè tiệm em." },
+    { who: "Bác Sáu chủ nhà", text: "Bác đi ngang thấy tiệm đông, bác đứng ngoài cười một mình." },
+    { who: "Anh shipper", text: "Trời mưa mà đơn chè vẫn đổ về, anh chạy muốn rớt dép luôn." },
+    { who: "Bà cụ", text: "Hồi xưa bà nấu chè đậu xanh cho cả xóm, giờ tới lượt con nấu cho bà." },
+    { who: "Học sinh", text: "Tụi em góp tiền mua một ly chè đặc biệt rồi chia năm muỗng." },
+    { who: "Anh Hiếu", text: "Anh Hiếu tập xếp chè cả buổi, ly nào cũng ngược thứ tự, rồi tự ăn hết." },
+    { who: "Út Mai", text: "Con thích sữa chua mít nhất! Mai con kêu ba con ghé mua nữa." },
+    { who: "Chị Lan Kế Toán", text: "Chị lập bảng tính so sánh các tiệm chè, tiệm em đứng đầu mọi cột." },
+    { who: "Cô giáo Hạnh", text: "Cô chấm bài mà nghĩ tới chè, cho điểm ai cũng cao hơn xíu." },
+    { who: "Bé Na Lớp 10", text: "Em mang chè vào phòng thi... à không, em ăn trước rồi mới thi." },
+    { who: "Anh Hiếu", text: "Đóng cửa xong anh Hiếu ngồi đếm ly, đếm tới đâu cười tới đó." }
   ],
 
   // Câu thả thính dễ thương (nói lái / chơi chữ) — anh Hiếu ghé tiệm buông câu, Bống gõ "ý thật".
