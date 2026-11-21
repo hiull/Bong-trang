@@ -208,3 +208,9 @@ Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (v�
 
 ## 10. Sao lưu tiến trình
 Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao lưu**. Cất mã vào app Ghi chú hoặc gửi qua email (đừng gửi qua Messenger/Zalo vì tin nhắn dài có thể bị cắt). Đổi máy thì dán mã vào ô **Dán mã để khôi phục**.
+
+## 11. Toàn màn hình
+- **Android / máy tính (Chrome, Edge…):** lần chạm đầu tiên game tự bật toàn màn hình (trình duyệt bắt buộc phải có một lần chạm). Lỡ thoát ra thì chạm tiếp là bật lại. Muốn tắt: **⚙️ Cài đặt → Toàn màn hình**.
+- **Thêm vào màn hình chính** (Android): app mở thẳng toàn màn hình, không còn thanh địa chỉ.
+- **iPhone / iPad:** Safari không cho trang web bật toàn màn hình. Hãy bấm **Chia sẻ → Thêm vào MH chính** rồi mở game từ biểu tượng đó để không còn thanh địa chỉ.
+

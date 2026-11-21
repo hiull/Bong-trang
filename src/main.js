@@ -81,6 +81,34 @@ window.BT = window.BT || { Screens: {} };
     return window.matchMedia("(orientation: landscape) and (hover: none) and (max-height: 560px)").matches;
   }
 
+  // ---------------- Toàn màn hình ----------------
+  // Trình duyệt chỉ cho bật toàn màn hình sau một lần chạm, nên game bật ở lần chạm đầu
+  // (và bật lại nếu lỡ thoát ra). Tắt được trong Cài đặt. iPhone: dùng "Thêm vào MH chính".
+  const Fullscreen = {
+    supported() { const d = document.documentElement; return !!(d.requestFullscreen || d.webkitRequestFullscreen); },
+    active() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement) ||
+        window.matchMedia("(display-mode: fullscreen)").matches;
+    },
+    enter() {
+      if (!this.supported() || this.active()) return;
+      const d = document.documentElement;
+      try {
+        const r = d.requestFullscreen ? d.requestFullscreen({ navigationUI: "hide" }) : d.webkitRequestFullscreen();
+        if (r && r.catch) r.catch(() => {});
+      } catch (e) { /* trình duyệt từ chối thì thôi */ }
+    },
+    exit() {
+      if (!(document.fullscreenElement || document.webkitFullscreenElement)) return;
+      try {
+        const r = document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen();
+        if (r && r.catch) r.catch(() => {});
+      } catch (e) { /* bỏ qua */ }
+    },
+    apply() { if (BT.Save.state.settings.fullscreen) this.enter(); else this.exit(); }
+  };
+  BT.Fullscreen = Fullscreen;
+
   // ---------------- Khởi động ----------------
   function start() {
     applyColors();
@@ -90,6 +118,9 @@ window.BT = window.BT || { Screens: {} };
     UI.setText(document.querySelector("#rotate-overlay .rotate-icon"), "📱");
     Router.root = UI.app();
     applyUnit();
+    const autoFull = () => { if (BT.Save.state.settings.fullscreen) Fullscreen.enter(); };
+    document.addEventListener("click", autoFull, true);
+    document.addEventListener("touchend", autoFull, true);
     window.addEventListener("resize", () => {
       applyUnit();
       if (isLandscapePhone()) Router.hide();

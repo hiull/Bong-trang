@@ -847,6 +847,7 @@ window.CONFIG = {
     setMusic: "Nhạc nền",
     setSfx: "Âm thanh",
     setVibrate: "Rung",
+    setFullscreen: "Toàn màn hình",
     setHowTo: "Cách chơi 📖",
     setBackup: "Sao lưu & Khôi phục 💾",
     setWipe: "Xoá dữ liệu",

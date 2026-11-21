@@ -30,7 +30,7 @@ window.BT = window.BT || { Screens: {} };
       regularCustomers: { chu_tu: 0, chi_lan: 0, be_na: 0, tomortle: 0 },
       checkin: { streak: 0, lastDate: "" },
       dailyQuests: { date: "", list: [] },
-      settings: { music: true, sfx: true, vibrate: true },
+      settings: { music: true, sfx: true, vibrate: true, fullscreen: true },
       tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false },
       endingSeen: false,
       appVersionSeen: CONFIG.version,
