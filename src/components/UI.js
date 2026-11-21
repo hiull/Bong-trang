@@ -331,7 +331,7 @@ window.BT = window.BT || { Screens: {} };
     if (run.mode === "secret") return UI.t("runSecret");
     if (run.mode === "daily") return UI.t("runDaily");
     if (run.mode === "endless") return UI.t("runEndless");
-    return UI.t("runMs", { n: run.ms });
+    return (run.season || 1) > 1 ? UI.t("runMsSeason", { s: run.season, n: run.ms }) : UI.t("runMs", { n: run.ms });
   };
   UI.dayLevel = (day) => (typeof day === "number" ? day : CONFIG.build.maxPlayableDay + 1);
 
@@ -381,7 +381,7 @@ window.BT = window.BT || { Screens: {} };
   // Xem phóng to 1 thẻ kỷ niệm; list = mảng chỉ số đã mở, vuốt trái/phải để chuyển
   UI.openMemory = function (index, opts) {
     opts = opts || {};
-    const mems = window.PERSONAL.memories;
+    const mems = opts.mems || window.PERSONAL.memories;
     const list = opts.list || [index];
     let pos = Math.max(0, list.indexOf(index));
     const wrap = UI.el("div", "mem-view");

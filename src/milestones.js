@@ -203,7 +203,11 @@ window.BT = window.BT || { Screens: {} };
     },
 
     goldHearts(sid) {
-      const best = this.stateOf(sid).best;
+      const S = BT.Save.state;
+      sid = sid || S.season || 1;
+      const st = sid === (S.season || 1) ? S.ms : (S.msBySeason || {})[sid];
+      if (!st) return 0;
+      const best = st.best;
       return this.list(sid).filter((m) => m.major && best[m.index] && best[m.index].stars >= 3).length;
     }
   };

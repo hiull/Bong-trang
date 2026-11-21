@@ -54,7 +54,8 @@ window.BT = window.BT || { Screens: {} };
         body.appendChild(dbox);
       }
 
-      if (s.newGold) body.appendChild(UI.el("div", "gold-get", UI.t("goldHeartGet") + " · " + UI.t("goldHearts", { a: S.goldHearts, b: CONFIG.build.maxPlayableDay })));
+      const goldNow = s.goldSeason === 2 ? S.s2.goldHearts : S.goldHearts;
+      if (s.newGold) body.appendChild(UI.el("div", "gold-get", UI.t("goldHeartGet") + " · " + UI.t("goldHearts", { a: goldNow, b: CONFIG.build.maxPlayableDay })));
       if (!s.passed) {
         body.appendChild(UI.el("div", "result-cheer", UI.t("loseLines")));
         body.appendChild(UI.el("div", "result-keep", UI.t("resultKeep", { x: UI.money(s.kept) })));
@@ -105,6 +106,20 @@ window.BT = window.BT || { Screens: {} };
         box.appendChild(UI.el("div", "ms-count", p.cleared ? UI.t("msCleared", { t: UI.t("runMs", { n: p.cleared }) })
           : UI.t("msProgress", { a: UI.num1(p.after.progress), b: UI.num1(s.need) })));
         if (p.cleared) box.classList.add("cleared");
+        if (s.card2 !== null && s.card2 !== undefined) {
+          const c2 = (window.PERSONAL.recipeCards2 || [])[s.card2];
+          if (c2) {
+            const cb = UI.el("div", "card2-box");
+            cb.appendChild(UI.el("div", "card2-head", UI.t("card2Get")));
+            cb.appendChild(UI.el("div", "card2-title", "🍧 " + c2.title));
+            cb.appendChild(UI.el("div", "card2-text", UI.fmt(c2.text)));
+            box.appendChild(cb);
+          }
+        }
+        if (s.memory2 !== null && s.memory2 !== undefined) {
+          const m2 = UI.button(UI.t("memory2Get"), "btn-purple small", () => UI.openMemory(s.memory2, { mems: window.PERSONAL.memories2 }));
+          box.appendChild(m2);
+        }
         if (s.minor) {
           box.appendChild(UI.el("div", "ms-reward", UI.t("msMinorCoins", { x: UI.money(s.minor.coins) })));
           if (s.minor.tale) {
@@ -135,7 +150,7 @@ window.BT = window.BT || { Screens: {} };
 
       function goEnding() {
         if (envelope && !envelope.classList.contains("opened")) { openLetter(() => goEnding()); return; }
-        router.go("Ending", {}, { replace: true });
+        router.go("Ending", { season: (s.run && s.run.season) || 1 }, { replace: true });
       }
 
       function openLetter(after) {
@@ -145,7 +160,7 @@ window.BT = window.BT || { Screens: {} };
         UI.openMemory(s.memory, {
           typing: true,
           onClose: () => {
-            if (s.allGold && !S.bonusSeen) showBonus(after);
+            if (s.allGold) showBonus(after);
             else if (after) after();
           }
         });
@@ -153,12 +168,13 @@ window.BT = window.BT || { Screens: {} };
 
       // Đủ 15 Trái tim vàng → lời nhắn bí mật
       function showBonus(after) {
-        S.bonusSeen = true;
+        const s2 = s.goldSeason === 2;
+        if (s2) S.s2.bonusSeen = true; else S.bonusSeen = true;
         BT.Save.persist();
         UI.confetti(80);
         UI.modal({
           title: UI.t("bonusTitle"),
-          body: window.PERSONAL.bonusMessage,
+          body: s2 ? window.PERSONAL.bonusMessage2 : window.PERSONAL.bonusMessage,
           className: "modal-welcome",
           buttons: [{ label: UI.t("btnClose"), cls: "btn-pink", onClick: () => { if (after) after(); } }]
         });
@@ -179,7 +195,7 @@ window.BT = window.BT || { Screens: {} };
         if (s.progress.cleared) { BT.Audio.play("win"); UI.confetti(60); }
       }, after + 150);
       if (envelope) scope.timeout(() => { envelope.classList.add("drop"); BT.Audio.play("pop"); }, after + 200);
-      else if (s.allGold && !S.bonusSeen) scope.timeout(() => showBonus(), after + 400);
+      else if (s.allGold) scope.timeout(() => showBonus(), after + 400);
 
       return {
         destroy() { scope.clear(); UI.closeAllModals(); },

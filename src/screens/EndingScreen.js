@@ -12,6 +12,11 @@ window.BT = window.BT || { Screens: {} };
       const P = window.PERSONAL;
       const S = BT.Save.state;
       const scope = UI.scope();
+      const S2 = params && params.season === 2;
+      // Mùa 2: thư kết riêng; trình chiếu thẻ công thức (và kỷ niệm Mùa 2 nếu có)
+      const slides = S2
+        ? (P.memories2 || []).filter((m, i) => S.s2.memories.includes(i)).concat((P.recipeCards2 || []).map((c) => ({ title: c.title, date: c.text })))
+        : P.memories;
       const el = UI.el("div", "screen ending");
 
       const stage = UI.el("div", "ending-stage");
@@ -55,7 +60,7 @@ window.BT = window.BT || { Screens: {} };
         msgBox.classList.add("show");
         const text = UI.el("div", "ending-text");
         msgBox.appendChild(text);
-        tw = UI.typewriter(text, P.finalMessage, G.typeMsPerChar * 2, () => { skip.classList.add("show"); });
+        tw = UI.typewriter(text, S2 ? P.ending2 : P.finalMessage, G.typeMsPerChar * 2, () => { skip.classList.add("show"); });
       }
 
       // 2) Trình chiếu 15 thẻ, mỗi thẻ 3 giây, mờ dần
@@ -68,8 +73,8 @@ window.BT = window.BT || { Screens: {} };
       }
       function nextSlide() {
         slideIndex++;
-        if (slideIndex >= P.memories.length) { showFinal(); return; }
-        const m = P.memories[slideIndex];
+        if (slideIndex >= slides.length) { showFinal(); return; }
+        const m = slides[slideIndex];
         const card = UI.el("div", "slide-card");
         card.appendChild(UI.memoryPhoto(m, "big"));
         card.appendChild(UI.el("div", "mem-title", m.title));
@@ -94,7 +99,7 @@ window.BT = window.BT || { Screens: {} };
         final.classList.add("show");
         UI.confetti(80);
         BT.Audio.play("win");
-        S.endingSeen = true;
+        if (S2) S.s2.endingSeen = true; else S.endingSeen = true;
         BT.Save.persist();
       }
 

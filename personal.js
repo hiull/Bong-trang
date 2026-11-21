@@ -140,6 +140,34 @@ window.PERSONAL = {
     "Ngày 7: Quà đặc biệt cuối tuần dành cho bà chủ nhỏ của anh Hiếu! Yêu em nhất trên đời 💖"
   ],
 
+  // ---------------- Mùa 2 ----------------
+  // Thư mở Mùa 2 (hiện khi bấm "Mùa 2 mở rồi!" ở Menu)
+  season2Intro: "Bà chủ ơi, tiệm mình đông khách quá rồi. Anh nghĩ mình mở thêm quầy chè với sữa chua đi, trời nóng ai cũng thèm. Anh sẽ phụ em một tay. Mình bắt đầu Mùa 2 nha 🍧",
+  // Thư kết Mùa 2 (màn kết sau mốc 30 Mùa 2)
+  ending2: "Vậy là quầy chè cũng chạy ngon lành rồi. Cảm ơn em đã cùng anh đi thêm một mùa nữa. Mỗi ly chè em xếp, anh đều đứng bên cạnh nhìn, và lần nào cũng thấy mình may mắn. Mùa sau mình làm gì tiếp nhỉ? Em chọn đi, anh theo 💕",
+  // Lời nhắn khi đủ 15 Trái tim vàng Mùa 2
+  bonusMessage2: "15 Trái tim vàng Mùa 2! Bà chủ đỉnh thật sự. Chụp màn hình này gửi anh để đổi một buổi đi ăn chè ngoài đời nha, anh bao 🍧💛",
+  // 15 thẻ công thức Mùa 2, mở lần lượt ở 15 mốc lớn
+  recipeCards2: [
+    { title: "Chè đậu xanh", text: "Món đầu tiên của quầy chè. Đậu xanh nấu nhừ, rưới nước cốt dừa béo béo. Đơn giản mà ai ăn cũng nhớ." },
+    { title: "Sữa chua đá", text: "Sữa chua đánh đá lạnh buốt, chua chua ngọt ngọt. Trưa hè ăn một ly là hết mệt." },
+    { title: "Chè đậu đỏ", text: "Đậu đỏ ninh mềm, ngọt thanh. Nghe nói ăn đậu đỏ là gặp may, nên ly đầu tiên dành cho bà chủ." },
+    { title: "Chè sương sáo", text: "Sương sáo đen mát lạnh, giòn giòn trong miệng. Món giải nhiệt của mấy chú xe ôm đầu hẻm." },
+    { title: "Sữa chua mít", text: "Mít vàng thơm lừng dưới đáy, sữa chua phủ lên trên. Xếp ngược là mất ngon liền." },
+    { title: "Chè thập cẩm", text: "Đậu xanh, đậu đỏ, thạch, nước cốt dừa. Bốn lớp, bốn màu, ăn một muỗng có đủ cả." },
+    { title: "Sữa chua nếp cẩm", text: "Nếp cẩm tím dẻo thơm, ăn cùng sữa chua là hết sẩy. Món ruột của mấy bạn văn phòng." },
+    { title: "Chè Thái", text: "Mít, thạch, trân châu, nước cốt dừa. Ly nào cũng đầy ụ, cầm lên thấy nặng tay." },
+    { title: "Sữa chua trân châu", text: "Trân châu dai dai nằm dưới, sữa chua mát lạnh ở trên. Học sinh tan trường xếp hàng mua." },
+    { title: "Chè dừa non", text: "Thạch dừa non trong veo, rắc thêm dừa nạo. Ăn chậm thôi kẻo hết." },
+    { title: "Chè ba màu", text: "Đỏ, vàng, xanh như đèn giao thông. Cô Hạnh nói ly này nhìn là thấy vui." },
+    { title: "Sữa chua dừa", text: "Sữa chua hoà nước cốt dừa, rắc dừa nạo. Béo ngậy mà không ngán." },
+    { title: "Combo Mùa Hè", text: "Một ly chè Thái, một ly trà tắc. Mùa hè chỉ cần vậy là đủ." },
+    { title: "Chè đặc biệt", text: "Sáu lớp, xếp lâu nhất tiệm. Bà chủ làm ly này là cả hẻm đứng xem." },
+    { title: "Ly Chè Hẹn Hò", text: "Món cuối của Mùa 2, chỉ làm cho người đặc biệt. Ăn chung một ly, hai cái muỗng." }
+  ],
+  // Kỷ niệm Mùa 2 (tuỳ chọn). Thêm như memories ở trên, phần tử thứ k mở ở mốc lớn thứ k của Mùa 2.
+  memories2: [],
+
   // Lời nhắn mỗi ngày: mở một câu khi chơi Thử thách hôm nay lần đầu trong ngày (lần lượt, hết thì quay lại).
   // Sửa thoải mái; thêm câu mới thì thêm vào cuối.
   dailyNotes: [

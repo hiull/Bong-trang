@@ -18,7 +18,7 @@ window.BT = window.BT || { Screens: {} };
       stats.appendChild(UI.el("div", "pill", "🪙 " + UI.money(S.wallet)));
       const rating = Pr.shopRating();
       stats.appendChild(UI.el("div", "pill", "⭐ " + (rating ? UI.rating(rating) : "–")));
-      stats.appendChild(UI.el("div", "pill", UI.t("goldHearts", { a: S.goldHearts, b: CONFIG.build.maxPlayableDay })));
+      stats.appendChild(UI.el("div", "pill", UI.t("goldHearts", { a: (S.season || 1) === 2 ? S.s2.goldHearts : S.goldHearts, b: CONFIG.build.maxPlayableDay })));
       top.appendChild(stats);
       top.appendChild(UI.iconButton("⚙️", UI.t("btnSettings"), () => openSettings(), "settings-btn"));
       el.appendChild(top);
@@ -56,6 +56,22 @@ window.BT = window.BT || { Screens: {} };
       main.appendChild(UI.button(UI.t("btnUpgrade"), "btn-orange big", () => router.go("Shop")));
       main.appendChild(UI.button(UI.t("btnMemories"), "btn-purple big", () => router.go("Album")));
       el.appendChild(main);
+
+      // Mùa mới
+      if (BT.MS.nextSeasonReady()) {
+        const sc = UI.el("button", "season-card");
+        sc.type = "button";
+        sc.appendChild(UI.el("div", "season-card-title", UI.t("seasonCardTitle")));
+        sc.appendChild(UI.el("div", "season-card-sub", UI.t("seasonCardSub")));
+        sc.addEventListener("click", () => {
+          BT.Audio.play("letter");
+          UI.modal({ title: UI.t("seasonModalTitle"), body: UI.fmt(P.season2Intro), className: "modal-welcome modal-season",
+            buttons: [{ label: UI.t("btnStartSeason"), cls: "btn-pink", onClick: () => { BT.MS.startSeason(2); router.go("Map", {}, { replace: false }); } }] });
+        });
+        el.appendChild(sc);
+      } else if ((S.season || 1) === 2 && S.s2.endingSeen) {
+        el.appendChild(UI.el("div", "season-soon", UI.t("season3Soon")));
+      }
 
       // Thử thách hôm nay
       const modes = UI.el("div", "menu-modes");

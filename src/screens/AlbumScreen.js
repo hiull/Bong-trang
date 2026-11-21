@@ -86,6 +86,47 @@ window.BT = window.BT || { Screens: {} };
           buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
       });
       scroll.appendChild(tbook);
+      // Mùa 2: Sổ công thức + kỷ niệm Mùa 2 (tự mở cho mốc lớn đã qua nếu người tặng thêm sau)
+      if (S.s2 && S.s2.started) {
+        const MS = BT.MS;
+        const st2 = MS.stateOf(2);
+        const m2 = P.memories2 || [];
+        MS.season(2).majorDays.forEach((d, ci) => {
+          if (m2[ci] && st2.cleared >= MS.majorIndex(d, 2) && !S.s2.memories.includes(ci)) S.s2.memories.push(ci);
+        });
+        BT.Save.persist();
+        const cards = P.recipeCards2 || [];
+        const cbook = UI.el("button", "flirt-book-card cards2-book-card");
+        cbook.type = "button";
+        cbook.appendChild(UI.el("span", "fb-icon", "🍧"));
+        cbook.appendChild(UI.el("span", "fb-label", UI.t("cards2Count", { a: S.s2.cards.length, b: cards.length })));
+        cbook.addEventListener("click", () => {
+          BT.Audio.play("pop");
+          const list = UI.el("div", "fb-list");
+          cards.forEach((c, i) => {
+            const row = UI.el("div", "fb-item " + (S.s2.cards.includes(i) ? "solved" : "locked"));
+            if (S.s2.cards.includes(i)) { row.appendChild(UI.el("div", "fb-answer", c.title)); row.appendChild(UI.el("div", "fb-line", UI.fmt(c.text))); }
+            else row.appendChild(UI.el("div", "fb-locked", "🔒 " + UI.t("cards2Locked")));
+            list.appendChild(row);
+          });
+          UI.modal({ title: UI.t("cards2Title"), body: list, className: "modal-flirt-book modal-cards2", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+        });
+        scroll.appendChild(cbook);
+        const open2 = S.s2.memories.filter((i) => m2[i]).sort((a, b) => a - b);
+        if (open2.length) {
+          scroll.appendChild(UI.el("div", "section-title", UI.t("memories2Title")));
+          const g2 = UI.el("div", "album-grid memories2-grid");
+          open2.forEach((i) => {
+            const c = UI.el("button", "album-card open");
+            c.type = "button";
+            c.appendChild(UI.memoryPhoto(m2[i], "thumb"));
+            c.appendChild(UI.el("div", "album-card-title", m2[i].title));
+            c.addEventListener("click", () => UI.openMemory(i, { list: open2, mems: m2 }));
+            g2.appendChild(c);
+          });
+          scroll.appendChild(g2);
+        }
+      }
       // Lời nhắn bí mật
       const bonus = UI.el("button", "bonus-card" + (S.goldHearts >= maxDay ? " open" : ""));
       bonus.type = "button";

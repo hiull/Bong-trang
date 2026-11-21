@@ -1734,3 +1734,15 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   .tab { font-size: 13px; padding: 0 2px; letter-spacing: -0.2px; }
   .tab-icon { font-size: 15px; }
 }
+
+/* ---------------- Mùa 2 ---------------- */
+.season-card { flex: none; margin: 0 24px 6px; padding: 8px 12px; border: var(--border) solid var(--brown); border-radius: 14px; background: linear-gradient(90deg, #FFE4EC, #E0F7F3); box-shadow: 0 4px 0 var(--brown); text-align: center; animation: breathe 2.4s ease-in-out infinite; }
+.season-card-title { font-family: var(--font-title); color: var(--pink-dark); font-size: calc(var(--fs) * 1.1); }
+.season-card-sub { font-size: var(--fs-s); }
+.season-soon { flex: none; text-align: center; font-weight: 800; color: var(--pink-dark); margin: 0 24px 4px; }
+.season-tabs { flex: none; display: flex; gap: 6px; margin: 0 12px 4px; }
+.season-tabs .btn { flex: 1; }
+.season-tabs .btn.active { background: var(--pink); color: var(--white); }
+.card2-box { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: #E0F7F3; }
+.card2-head { font-weight: 800; color: var(--pink-dark); font-size: var(--fs-s); }
+.card2-title { font-family: var(--font-title); }

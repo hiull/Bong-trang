@@ -1574,12 +1574,18 @@ window.BT = window.BT || { Screens: {} };
     applyCleared(progress) {
       const S = this.S;
       const MS = BT.MS;
-      let newMemory = null, minor = null, ending = false;
+      let newMemory = null, minor = null, ending = false, card2 = null, newMemory2 = null;
+      const sid = S.season || 1;
       if (progress && progress.cleared) {
         const m = MS.get(progress.cleared);
-        if (m.major) {
+        if (m.major && sid === 1) {
           const mi = m.day - 1;
           if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
+        } else if (m.major) {
+          // Mùa 2: thẻ công thức (+ kỷ niệm Mùa 2 nếu người tặng đã thêm)
+          const ci = m.day - MS.season(2).majorDays[0];
+          if (!S.s2.cards.includes(ci)) { S.s2.cards.push(ci); card2 = ci; }
+          if ((window.PERSONAL.memories2 || [])[ci] && !S.s2.memories.includes(ci)) { S.s2.memories.push(ci); newMemory2 = ci; }
         } else {
           const MC = CONFIG.milestones;
           const coins = MC.minorCoinsBase + MC.minorCoinsPerLevel * m.level;
@@ -1589,9 +1595,9 @@ window.BT = window.BT || { Screens: {} };
           if (tales.length) { const ti = S.talesSeen.length % tales.length; tale = tales[ti]; S.talesSeen.push(ti); }
           minor = { coins, tale };
         }
-        ending = progress.cleared === MS.count() && !S.endingSeen;
+        ending = progress.cleared === MS.count() && !(sid === 1 ? S.endingSeen : S.s2.endingSeen);
       }
-      return { newMemory, minor, ending };
+      return { newMemory, minor, ending, card2, newMemory2 };
     }
 
     // Kết thúc Ca vô tận: không có mục tiêu, giữ toàn bộ tiền, cộng tiến độ theo số khách
@@ -1603,7 +1609,7 @@ window.BT = window.BT || { Screens: {} };
       const units = BT.Endless.units(served);
       S.ms.shifts++;
       const progress = MS.addProgress(units);
-      const { newMemory, minor, ending } = this.applyCleared(progress);
+      const { newMemory, minor, ending, card2, newMemory2 } = this.applyCleared(progress);
       const avg = this.avgRating();
       const lvBefore = BT.Progress.level(S.xp).level;
       S.xp += Math.round(income / 10);
@@ -1617,7 +1623,7 @@ window.BT = window.BT || { Screens: {} };
       const summary = {
         day: this.dayId, run: this.run, title: UI.runTitle(this.run), endless: true, passed: true, lostHearts: false, stars: 0,
         served, best: S.endless.best, newBest: claim.newBest, coins: claim.coins, rewardMarks: claim.milestones,
-        memory: newMemory, ending, minor, units, progress, need: MS.need(progress.before.index), levelUp,
+        memory: newMemory, ending, minor, card2, memory2: newMemory2, units, progress, need: MS.need(progress.before.index), levelUp,
         income, kept: income, target: 0, revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
         net: income - this.stats.expense, total: served, walkouts: this.stats.walkouts, avgRating: avg
       };
@@ -1653,8 +1659,8 @@ window.BT = window.BT || { Screens: {} };
       const MS = BT.MS;
       const run = this.run;
       // Tiến độ mốc (ca bí mật không tính)
-      let units = 0, progress = null, newMemory = null, minor = null, ending = false, daily = null;
-      const goldBefore = S.goldHearts;
+      let units = 0, progress = null, newMemory = null, minor = null, ending = false, daily = null, card2 = null, newMemory2 = null;
+      const goldBefore = [S.goldHearts, S.s2.goldHearts];
       S.ms.shifts++;
       if (run.mode === "daily") {
         daily = BT.Daily.complete(run.date, { income, target: d.target });
@@ -1671,10 +1677,13 @@ window.BT = window.BT || { Screens: {} };
         units = MS.units({ passed, stars, income, target: d.target });
         progress = MS.addProgress(units, { replay: run.mode === "replay" });
       }
-      ({ newMemory, minor, ending } = this.applyCleared(progress));
-      S.goldHearts = MS.goldHearts();
-      const newGold = S.goldHearts > goldBefore;
-      const allGold = S.goldHearts >= CONFIG.build.maxPlayableDay && !S.bonusSeen;
+      ({ newMemory, minor, ending, card2, newMemory2 } = this.applyCleared(progress));
+      // Tim vàng tính riêng từng mùa
+      S.goldHearts = MS.goldHearts(1);
+      S.s2.goldHearts = MS.goldHearts(2);
+      const goldSeason = run.season || 1;
+      const newGold = goldSeason === 1 ? S.goldHearts > goldBefore[0] : S.s2.goldHearts > goldBefore[1];
+      const allGold = goldSeason === 1 ? S.goldHearts >= CONFIG.build.maxPlayableDay && !S.bonusSeen : S.s2.goldHearts >= CONFIG.build.maxPlayableDay && !S.s2.bonusSeen;
       // Khách thêm từ cốt truyện: dùng cho ngày kế tiếp
       this.S.bonusCustomers = this.S.bonusNext || 0;
       this.S.bonusNext = 0;
@@ -1695,7 +1704,7 @@ window.BT = window.BT || { Screens: {} };
 
       const summary = {
         day: this.dayId, run, title: UI.runTitle(run), passed, lostHearts, stars, secret: this.secret,
-        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily,
+        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason,
         memory: newMemory, newGold, allGold, ending, levelUp,
         income, kept, target: d.target,
         revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
