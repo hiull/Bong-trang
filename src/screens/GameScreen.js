@@ -423,7 +423,12 @@ window.BT = window.BT || { Screens: {} };
       if (this.endless) {
         // Chỉ gọi món còn làm được (còn hàng hoặc đủ tiền nhập); hết món làm được → kết thúc ca
         this.dishPool = this.dishPoolAll.filter((r) => this.canMake(r));
-        if (!this.dishPool.length) { this.dishPool = this.dishPoolAll; if (!this.customers.some((c) => !c.isCat)) this.finish(false); else this.spawnTimer = 1; return; }
+        if (!this.dishPool.length) {
+          this.dishPool = this.dishPoolAll;
+          // Anh Hiếu chờ vô hạn → không tính là còn khách: chỉ còn anh (hoặc mèo) thì kết thúc ca
+          if (!this.customers.some((c) => !c.isCat && c.typeId !== "tomortle")) this.finish(false); else this.spawnTimer = 1;
+          return;
+        }
         if (this.spawned > 0 && this.spawned % CONFIG.endless.eventEvery === 0 && this.lastEventAt !== this.spawned) { this.lastEventAt = this.spawned; this.switchEvent(); }
       }
       // Mèo hoang hiếm (không tính vào số khách của ngày)
@@ -444,7 +449,7 @@ window.BT = window.BT || { Screens: {} };
       let special = this.groupPending > 0 ? null : this.plan[this.spawned];
       // Anh Hiếu chưa ghé mà chỉ còn vài khách cuối → ép anh tới ở lượt này
       if (!special && this.groupPending === 0 && this.tomoCame < this.tomoWanted && left <= G.tomortleForceWhenLeft) special = { kind: "tomortle" };
-      if (this.endless && !special && this.dayNum >= G.tomortleFromDay && this.spawned > 0 && this.spawned % CONFIG.endless.tomoEvery === 0) special = { kind: "tomortle" };
+      if (this.endless && !special && this.dayNum >= G.tomortleFromDay && this.spawned > 0 && this.spawned % CONFIG.endless.tomoEvery === 0 && this.dishPool.some((r) => r.zone !== "nuoc" && !r.combo)) special = { kind: "tomortle" };
       if (special && special.kind === "tomortle" && this.tomoCame >= this.tomoWanted) special = null;
       if (special && special.kind === "tomortle") this.spawnTomortle(seat);
       else if (special && special.kind === "regular") this.spawnRegular(seat, special);
@@ -503,7 +508,8 @@ window.BT = window.BT || { Screens: {} };
     // Hiếu (Tomortle): 1 món bánh tráng + 1 ly nước, kiên nhẫn vô hạn
     spawnTomortle(seat) {
       this.tomoCame++;
-      const foods = this.dishPool.filter((r) => r.zone !== "nuoc" && !r.combo);
+      let foods = this.dishPool.filter((r) => r.zone !== "nuoc" && !r.combo);
+      if (!foods.length) foods = this.dishPool.filter((r) => !r.combo);
       const drinks = this.dishPool.filter((r) => r.zone === "nuoc");
       const items = [{ id: UI.pick(foods).id, reqs: [] }];
       if (drinks.length) items.push({ id: UI.pick(drinks).id, reqs: [] });
