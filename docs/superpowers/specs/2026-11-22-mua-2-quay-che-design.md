@@ -183,7 +183,7 @@ Mốc 29 không có món mới, chỉ có biến cố (lễ hội).
 
 ### 4.7 Mốc nhỏ, Thử thách, Ca vô tận
 
-- **Mốc nhỏ Mùa 2:** như Mùa 1 (tiền + chuyện vặt). `PERSONAL.minorTales` thêm 15 câu, có cả nhân viên.
+- **Mốc nhỏ Mùa 2:** như Mùa 1 (tiền + chuyện vặt). `PERSONAL.minorTales` thêm 15 câu (có cả chuyện anh Hiếu phụ tiệm).
 - **Thử thách hôm nay:** thêm 2 luật vui.
   - "Ngày chè" (món chủ đạo luôn là món chè).
   - "Anh Hiếu bận" (anh không phụ ca này, thưởng +50%).
