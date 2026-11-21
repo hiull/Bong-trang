@@ -13,9 +13,10 @@ window.BT = window.BT || { Screens: {} };
   }
 
   class Customer {
-    // opts: { typeId, items: [{id, reqs}], combo, reviewer, seat, centerPct, patienceMult, area, scope, onWalkout, onGone }
+    // opts: { typeId, typeDef?, items: [{id, reqs}], combo, reviewer, tag, speech, loyal, regularId,
+    //         seat, centerPct, patienceMult, area, scope, onWalkout, onGone }
     constructor(opts) {
-      const type = CONFIG.customerTypes[opts.typeId];
+      const type = opts.typeDef || CONFIG.customerTypes[opts.typeId];
       this.id = nextId++;
       this.typeId = opts.typeId;
       this.type = type;
@@ -23,6 +24,12 @@ window.BT = window.BT || { Screens: {} };
       this.items = (opts.items || []).map((x) => ({ id: x.id, reqs: x.reqs || [], done: false }));
       this.combo = !!opts.combo;
       this.reviewer = !!opts.reviewer;
+      this.tag = opts.tag || "";
+      this.speechText = opts.speech || "";
+      this.loyal = !!opts.loyal;
+      this.regularId = opts.regularId || null;
+      this.isTomortle = opts.typeId === "tomortle";
+      this.isFriend = type.kind === "friend";
       this.seat = opts.seat;
       this.area = opts.area;
       this.scope = opts.scope;
@@ -64,6 +71,7 @@ window.BT = window.BT || { Screens: {} };
 
       let speechText;
       if (this.isCat) speechText = UI.t("catLine");
+      else if (this.speechText) speechText = this.speechText;
       else {
         speechText = UI.fmt(UI.pick(this.type.lines), this.vars({ dish: this.dishLabel() }));
       }
@@ -106,6 +114,7 @@ window.BT = window.BT || { Screens: {} };
       const bar = UI.el("div", "pbar");
       const fill = UI.el("div", "pfill");
       bar.appendChild(fill);
+      if (this.max === Infinity) { bar.classList.add("infinite"); bar.appendChild(UI.el("span", "pbar-heart", "💗 ∞")); }
 
       bubble.appendChild(speech);
       bubble.appendChild(card);
@@ -114,6 +123,8 @@ window.BT = window.BT || { Screens: {} };
       bubble.dataset.mode = "speech";
 
       const body = UI.el("div", "cbody");
+      if (this.tag) body.appendChild(UI.el("div", "name-tag" + (this.isTomortle ? " tomo" : ""), this.tag + (this.loyal ? " ❤️" : "")));
+      if (this.isTomortle) el.classList.add("tomortle");
       body.appendChild(UI.el("div", "avatar", this.avatar));
       if (this.type.accessory) body.appendChild(UI.el("div", "accessory", this.type.accessory));
       if (this.reviewer) {

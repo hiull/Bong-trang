@@ -271,5 +271,116 @@ window.BT = window.BT || { Screens: {} };
     return Math.max(0, Math.round((today - start) / 86400000));
   };
 
+  // Tên ngày dùng trong câu: 5 → "5", "secret" → "bí mật"
+  UI.dayName = (day) => (typeof day === "number" ? String(day) : CONFIG.texts.dayNames[day] || String(day));
+  // Ngày dạng số để so với openDay (Ngày bí mật = sau Ngày 15)
+  UI.dayLevel = (day) => (typeof day === "number" ? day : CONFIG.build.maxPlayableDay + 1);
+
+  // Chữ hiện từng ký tự; chạm để hiện hết ngay
+  UI.typewriter = function (el, text, msPerChar, onDone) {
+    const chars = Array.from(text);
+    let i = 0;
+    let timer = null;
+    let done = false;
+    el.textContent = "";
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      el.textContent = text;
+      if (onDone) onDone();
+    };
+    const step = () => {
+      if (done) return;
+      i++;
+      el.textContent = chars.slice(0, i).join("");
+      if (i >= chars.length) finish();
+      else timer = setTimeout(step, msPerChar);
+    };
+    timer = setTimeout(step, msPerChar);
+    return { finish, isDone: () => done };
+  };
+
+  // Ảnh kỷ niệm; thiếu ảnh hoặc lỗi → khung trái tim hồng (không bao giờ hiện icon ảnh vỡ)
+  UI.memoryPhoto = function (mem, cls) {
+    const box = UI.el("div", "mem-photo " + (cls || ""));
+    const ph = UI.el("div", "mem-placeholder");
+    ph.appendChild(UI.el("div", "mem-heart", "❤"));
+    ph.appendChild(UI.el("div", "mem-ph-title", mem.title));
+    box.appendChild(ph);
+    if (mem.photo) {
+      const img = new Image();
+      img.alt = "";
+      img.draggable = false;
+      img.onload = () => { if (img.naturalWidth > 0) { box.appendChild(img); box.classList.add("has-img"); } };
+      img.onerror = () => {};
+      img.src = mem.photo;
+    }
+    return box;
+  };
+
+  // Xem phóng to 1 thẻ kỷ niệm; list = mảng chỉ số đã mở, vuốt trái/phải để chuyển
+  UI.openMemory = function (index, opts) {
+    opts = opts || {};
+    const mems = window.PERSONAL.memories;
+    const list = opts.list || [index];
+    let pos = Math.max(0, list.indexOf(index));
+    const wrap = UI.el("div", "mem-view");
+    let tw = null;
+    const show = () => {
+      const i = list[pos];
+      const m = mems[i];
+      wrap.innerHTML = "";
+      wrap.appendChild(UI.memoryPhoto(m, "big"));
+      wrap.appendChild(UI.el("div", "mem-title", m.title));
+      wrap.appendChild(UI.el("div", "mem-date", m.date));
+      const text = UI.el("div", "mem-text");
+      wrap.appendChild(text);
+      if (opts.typing) tw = UI.typewriter(text, m.text, CONFIG.gameplay.typeMsPerChar);
+      else text.textContent = m.text;
+      if (list.length > 1) {
+        const nav = UI.el("div", "mem-nav");
+        const prev = UI.iconButton("◀", UI.t("zonePrev"), () => { pos = (pos - 1 + list.length) % list.length; show(); });
+        const next = UI.iconButton("▶", UI.t("zoneNext"), () => { pos = (pos + 1) % list.length; show(); });
+        nav.appendChild(prev);
+        nav.appendChild(UI.el("span", "mem-pos", (pos + 1) + "/" + list.length));
+        nav.appendChild(next);
+        wrap.appendChild(nav);
+      }
+    };
+    show();
+    wrap.addEventListener("click", () => { if (tw && !tw.isDone()) tw.finish(); });
+    let sx = null;
+    wrap.addEventListener("pointerdown", (e) => { sx = e.clientX; });
+    wrap.addEventListener("pointerup", (e) => {
+      if (sx === null || list.length < 2) return;
+      const dx = e.clientX - sx;
+      sx = null;
+      if (Math.abs(dx) > 60) { pos = (pos + (dx < 0 ? 1 : -1) + list.length) % list.length; show(); }
+    });
+    return UI.modal({
+      body: wrap,
+      className: "modal-memory",
+      dismissable: true,
+      onClose: opts.onClose,
+      buttons: [{ label: UI.t("btnClose"), cls: "btn-pink", onClick: opts.onClose }]
+    });
+  };
+
+  // Trái tim bay khắp màn hình
+  UI.heartBurst = function (count, sec) {
+    let fx = document.getElementById("fx");
+    if (!fx) { fx = UI.el("div"); fx.id = "fx"; UI.app().appendChild(fx); }
+    for (let i = 0; i < count; i++) {
+      const h = UI.el("div", "burst-heart", UI.pick(["💖", "💕", "💗", "❤️"]));
+      h.style.left = UI.rand(5, 90) + "%";
+      h.style.animationDuration = sec + "s";
+      h.style.animationDelay = UI.rand(0, sec * 0.4) + "s";
+      h.style.setProperty("--drift", UI.rand(-60, 60) + "px");
+      fx.appendChild(h);
+      setTimeout(() => h.remove(), sec * 1400 + 200);
+    }
+  };
+
   BT.UI = UI;
 })();

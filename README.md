@@ -3,7 +3,10 @@
 Game nấu ăn – quản lý thời gian bán bánh tráng, làm tặng **Bống (Sarose)** từ **Hiếu (Tomortle)**.
 Chạy trên trình duyệt, không cần cài đặt, không quảng cáo, không gửi dữ liệu đi đâu cả.
 
-> **Trạng thái hiện tại: Giai đoạn 2 / 6 — Đủ 4 khu & 15 Ngày.**
+> **Trạng thái hiện tại: Giai đoạn 3 / 6 — Cá nhân hoá & Kỷ niệm.**
+> Có khách **Hiếu (Tomortle)**, 7 người bạn, 3 khách quen có cốt truyện, 15 thẻ kỷ niệm & Album, Trái tim vàng, màn kết thúc sau Ngày 15 và **Ngày bí mật ★**.
+>
+> *(Giai đoạn 2 — Đủ 4 khu & 15 Ngày:)*
 > Chơi thông suốt **Ngày 1 → Ngày 15** với đủ 4 khu: Trộn (lắc bịch), Nước (nhấn giữ rót), Nướng (canh lửa), Cuốn (vuốt cuốn).
 > Có yêu cầu riêng của khách, combo, chiêu 💖 Năng lượng yêu thương, và **tự lưu tiến trình**.
 
@@ -66,11 +69,23 @@ Bạn chỉ cần máy tính có **Google Chrome** (hoặc Microsoft Edge) và c
 - [ ] Thua cùng một ngày **2 lần liên tiếp** → lần sau hiện *"Anh giúp em một chút nha 😉"*, khách kiên nhẫn hơn 20%.
 - [ ] **Lưu game:** chơi xong vài ngày, bấm F5 tải lại → tiền, ngày đã mở, sao trên bản đồ vẫn còn.
 
+### Bước 7 — Kiểm tra Giai đoạn 3 (cá nhân hoá & kỷ niệm)
+- [ ] **Từ Ngày 3:** mỗi ngày anh **Hiếu (Tomortle)** ghé 1 lần (áo hồng, cầm 💐, bảng tên hồng), gọi 1 món bánh tráng + 1 ly nước bằng câu *"Bé ơi cho anh một xuất … với … đi, ăn xong mình lnlk😈😈😈"* hoặc câu trong `anhLines`. Thanh kiên nhẫn của anh là **💗 ∞** (không bao giờ hết). Giao đủ → 10 trái tim bay lên, +20k tip, rồi anh hỏi *"Bống còn nhớ "…" không?"* kèm 2 câu trả lời.
+- [ ] **Từ Ngày 4:** bạn bè (**Kiều, Mai, Thảo, Huân, Như, Quyên, Băng**) có bảng tên, xưng *mình*, gọi *Bống*.
+- [ ] **3 khách quen có cốt truyện**, mỗi người 4 chương, cách nhau 2 ngày: **Chị Lan Kế Toán** (từ Ngày 2), **Chú Tư Xe Ôm** (từ Ngày 4), **Bé Na Lớp 10** (từ Ngày 7). Giao món xong hiện đoạn thoại + 2 lựa chọn (thêm tip / thêm khách ngày mai / tặng đồ trang trí…). Xong 4 chương thành **Khách ruột ❤️**, tip x2.
+- [ ] **Qua mỗi ngày lần đầu** → phong bì ✉️ rơi xuống ở màn Tổng kết, chạm để mở: ảnh (hoặc khung trái tim hồng nếu chưa có ảnh) + tiêu đề, ngày, đoạn văn hiện từng chữ (chạm để hiện hết).
+- [ ] **Album (nút Kỷ niệm):** lưới 3×5, thẻ chưa mở hiện phong bì khoá *"Qua Ngày N để mở"*; chạm thẻ đã mở để xem to, vuốt trái/phải hoặc bấm ◀ ▶ để chuyển.
+- [ ] **Trái tim vàng 💛:** đạt 3 sao một ngày → +1 (hiện ở màn hình chính & Album). Đủ 15 → lời nhắn bí mật `bonusMessage`.
+- [ ] **Qua Ngày 15 lần đầu** → nút **"Xem bất ngờ 💝"** → màn kết thúc: tối dần, tiệm lên đèn, anh Hiếu bước vào cầm hoa, `finalMessage` hiện từng chữ, trình chiếu 15 thẻ (mỗi thẻ 3 giây, chạm để chuyển nhanh), dòng *"Đã bên nhau N ngày. Và còn nhiều nữa 💞"*, nút **"Về tiệm"**.
+- [ ] Sau màn kết thúc, **Ngày bí mật ★** trên bản đồ mở: chỉ có anh Hiếu (3 lần) và nhóm bạn, không thể thua.
+- [ ] Ngày **11/01** hằng năm hoặc tròn **100, 200, 300… ngày** yêu → màn hình chính bắn pháo hoa + banner chúc mừng.
+
 ### Muốn chơi lại từ đầu?
 Tiến trình được lưu trong trình duyệt. Để thử lại từ Ngày 1, mở một **cửa sổ ẩn danh** (**Ctrl + Shift + N**, Mac: **Cmd + Shift + N**) rồi kéo file `index.html` vào cửa sổ đó. *(Nút "Xoá dữ liệu" trong Cài đặt sẽ có ở Giai đoạn 6.)*
 
-### Lưu ý ở Giai đoạn 2
-- Khách **Hiếu (Tomortle)**, 7 người bạn, 3 khách quen có cốt truyện, phong bì kỷ niệm, màn kết thúc và **Ngày bí mật ★** sẽ có ở Giai đoạn 3.
+### Lưu ý ở Giai đoạn 3
+- Đồ trang trí khách tặng (đèn lồng, chậu hoa giấy) đã được lưu, sẽ hiện trên tiệm khi có Cửa hàng ở Giai đoạn 4.
+- Nhạc nền màn kết thúc (`music_ending.mp3`) sẽ thêm ở Giai đoạn 5.
 - **Âm thanh:** mới có tiếng "tít" ngắn tạo bằng code. Nhạc nền & hiệu ứng thật ở Giai đoạn 5.
 - Các nút **Nâng cấp, Kỷ niệm, Đánh giá, Điểm danh, Nhiệm vụ, ⚙️** hiện thông báo *"sắp có"*.
 - Mở trên điện thoại thật qua link web sẽ làm ở Giai đoạn 6 (GitHub Pages).
@@ -86,7 +101,7 @@ Tiến trình được lưu trong trình duyệt. Để thử lại từ Ngày 1
 Mọi con số cân bằng game (giá món, giá nhập hàng, số khách, mục tiêu doanh thu, thời gian kiên nhẫn, số lần lắc bịch…) và toàn bộ chữ hiển thị đều nằm trong `config.js`, có chú thích tiếng Việt. Ví dụ: muốn Ngày 1 dễ hơn, tăng `patienceMult` của `day: 1`.
 
 ## 4. Thêm ảnh kỷ niệm
-Đặt ảnh vào `assets/memories/` với tên **01.jpg … 15.jpg** (ảnh dọc 4:5, ví dụ 800×1000, dưới 300 KB). Chưa có ảnh thì game tự vẽ khung trái tim hồng thay thế. *(Album sẽ hiển thị ở Giai đoạn 3.)*
+Đặt ảnh vào `assets/memories/` với tên **01.jpg … 15.jpg** (ảnh dọc 4:5, ví dụ 800×1000, dưới 300 KB). Chưa có ảnh thì game tự vẽ khung trái tim hồng thay thế. Ảnh hiện trong phong bì, Album và màn kết thúc.
 
 | File | Kỷ niệm |
 |---|---|
@@ -122,8 +137,8 @@ CREDITS.md          Nguồn tài nguyên & giấy phép
 | Giai đoạn | Nội dung | Trạng thái |
 |---|---|---|
 | 1 | Lõi bán hàng & Chuẩn bị (Ngày 1, Quầy trộn) | ✅ Xong |
-| 2 | Đủ 4 khu & 15 Ngày, lưu game | ✅ Xong, chờ xác nhận |
-| 3 | Cá nhân hoá & Kỷ niệm, khách Hiếu (Tomortle), Ending | ⏳ |
+| 2 | Đủ 4 khu & 15 Ngày, lưu game | ✅ Xong |
+| 3 | Cá nhân hoá & Kỷ niệm, khách Hiếu (Tomortle), Ending | ✅ Xong, chờ xác nhận |
 | 4 | Cửa hàng, Đánh giá & Sự kiện | ⏳ |
 | 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ⏳ |
 | 6 | Hoàn thiện, PWA & đưa lên GitHub Pages | ⏳ |

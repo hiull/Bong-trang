@@ -12,7 +12,9 @@ window.BT = window.BT || { Screens: {} };
       const C = CONFIG;
       const G = C.gameplay;
       this.router = router;
-      this.dayNum = params.day;
+      this.dayId = params.day;                 // 1..15 hoặc "secret"
+      this.dayNum = UI.dayLevel(params.day);   // dạng số để so với ngày mở món
+      this.secret = this.dayId === "secret";
       this.dayCfg = UI.dayCfg(params.day);
       this.S = BT.Save.state;
       this.scope = UI.scope();
@@ -20,7 +22,7 @@ window.BT = window.BT || { Screens: {} };
       this.started = false;
       this.over = false;
 
-      this.total = this.dayCfg.customers;
+      this.total = this.dayCfg.customers + (this.S.bonusCustomers || 0);
       this.spawned = 0;
       this.done = 0;
       this.hearts = G.hearts;
@@ -32,7 +34,7 @@ window.BT = window.BT || { Screens: {} };
       this.groupDone = false;
       this.groupPending = 0;
       this.reviewerAt = this.dayCfg.ratingWeight ? UI.randInt(1, Math.max(1, this.total - 2)) : -1;
-      const today = this.S.today && this.S.today.day === this.dayNum ? this.S.today : { day: this.dayNum, expense: 0 };
+      const today = this.S.today && this.S.today.day === this.dayId ? this.S.today : { day: this.dayId, expense: 0 };
       this.S.today = today;
       this.stats = { revenue: 0, tips: 0, expense: today.expense, served: 0, walkouts: 0, ratings: [], weights: [] };
 
@@ -41,7 +43,7 @@ window.BT = window.BT || { Screens: {} };
       this.patienceMult = this.dayCfg.patienceMult;
       if (up.quat > 0) this.patienceMult *= 1 + C.upgrades.quat.patienceBonus[up.quat - 1];
       const streak = this.S.loseStreak;
-      this.helped = !!(streak && streak.day === this.dayNum && streak.n >= 2);
+      this.helped = !!(streak && streak.day === this.dayId && streak.n >= 2);
       if (this.helped) this.patienceMult *= 1 + G.retryHelpPatienceBonus;
 
       this.seatCount = up.ghe;
@@ -61,9 +63,50 @@ window.BT = window.BT || { Screens: {} };
         return t.kind === "normal" && t.openDay <= this.dayNum;
       });
 
+      this.planSpecials();
       this.build(root);
       this.loop();
       this.countdown();
+    }
+
+    // Lên lịch khách đặc biệt: Hiếu (Tomortle), khách quen có cốt truyện, khách ruột
+    planSpecials() {
+      const G = CONFIG.gameplay;
+      this.plan = {};
+      this.tomoCame = 0;
+      this.tomoWanted = 0;
+      const free = () => {
+        const slots = [];
+        for (let i = 0; i < this.total; i++) if (!this.plan[i]) slots.push(i);
+        return slots;
+      };
+      if (this.secret) {
+        this.tomoWanted = G.secretTomortleVisits;
+        for (let k = 0; k < this.tomoWanted; k++) this.plan[Math.floor((k + 0.5) * this.total / this.tomoWanted)] = { kind: "tomortle" };
+        return;
+      }
+      if (this.dayNum >= G.tomortleFromDay) {
+        this.tomoWanted = 1;
+        this.plan[UI.randInt(1, Math.max(1, this.total - G.tomortleForceWhenLeft - 1))] = { kind: "tomortle" };
+      }
+      const R = CONFIG.regulars;
+      const S = this.S;
+      S.regularNext = S.regularNext || {};
+      Object.keys(R).forEach((id) => {
+        const def = R[id];
+        const done = S.regularCustomers[id] || 0;
+        const dishOk = this.dishPool.some((r) => r.id === def.dish);
+        let entry = null;
+        if (done < G.regularChapters && this.dayNum >= def.startDay && this.dayNum >= (S.regularNext[id] || 0) && dishOk) {
+          entry = { kind: "regular", id, chapter: done };
+        } else if (done >= G.regularChapters && Math.random() < G.regularLoyalRate) {
+          entry = { kind: "regular", id, chapter: -1 };
+        }
+        if (entry) {
+          const slots = free().filter((i) => i > 0);
+          if (slots.length) this.plan[UI.pick(slots)] = entry;
+        }
+      });
     }
 
     containers() { return this.trays.concat(this.grills); }
@@ -354,18 +397,69 @@ window.BT = window.BT || { Screens: {} };
         this.groupPending = Math.min(d.groupOf, this.total - this.spawned);
         UI.toast(UI.t("groupArrive"));
       }
-      let typeId = UI.pick(this.typePool);
-      if (this.groupPending > 0) { typeId = "hoc_sinh"; this.groupPending--; }
-      const order = this.makeOrder();
-      order.reviewer = this.spawned === this.reviewerAt;
-      this.spawn(seat, typeId, order);
+      const left = this.total - this.spawned;
+      let special = this.groupPending > 0 ? null : this.plan[this.spawned];
+      // Anh Hiếu chưa ghé mà chỉ còn vài khách cuối → ép anh tới ở lượt này
+      if (!special && this.groupPending === 0 && this.tomoCame < this.tomoWanted && left <= G.tomortleForceWhenLeft) special = { kind: "tomortle" };
+      if (special && special.kind === "tomortle" && this.tomoCame >= this.tomoWanted) special = null;
+      if (special && special.kind === "tomortle") this.spawnTomortle(seat);
+      else if (special && special.kind === "regular") this.spawnRegular(seat, special);
+      else if (this.secret || (this.groupPending === 0 && this.dayNum >= G.friendFromDay && Math.random() < G.friendWeight / (this.typePool.length + G.friendWeight))) this.spawnFriend(seat);
+      else {
+        let typeId = UI.pick(this.typePool);
+        if (this.groupPending > 0) { typeId = "hoc_sinh"; this.groupPending--; }
+        const order = this.makeOrder();
+        order.reviewer = this.spawned === this.reviewerAt;
+        this.spawn(seat, typeId, order);
+      }
       this.spawned++;
       this.spawnTimer = this.groupPending > 0 ? G.groupSpawnGapSec : UI.rand(d.spawn[0], d.spawn[1]);
     }
 
-    spawn(seat, typeId, order) {
+    // Hiếu (Tomortle): 1 món bánh tráng + 1 ly nước, kiên nhẫn vô hạn
+    spawnTomortle(seat) {
+      this.tomoCame++;
+      const foods = this.dishPool.filter((r) => r.zone !== "nuoc" && !r.combo);
+      const drinks = this.dishPool.filter((r) => r.zone === "nuoc");
+      const items = [{ id: UI.pick(foods).id, reqs: [] }];
+      if (drinks.length) items.push({ id: UI.pick(drinks).id, reqs: [] });
+      const P = window.PERSONAL;
+      const vars = { dish: UI.recipe(items[0].id).name.toLowerCase(), drink: items[1] ? UI.recipe(items[1].id).name.toLowerCase() : "" };
+      const lines = items[1] ? P.anhLines : P.anhLines.filter((l) => l.indexOf("{drink}") < 0);
+      const speech = UI.fmt(this.tomoCame === 1 && items[1] ? P.anhOrderTemplate : UI.pick(lines.length ? lines : P.anhLines), vars);
+      return this.spawn(seat, "tomortle", { items }, { speech, tag: UI.t("tomoTag") });
+    }
+
+    spawnFriend(seat) {
+      const onScreen = this.customers.map((c) => c.tag);
+      const names = window.PERSONAL.friends.filter((n) => !onScreen.includes(n));
+      const name = UI.pick(names.length ? names : window.PERSONAL.friends);
+      return this.spawn(seat, "ban_be", this.makeOrder(), { tag: name });
+    }
+
+    spawnRegular(seat, plan) {
+      const G = CONFIG.gameplay;
+      const def = CONFIG.regulars[plan.id];
+      const loyal = (this.S.regularCustomers[plan.id] || 0) >= G.regularChapters;
+      const typeDef = {
+        name: def.name, avatar: def.avatar, accessory: def.accessory, patience: def.patience,
+        tip: loyal ? def.tip.map((x) => x * G.regularLoyalTipMult) : def.tip,
+        self: def.self, call: def.call, lines: [UI.t("regularOrder")], enterSec: CONFIG.gameplay.customerEnterSec, kind: "regular"
+      };
+      const dish = this.dishPool.some((r) => r.id === def.dish) ? def.dish : this.makeOrder().items[0].id;
+      return this.spawn(seat, null, { items: [{ id: dish, reqs: this.makeRequests(dish) }] },
+        { typeDef, tag: def.name, loyal, regularId: plan.id, chapter: plan.chapter });
+    }
+
+    spawn(seat, typeId, order, extra) {
+      extra = extra || {};
       const c = new BT.Customer({
         typeId,
+        typeDef: extra.typeDef,
+        tag: extra.tag,
+        speech: extra.speech,
+        loyal: extra.loyal,
+        regularId: extra.regularId,
         items: order.items,
         combo: order.combo,
         reviewer: order.reviewer,
@@ -377,6 +471,7 @@ window.BT = window.BT || { Screens: {} };
         onWalkout: (cc) => this.onWalkout(cc),
         onGone: (cc) => this.onGone(cc)
       });
+      c.chapter = extra.chapter;
       this.seats[seat] = c;
       this.customers.push(c);
       c.el.addEventListener("click", () => this.onCustomerTap(c));
@@ -399,7 +494,7 @@ window.BT = window.BT || { Screens: {} };
       this.addRating(G.ratingWalkout, c);
       this.done++;
       this.combo = 0;
-      this.hearts = Math.max(0, this.hearts - 1);
+      if (!this.dayCfg.cannotLose) this.hearts = Math.max(0, this.hearts - 1);
       BT.Audio.play("angry");
       BT.Audio.vibrate(G.vibrateBad);
       UI.shake(this.hudHearts);
@@ -538,13 +633,93 @@ window.BT = window.BT || { Screens: {} };
       c.el.classList.add("happy");
       let line = p > G.patienceHigh ? UI.t("fast") : UI.t("praise");
       if (reqTip) line = UI.t("requestPraise", c.vars());
-      c.react(line, "😍");
+      if (c.isTomortle) line = UI.t("tomoThanks");
+      c.react(line, c.isTomortle ? "🥰" : "😍");
       const from = UI.center(c.el);
       UI.floatText(from.x, from.y - 30, "+" + UI.money(pay + comboBonus + tip), "money");
       UI.floatText(from.x, from.y - 60, "⭐".repeat(stars), "stars");
       UI.fly(from, UI.center(this.hudMoney), "🪙", 0.6);
       BT.Audio.play("coin");
       c.leave(G.happyLeaveDelaySec);
+      if (c.isTomortle) {
+        UI.heartBurst(G.tomortleHearts, G.tomortleHeartsSec);
+        BT.Audio.play("star");
+        this.scope.timeout(() => this.tomortleStory(), G.tomortleHeartsSec * 700);
+      } else if (c.regularId && c.chapter >= 0) {
+        this.scope.timeout(() => this.regularStory(c.regularId, c.chapter), 600);
+      }
+    }
+
+    // ---------------- Cốt truyện ----------------
+    storyDialog(title, avatar, text, choices) {
+      if (this.over) return;
+      this.pauseReasons.add("story");
+      const body = UI.el("div", "story");
+      body.appendChild(UI.el("div", "story-avatar", avatar));
+      body.appendChild(UI.el("div", "story-text", text));
+      UI.modal({
+        title,
+        body,
+        className: "modal-story",
+        buttons: choices.map((ch) => ({
+          label: ch.label,
+          cls: "btn-white story-choice",
+          onClick: () => { this.pauseReasons.delete("story"); ch.onPick(); }
+        }))
+      });
+    }
+
+    applyEffect(eff) {
+      const S = this.S;
+      const msgs = [];
+      if (eff.tip) { this.stats.tips += eff.tip; S.wallet += eff.tip; msgs.push(UI.t("effTip", { x: UI.money(eff.tip) })); }
+      if (eff.wallet) { S.wallet += eff.wallet; msgs.push(UI.t("effWallet", { x: UI.money(eff.wallet) })); }
+      if (eff.customer) { S.bonusNext = (S.bonusNext || 0) + eff.customer; msgs.push(UI.t("effCustomer")); }
+      if (eff.heart) { this.hearts += eff.heart; msgs.push(UI.t("effHeart")); }
+      if (eff.decor) {
+        if (!S.decor.includes(eff.decor)) S.decor.push(eff.decor);
+        const d = CONFIG.decor.find((x) => x.id === eff.decor);
+        msgs.push(UI.t("effDecor", { name: d ? d.name : eff.decor }));
+      }
+      if (msgs.length) UI.toast(msgs.join(" · "), 2400);
+      BT.Audio.play("coin");
+      this.updateHud();
+    }
+
+    tomortleStory() {
+      const P = window.PERSONAL;
+      const S = this.S;
+      const n = S.regularCustomers.tomortle || 0;
+      const mem = P.memories[n % P.memories.length];
+      const replies = CONFIG.texts.tomoReplies;
+      const answers = CONFIG.texts.tomoAnswers;
+      const effects = [{ tip: 5 }, { heart: 1 }];
+      this.storyDialog(UI.t("tomoTag"), "🧑💐", UI.t("tomoAsk", { title: mem.title }) + "\n" + mem.date, replies.map((label, i) => ({
+        label: UI.fmt(label),
+        onPick: () => {
+          S.regularCustomers.tomortle = n + 1;
+          UI.toast(UI.fmt(answers[i]), 2600);
+          this.applyEffect(effects[i]);
+        }
+      })));
+    }
+
+    regularStory(id, chapter) {
+      const G = CONFIG.gameplay;
+      const def = CONFIG.regulars[id];
+      const ch = def.chapters[chapter];
+      if (!ch) return;
+      const S = this.S;
+      this.storyDialog(UI.t("regularTitle", { name: def.name, c: chapter + 1, t: G.regularChapters }), def.avatar, UI.fmt(ch.text), ch.choices.map((choice) => ({
+        label: UI.fmt(choice.label),
+        onPick: () => {
+          S.regularCustomers[id] = chapter + 1;
+          S.regularNext = S.regularNext || {};
+          S.regularNext[id] = this.dayNum + def.gap;
+          this.applyEffect(choice.effect);
+          if (chapter + 1 >= G.regularChapters) this.scope.timeout(() => UI.toast(UI.t("regularLoyal", { name: def.name }), 2800), 900);
+        }
+      })));
     }
 
     // ---------------- Khay & vỉ ----------------
@@ -944,8 +1119,8 @@ window.BT = window.BT || { Screens: {} };
       this.hudCust.textContent = UI.t("hudCustomers", { d: this.done, t: this.total });
       const avg = this.avgRating();
       this.hudRate.textContent = "⭐ " + (avg ? UI.rating(avg) : "–");
-      this.hudMoney.textContent = "🪙 " + UI.money(this.income()) + " / " + UI.money(this.dayCfg.target);
-      this.hudMoney.classList.toggle("reached", this.income() >= this.dayCfg.target);
+      this.hudMoney.textContent = "🪙 " + UI.money(this.income()) + (this.secret ? "" : " / " + UI.money(this.dayCfg.target));
+      this.hudMoney.classList.toggle("reached", !this.secret && this.income() >= this.dayCfg.target);
       this.hudCombo.textContent = UI.t("comboLabel", { n: this.combo });
       this.hudCombo.style.display = this.combo >= 2 ? "" : "none";
       let h = "";
@@ -1036,7 +1211,7 @@ window.BT = window.BT || { Screens: {} };
       this.over = true;
       BT.Save.restoreDay();
       BT.Save.persist();
-      if (where === "retry") this.router.go("Prep", { day: this.dayNum }, { replace: true });
+      if (where === "retry") this.router.go("Prep", { day: this.dayId }, { replace: true });
       else this.router.backTo("Map");
     }
 
@@ -1048,9 +1223,10 @@ window.BT = window.BT || { Screens: {} };
       const M = CONFIG.money;
       const d = this.dayCfg;
       const income = this.income();
-      const passed = !lostHearts && income >= d.target;
+      const passed = this.secret || (!lostHearts && income >= d.target);
       let stars = 0;
-      if (passed) {
+      if (this.secret) stars = 3;
+      else if (passed) {
         stars = 1;
         if (income >= d.target * G.dayStarRatios[1]) stars = 2;
         if (income >= d.target * G.dayStarRatios[2] && this.stats.walkouts === 0) stars = 3;
@@ -1061,27 +1237,42 @@ window.BT = window.BT || { Screens: {} };
         this.S.wallet -= income - kept;
       }
       const avg = this.avgRating();
-      const prev = this.S.days[this.dayNum];
+      const prev = this.S.days[this.dayId];
       const firstClear = passed && !(prev && prev.stars > 0);
 
       const rec = prev || { stars: 0, bestRevenue: 0, avgRating: 0 };
       rec.stars = Math.max(rec.stars, stars);
       rec.bestRevenue = Math.max(rec.bestRevenue, income);
       if (avg > rec.avgRating) rec.avgRating = Math.round(avg * 10) / 10;
-      this.S.days[this.dayNum] = rec;
+      this.S.days[this.dayId] = rec;
+      const goldBefore = this.S.goldHearts;
       this.S.goldHearts = Object.keys(this.S.days).filter((k) => k !== "secret" && this.S.days[k].stars === 3).length;
-      if (passed && typeof this.dayNum === "number") this.S.unlockedDay = Math.max(this.S.unlockedDay, this.dayNum + 1);
+      const newGold = this.S.goldHearts > goldBefore;
+      const allGold = this.S.goldHearts >= CONFIG.build.maxPlayableDay && !this.S.bonusSeen;
+      // Qua ngày lần đầu → mở 1 thẻ kỷ niệm
+      let newMemory = null;
+      const mi = this.dayNum - 1;
+      if (passed && !this.secret && window.PERSONAL.memories[mi] && !this.S.memoriesUnlocked.includes(mi)) {
+        this.S.memoriesUnlocked.push(mi);
+        newMemory = mi;
+      }
+      const ending = passed && this.dayId === CONFIG.build.maxPlayableDay && !this.S.endingSeen;
+      // Khách thêm từ cốt truyện: dùng cho ngày kế tiếp
+      this.S.bonusCustomers = this.S.bonusNext || 0;
+      this.S.bonusNext = 0;
+      if (passed && !this.secret) this.S.unlockedDay = Math.max(this.S.unlockedDay, this.dayNum + 1);
       // Đếm số lần thua liên tiếp ở cùng một ngày
       if (passed) this.S.loseStreak = null;
-      else if (this.S.loseStreak && this.S.loseStreak.day === this.dayNum) this.S.loseStreak.n++;
-      else this.S.loseStreak = { day: this.dayNum, n: 1 };
+      else if (this.S.loseStreak && this.S.loseStreak.day === this.dayId) this.S.loseStreak.n++;
+      else this.S.loseStreak = { day: this.dayId, n: 1 };
       this.S.xp += Math.round(income / 10);
       if (this.S.dayBackup) this.S.dayBackup.finished = true;
       this.S.today = null;
       BT.Save.persist();
 
       const summary = {
-        day: this.dayNum, passed, lostHearts, stars, firstClear,
+        day: this.dayId, passed, lostHearts, stars, firstClear, secret: this.secret,
+        memory: newMemory, newGold, allGold, ending,
         income, kept, target: d.target,
         revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
         net: kept - this.stats.expense,

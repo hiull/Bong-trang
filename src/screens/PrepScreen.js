@@ -10,6 +10,7 @@ window.BT = window.BT || { Screens: {} };
       const M = CONFIG.money;
       const day = params.day;
       const dc = UI.dayCfg(day);
+      const lv = UI.dayLevel(day);
 
       // Điểm khôi phục đầu ngày (vào lại màn này thì quay về đúng đầu ngày)
       if (S.dayBackup && S.dayBackup.day === day && !S.dayBackup.finished) BT.Save.restoreDay();
@@ -19,21 +20,21 @@ window.BT = window.BT || { Screens: {} };
 
       const ids = Object.keys(CONFIG.ingredients).filter((id) => {
         const ing = CONFIG.ingredients[id];
-        return ing.openDay <= day && ing.zones.some((z) => CONFIG.build.playableZones.includes(z));
+        return ing.openDay <= lv && ing.zones.some((z) => CONFIG.build.playableZones.includes(z));
       });
       const gift = M.freeStockDays.includes(day);
       if (gift) ids.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.freeStockQty); });
       // Xếp theo khu: Trộn → Nước → Nướng → Cuốn (theo ngày mở)
-      const zones = CONFIG.zones.filter((z) => z.openDay <= day && CONFIG.build.playableZones.includes(z.id)).sort((a, b) => a.openDay - b.openDay);
+      const zones = CONFIG.zones.filter((z) => z.openDay <= lv && CONFIG.build.playableZones.includes(z.id)).sort((a, b) => a.openDay - b.openDay);
       const seen = new Set();
       const groups = zones.map((z) => {
-        const list = BT.Station.ingredientsFor(z.id, day).filter((id) => !seen.has(id));
+        const list = BT.Station.ingredientsFor(z.id, lv).filter((id) => !seen.has(id));
         list.forEach((id) => seen.add(id));
         return { z, list };
       }).filter((g) => g.list.length);
 
       const el = UI.el("div", "screen prep");
-      el.appendChild(UI.topbar(UI.t("prepTitle", { n: day }), () => router.back()));
+      el.appendChild(UI.topbar(UI.t("prepTitle", { n: UI.dayName(day) }), () => router.back()));
       const body = UI.el("div", "prep-body");
 
       const card = UI.el("div", "card forecast");
@@ -81,7 +82,7 @@ window.BT = window.BT || { Screens: {} };
       el.appendChild(body);
 
       const foot = UI.el("div", "prep-foot");
-      foot.appendChild(UI.button(UI.t("btnOpenDay", { n: day }), "btn-pink big", () => {
+      foot.appendChild(UI.button(UI.t("btnOpenDay", { n: UI.dayName(day) }), "btn-pink big", () => {
         router.go("Game", { day }, { replace: true });
       }));
       el.appendChild(foot);

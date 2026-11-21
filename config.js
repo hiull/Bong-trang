@@ -11,10 +11,10 @@ window.CONFIG = {
   // Phạm vi đã làm xong theo lộ trình (Mục 23). Giai đoạn 2: đủ 4 khu, Ngày 1 → 15.
   // Ngày bí mật mở ở Giai đoạn 3 (cùng khách Hiếu & nhóm bạn).
   build: {
-    stage: 2,
+    stage: 3,
     maxPlayableDay: 15,
     playableZones: ["tron", "nuong", "cuon", "nuoc"],
-    secretPlayable: false
+    secretPlayable: true
   },
 
   // Bảng màu (Mục 14.2) — main.js tự nạp vào biến CSS.
@@ -121,7 +121,102 @@ window.CONFIG = {
     // Quầy cuốn
     rollDistance: 0.55,                        // vuốt lên được 55% chiều cao bánh là cuốn xong
     // Ngày Học sinh tan trường
-    groupSpawnGapSec: 0.5
+    groupSpawnGapSec: 0.5,
+    // Khách Hiếu (Tomortle) & khách quen
+    tomortleFromDay: 3,
+    tomortleForceWhenLeft: 3,     // còn 3 khách cuối mà anh chưa tới thì ép anh tới ở lượt kế tiếp
+    tomortleHearts: 10,           // số trái tim bay lên khi anh nhận món
+    tomortleHeartsSec: 1.5,
+    secretTomortleVisits: 3,      // Ngày bí mật: anh ghé 3 lần, còn lại là nhóm bạn
+    friendFromDay: 4,
+    friendWeight: 0.6,            // tỉ lệ bạn bè so với 1 loại khách thường
+    regularChapters: 4,
+    regularLoyalTipMult: 2,       // khách ruột tip x2
+    regularLoyalRate: 0.35,       // khách ruột ghé lại mỗi ngày với tỉ lệ này
+    // Kỷ niệm
+    typeMsPerChar: 30,
+    endingSlideSec: 3,
+    endingWalkSec: 2.2
+  },
+
+  // 3 khách quen có cốt truyện (Mục 8.2). Mỗi chương có 2 lựa chọn, lựa chọn nào cũng có lợi.
+  // effect: tip (+k ngay), wallet (+k vào ví), customer (+1 khách ngày mai), decor (tặng đồ trang trí)
+  regulars: {
+    chi_lan: {
+      name: "Chị Lan Kế Toán", avatar: "👩‍💼", self: "chị", call: "em", dish: "bt_tron_kho_bo",
+      patience: 30, tip: [3, 5], startDay: 2, gap: 2,
+      chapters: [
+        { text: "Chị làm kế toán ở toà nhà đối diện nè. Tháng này quyết toán, chị tăng ca hoài luôn em ơi.",
+          choices: [
+            { label: "Chị ăn thêm cho có sức nha, em bỏ nhiều khô bò cho chị!", effect: { tip: 5 } },
+            { label: "Chị nhớ nghỉ ngơi xíu, sức khoẻ là trên hết á!", effect: { customer: 1 } }
+          ] },
+        { text: "Hôm qua chị rủ mấy đứa trong phòng qua ăn, tụi nó khen quá trời. Sếp chị cũng ghiền luôn rồi đó!",
+          choices: [
+            { label: "Dạ em cảm ơn chị đã giới thiệu nha 💕", effect: { wallet: 20 } },
+            { label: "Lần sau chị dẫn sếp qua, em làm phần đặc biệt!", effect: { customer: 1 } }
+          ] },
+        { text: "Chị vừa được tăng lương nè em! Chị mua tặng tiệm cái đèn lồng nhỏ treo cho đẹp nha.",
+          choices: [
+            { label: "Trời ơi, em cảm ơn chị nhiều lắm!", effect: { decor: "den_long" } },
+            { label: "Chúc mừng chị! Chị xứng đáng lắm luôn!", effect: { tip: 10 } }
+          ] },
+        { text: "Chị sắp chuyển qua chi nhánh khác rồi… nhưng cuối tuần nào chị cũng ghé tiệm em hết á!",
+          choices: [
+            { label: "Chị nhớ ghé nha, em để dành khô bò cho chị!", effect: { tip: 10 } },
+            { label: "Tiệm lúc nào cũng có chỗ cho chị hết!", effect: { wallet: 20 } }
+          ] }
+      ] },
+    chu_tu: {
+      name: "Chú Tư Xe Ôm", avatar: "🧔", accessory: "🛵", self: "chú", call: "con", dish: "bt_nuong_trung",
+      patience: 30, tip: [2, 4], startDay: 4, gap: 2,
+      chapters: [
+        { text: "Chú chạy xe ôm trước cổng trường hoài mà giờ mới ghé. Mua cái bánh nướng cho bé Út cháu gái chú nè con.",
+          choices: [
+            { label: "Dạ con nướng giòn giòn cho bé nha chú!", effect: { tip: 5 } },
+            { label: "Lần sau chú dẫn bé Út qua chơi nha!", effect: { customer: 1 } }
+          ] },
+        { text: "Bé Út khen bánh con nướng ngon nhất trường đó. Nó còn vẽ tặng tiệm một tấm hình nữa nè.",
+          choices: [
+            { label: "Dễ thương quá! Con dán lên tủ liền nha chú", effect: { wallet: 15 } },
+            { label: "Chú cảm ơn bé Út giùm con nha!", effect: { tip: 5 } }
+          ] },
+        { text: "Hôm nay nắng quá, chú chở khách cả ngày mệt rã rời… Ăn cái bánh của con là khoẻ re liền.",
+          choices: [
+            { label: "Chú nhớ uống nhiều nước cho mát nha!", effect: { wallet: 10 } },
+            { label: "Chú đội nón kỹ kẻo say nắng nha chú!", effect: { tip: 5 } }
+          ] },
+        { text: "Từ giờ chú chở khách nào cũng giới thiệu tiệm của con hết! Tiệm {shop} là số một!",
+          choices: [
+            { label: "Con cảm ơn chú nhiều lắm!", effect: { customer: 1 } },
+            { label: "Chú với bé Út là khách ruột của tiệm luôn rồi đó!", effect: { tip: 10 } }
+          ] }
+      ] },
+    be_na: {
+      name: "Bé Na Lớp 10", avatar: "👧", self: "em", call: "chị", dish: "bt_cuon_bo",
+      patience: 30, tip: [0, 2], startDay: 7, gap: 2,
+      chapters: [
+        { text: "Chị ơi, em để dành tiền ăn sáng cả tuần mới đủ mua cuốn bơ đó. Ngon dữ thần luôn!",
+          choices: [
+            { label: "Em nhớ ăn sáng đầy đủ nha, đừng nhịn đói!", effect: { tip: 3 } },
+            { label: "Lần sau rủ bạn qua, chị làm nhiều bơ cho!", effect: { customer: 1 } }
+          ] },
+        { text: "Hôm nay em bị cô kêu lên bảng mà làm được bài luôn chị ơi! Vui quá nên ghé ăn mừng nè.",
+          choices: [
+            { label: "Giỏi quá! Chị thưởng em thêm muối tôm nha!", effect: { tip: 5 } },
+            { label: "Cố lên Na, chị tin em thi tốt!", effect: { customer: 1 } }
+          ] },
+        { text: "Em với mấy bạn làm báo tường có viết về tiệm chị đó! Tụi em tặng chị chậu hoa giấy nè.",
+          choices: [
+            { label: "Trời, cảm ơn em với các bạn nha!", effect: { decor: "hoa_giay" } },
+            { label: "Cho chị đọc bài báo với!", effect: { tip: 5 } }
+          ] },
+        { text: "Em đậu đội tuyển văn của trường rồi! Mai mốt em đi thi xa, nhưng về là ghé chị liền!",
+          choices: [
+            { label: "Chúc mừng Na! Chị đợi em về kể chuyện nha", effect: { customer: 1 } },
+            { label: "Đi thi nhớ mang theo bánh tráng chị làm nè!", effect: { tip: 5 } }
+          ] }
+      ] }
   },
 
   // 4 khu làm món (Mục 7.1)
@@ -527,6 +622,40 @@ window.CONFIG = {
     weatherChip: "{icon} {label}",
     zoneHeader: "{icon} Khu {name}",
     secretSoon: "Ngày bí mật sẽ mở ở bản cập nhật tới 💕",
+    dayNames: { secret: "bí mật" },
+    // Khách Hiếu (Tomortle)
+    tomoTag: "{nick} 💕",
+    tomoAsk: "{Her} còn nhớ \"{title}\" không?",
+    tomoReplies: ["Nhớ chứ, sao mà quên được 💕", "Nhớ hoài luôn, anh hỏi chi vậy 😳"],
+    tomoAnswers: ["Anh cũng vậy, nhớ từng chút một luôn ❤️ (+5k tip)", "Tại anh thương em quá nên hỏi hoài đó 😚 (+1 tim tiệm)"],
+    tomoThanks: "Ngon nhất quả đất luôn! Cảm ơn bà chủ {her} 💕",
+    // Khách quen
+    regularOrder: "{Call} ơi, cho {self} {dish} như mọi khi nha!",
+    regularTitle: "{name} · Chương {c}/{t}",
+    regularLoyal: "{name} trở thành Khách ruột ❤️ của tiệm!",
+    effTip: "+{x} tip 💰",
+    effWallet: "+{x} vào ví 🪙",
+    effCustomer: "Ngày mai có thêm 1 khách ghé tiệm 👥",
+    effDecor: "Nhận quà trang trí: {name} 🎁",
+    effHeart: "+1 tim tiệm ❤️",
+    // Kỷ niệm
+    envelopeTap: "Có thư nè! Chạm để mở ✉️",
+    memoryLocked: "Qua Ngày {n} để mở",
+    albumTitle: "Kỷ niệm 💌",
+    albumCount: "Đã mở {a}/{b} thẻ",
+    goldHearts: "💛 {a}/{b}",
+    bonusTitle: "Lời nhắn bí mật 💛",
+    bonusCard: "💛 Lời nhắn bí mật",
+    bonusLocked: "Đạt 3 sao cả 15 ngày để mở lời nhắn bí mật",
+    goldHeartGet: "Nhận 1 Trái tim vàng 💛",
+    btnOpenLetter: "Mở thư",
+    btnSurprise: "Xem bất ngờ 💝",
+    tapToSkip: "Chạm để xem tiếp",
+    endingTogether: "Đã bên nhau {n} ngày. Và còn nhiều nữa 💞",
+    specialDayBanner: "Chúc mừng kỷ niệm của {nick} & Sarose! 🎉",
+    secretInfo: "Chỉ có anh {me} và nhóm bạn ghé chơi. Không thể thua 💕",
+    noTarget: "Không giới hạn",
+    secretResult: "Một ngày bán hàng thật vui cùng mọi người 💕",
     stepNames: { lac: "💫 Lắc", nuong: "🔥 Canh lửa", gap: "🫓 Gấp bánh", cuon: "🌯 Cuốn", "rot:tra": "🫖 Rót trà (giữ 2 giây)", "rot:nuoc_mia": "🎋 Rót nước mía (giữ 2 giây)" },
     zonePrev: "Khu trước",
     zoneNext: "Khu sau",

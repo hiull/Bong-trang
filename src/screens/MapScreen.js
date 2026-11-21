@@ -6,7 +6,7 @@ window.BT = window.BT || { Screens: {} };
 
   function isPlayable(day) {
     const S = BT.Save.state;
-    if (day === "secret") return CONFIG.build.secretPlayable && S.unlockedDay > 15;
+    if (day === "secret") return CONFIG.build.secretPlayable && S.endingSeen;
     return day <= S.unlockedDay && day <= CONFIG.build.maxPlayableDay;
   }
 
@@ -15,7 +15,8 @@ window.BT = window.BT || { Screens: {} };
     const w = CONFIG.weathers[dc.weather];
     box.appendChild(UI.el("div", "info-line", UI.t("forecast", { icon: w.icon, weather: w.label, c: dc.customers })));
     if (w.note) box.appendChild(UI.el("div", "info-note", w.note));
-    box.appendChild(UI.el("div", "info-line", UI.t("target") + ": " + UI.money(dc.target)));
+    if (dc.cannotLose) box.appendChild(UI.el("div", "info-note", UI.t("secretInfo")));
+    box.appendChild(UI.el("div", "info-line", UI.t("target") + ": " + (dc.target ? UI.money(dc.target) : UI.t("noTarget"))));
     const names = (dc.unlock || []).map((id) => UI.recipe(id).name);
     box.appendChild(UI.el("div", "info-line", names.length ? UI.t("newDishes", { list: names.join(", ") }) : UI.t("noNewDishes")));
     return box;
@@ -50,14 +51,14 @@ window.BT = window.BT || { Screens: {} };
         if (!playable) node.appendChild(UI.el("span", "node-lock", "🔒"));
         node.addEventListener("click", () => {
           if (!playable) {
-            if (secret) UI.toast(S.unlockedDay > 15 ? UI.t("secretSoon") : UI.t("secretLocked"));
+            if (secret) UI.toast(UI.t("secretLocked"));
             else if (d > S.unlockedDay) UI.toast(UI.t("dayLockedPrev", { p: d - 1 }));
             else UI.toast(UI.t("dayLockedBuild", { n: d }));
             return;
           }
           BT.Audio.play("tap");
           UI.modal({
-            title: UI.t("dayN", { n: d }),
+            title: secret ? UI.t("secretDay") : UI.t("dayN", { n: d }),
             body: dayInfo(dc),
             dismissable: true,
             buttons: [{ label: UI.t("btnPrepare"), cls: "btn-pink", onClick: () => router.go("Prep", { day: d }) }]

@@ -17,6 +17,7 @@ window.BT = window.BT || { Screens: {} };
       stats.appendChild(UI.el("div", "pill", "🪙 " + UI.money(S.wallet)));
       const ratings = Object.values(S.days).map((d) => d.avgRating).filter((x) => x > 0);
       stats.appendChild(UI.el("div", "pill", "⭐ " + (ratings.length ? UI.rating(ratings.reduce((a, b) => a + b, 0) / ratings.length) : "–")));
+      stats.appendChild(UI.el("div", "pill", UI.t("goldHearts", { a: S.goldHearts, b: CONFIG.build.maxPlayableDay })));
       top.appendChild(stats);
       top.appendChild(UI.iconButton("⚙️", UI.t("btnSettings"), () => UI.toast(UI.t("comingSoonShort")), "settings-btn"));
       el.appendChild(top);
@@ -53,6 +54,15 @@ window.BT = window.BT || { Screens: {} };
 
       el.appendChild(UI.el("div", "footer", UI.t("footer")));
       root.appendChild(el);
+
+      // Ngày đặc biệt: 11/01 hằng năm hoặc tròn bội số 100 ngày yêu → pháo hoa + banner
+      const ann = String(P.anniversary).split("-").map(Number);
+      const now = new Date();
+      const n = UI.loveDays();
+      if ((now.getMonth() + 1 === ann[1] && now.getDate() === ann[2]) || (n > 0 && n % 100 === 0)) {
+        facade.appendChild(UI.el("div", "special-banner", UI.t("specialDayBanner")));
+        setTimeout(() => UI.confetti(80), 500);
+      }
 
       // Lần đầu mở game: popup chào mừng → vào thẳng Chuẩn bị Ngày 1
       if (!BT.Save.available) UI.toast(UI.t("privateMode"), 3200);

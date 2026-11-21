@@ -38,6 +38,10 @@ window.BT = window.BT || { Screens: {} };
       inventory: {},      // kho nguyên liệu mang sang ngày sau
       today: null,        // chi phí của ngày đang chơi
       loseStreak: null,   // { day, n } số lần thua liên tiếp ở cùng một ngày
+      regularNext: {},    // khách quen: ngày sớm nhất được ghé chương tiếp theo
+      bonusCustomers: 0,  // khách thêm cho lần chơi tới (từ lựa chọn cốt truyện)
+      bonusNext: 0,
+      bonusSeen: false,   // đã xem lời nhắn bí mật (đủ 15 tim vàng)
       welcomeSeen: false
     };
   }
