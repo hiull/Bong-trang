@@ -130,6 +130,53 @@ window.BT = window.BT || { Screens: {} };
     stock(id) { return this.state.inventory[id] || 0; }
   };
 
+  // ---------------- Mã sao lưu TIEM1- ----------------
+  // TIEM1-Z… = JSON nén deflate rồi base64url (trình duyệt có CompressionStream)
+  // TIEM1-J… = JSON base64url không nén (trình duyệt cũ)
+  const PREFIX = "TIEM1-";
+  function b64encode(bytes) {
+    let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function b64decode(str) {
+    const s = str.replace(/-/g, "+").replace(/_/g, "/");
+    const bin = atob(s + "===".slice((s.length + 3) % 4));
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  async function pipe(bytes, stream) {
+    const res = new Response(new Blob([bytes]).stream().pipeThrough(stream));
+    return new Uint8Array(await res.arrayBuffer());
+  }
+
+  Save.exportCode = async function () {
+    const data = Object.assign({}, this.state, { dayBackup: null, today: null });
+    const bytes = new TextEncoder().encode(JSON.stringify(data));
+    if (window.CompressionStream) {
+      try { return PREFIX + "Z" + b64encode(await pipe(bytes, new CompressionStream("deflate-raw"))); } catch (e) { /* dùng bản không nén */ }
+    }
+    return PREFIX + "J" + b64encode(bytes);
+  };
+
+  // Trả về true nếu khôi phục được, ném lỗi nếu mã sai
+  Save.importCode = async function (code) {
+    const c = String(code || "").replace(/\s+/g, "");
+    if (c.indexOf(PREFIX) !== 0 || c.length < PREFIX.length + 10) throw new Error("bad");
+    const kind = c.charAt(PREFIX.length);
+    let bytes = b64decode(c.slice(PREFIX.length + 1));
+    if (kind === "Z") {
+      if (!window.DecompressionStream) throw new Error("unsupported");
+      bytes = await pipe(bytes, new DecompressionStream("deflate-raw"));
+    } else if (kind !== "J") throw new Error("bad");
+    const data = JSON.parse(new TextDecoder().decode(bytes));
+    if (!data || data.version !== 1 || typeof data.wallet !== "number") throw new Error("bad");
+    this.state = merge(defaults(), data);
+    this.persist();
+    return true;
+  };
+
   BT.Save = Save;
 
   // ---------------- Tiến trình: cấp độ, nhiệm vụ, điểm danh, đánh giá ----------------

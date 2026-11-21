@@ -101,10 +101,68 @@ window.BT = window.BT || { Screens: {} };
         toggle("sfx", UI.t("setSfx"));
         if (navigator.vibrate) toggle("vibrate", UI.t("setVibrate"));
         body.appendChild(UI.button(UI.t("setHowTo"), "btn-purple small", () => { m.close(true); UI.howTo(); }));
-        body.appendChild(UI.button(UI.t("setBackup"), "btn-white small", () => UI.toast(UI.t("comingSoonShort"))));
-        body.appendChild(UI.button(UI.t("setWipe"), "btn-white small danger", () => UI.toast(UI.t("comingSoonShort"))));
+        body.appendChild(UI.button(UI.t("setBackup"), "btn-white small", () => { m.close(true); openBackup(); }));
+        body.appendChild(UI.button(UI.t("setWipe"), "btn-white small danger", () => { m.close(true); openWipe(); }));
         body.appendChild(UI.el("div", "set-footer", UI.t("footer")));
         const m = UI.modal({ title: UI.t("settingsTitle"), body, dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+      }
+
+      // ---------- Sao lưu & Khôi phục mã TIEM1- ----------
+      function openBackup() {
+        const body = UI.el("div", "backup");
+        const out = UI.el("textarea", "backup-code");
+        out.readOnly = true;
+        out.rows = 3;
+        out.value = "…";
+        BT.Save.exportCode().then((code) => { out.value = code; });
+        body.appendChild(out);
+        body.appendChild(UI.button(UI.t("backupCopy"), "btn-pink small", () => {
+          const code = out.value;
+          const done = () => UI.toast(UI.t("backupCopied"), 2600);
+          const manual = () => { out.focus(); out.select(); UI.toast(UI.t("backupCopyManual"), 2600); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, manual);
+          else manual();
+        }));
+        body.appendChild(UI.el("div", "backup-warn", "⚠️ " + UI.t("backupWarn")));
+        body.appendChild(UI.el("div", "backup-label", UI.t("backupPaste")));
+        const inp = UI.el("textarea", "backup-code");
+        inp.rows = 3;
+        inp.placeholder = UI.t("backupPlaceholder");
+        body.appendChild(inp);
+        body.appendChild(UI.button(UI.t("backupRestore"), "btn-orange small", () => {
+          const code = inp.value.trim();
+          if (!code) { UI.toast(UI.t("backupBad")); return; }
+          confirmBox(UI.t("backupConfirm"), UI.t("backupRestore"), () => {
+            BT.Save.importCode(code).then(() => {
+              UI.closeAllModals();
+              UI.toast(UI.t("backupDone"), 2600);
+              BT.Audio.applySettings();
+              router.stack.length = 0;
+              router.go("Menu");
+            }).catch((e) => UI.toast(e && e.message === "unsupported" ? UI.t("backupUnsupported") : UI.t("backupBad"), 3000));
+          });
+        }));
+        UI.modal({ title: UI.t("backupTitle"), body, dismissable: true, className: "modal-backup", buttons: [{ label: UI.t("btnClose"), cls: "btn-white" }] });
+      }
+
+      function confirmBox(text, yes, onYes, cls) {
+        UI.modal({ title: "", body: text, dismissable: true, buttons: [
+          { label: yes, cls: cls || "btn-orange", onClick: onYes },
+          { label: UI.t("cancel"), cls: "btn-white" }
+        ] });
+      }
+
+      // ---------- Xoá dữ liệu (xác nhận 2 lần) ----------
+      function openWipe() {
+        confirmBox(UI.t("wipeConfirm1"), UI.t("wipeYes"), () => {
+          confirmBox(UI.t("wipeConfirm2"), UI.t("wipeYes2"), () => {
+            BT.Save.reset();
+            BT.Audio.applySettings();
+            UI.closeAllModals();
+            router.stack.length = 0;
+            router.go("Menu");
+          }, "btn-red");
+        }, "btn-red");
       }
 
       // ---------- Điểm danh 7 ngày ----------

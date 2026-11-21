@@ -100,7 +100,28 @@ window.BT = window.BT || { Screens: {} };
       link.rel = "manifest";
       link.href = "manifest.json";
       document.head.appendChild(link);
-      // service-worker.js sẽ được đăng ký ở Giai đoạn 6 (PWA chơi offline).
+      // PWA: chơi offline sau lần tải đầu, "Thêm vào màn hình chính"
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("service-worker.js").then((reg) => {
+            reg.addEventListener("updatefound", () => {
+              const w = reg.installing;
+              if (!w) return;
+              w.addEventListener("statechange", () => {
+                if (w.state === "installed" && navigator.serviceWorker.controller) UI.toast(UI.t("updateReady"), 4000);
+              });
+            });
+          }).catch(() => { /* không có PWA thì game vẫn chạy bình thường */ });
+        });
+      }
+    }
+
+    // Trình duyệt nhúng trong Messenger / Zalo / Facebook / Instagram → nhắc mở bằng Safari hoặc Chrome
+    if (/FBAN|FBAV|FB_IAB|FBIOS|Messenger|Zalo|Instagram/i.test(navigator.userAgent || "")) {
+      const bar = UI.el("div", "embed-banner");
+      bar.appendChild(UI.el("span", "", UI.t("embeddedBrowser")));
+      bar.appendChild(UI.iconButton("✕", UI.t("btnClose"), () => bar.remove()));
+      setTimeout(() => document.body.appendChild(bar), 1500);
     }
 
     // Bật âm thanh sau lần chạm đầu tiên

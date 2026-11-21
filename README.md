@@ -3,18 +3,8 @@
 Game nấu ăn – quản lý thời gian bán bánh tráng, làm tặng **Bống (Sarose)** từ **Hiếu (Tomortle)**.
 Chạy trên trình duyệt, không cần cài đặt, không quảng cáo, không gửi dữ liệu đi đâu cả.
 
-> **Trạng thái hiện tại: Giai đoạn 5 / 6 — Hoạt ảnh, Âm thanh & Hướng dẫn.**
-> Nhạc nền & hiệu ứng âm thanh (tạo bằng code), hoạt ảnh làm món, bộ 7 thẻ "Cách chơi", hướng dẫn tương tác Ngày 1, 2, 4, 7, Cài đặt âm thanh/rung.
->
-> *(Giai đoạn 4 — Cửa hàng, Đánh giá & Sự kiện:)*
-> Cửa hàng nâng cấp, trang trí, thú cưng, 5 giao diện mùa, Sổ đánh giá, sự cố nước đổ, điểm danh 7 ngày, nhiệm vụ hằng ngày, cấp độ tiệm.
->
-> *(Giai đoạn 3 — Cá nhân hoá & Kỷ niệm:)*
-> Có khách **Hiếu (Tomortle)**, 7 người bạn, 3 khách quen có cốt truyện, 15 thẻ kỷ niệm & Album, Trái tim vàng, màn kết thúc sau Ngày 15 và **Ngày bí mật ★**.
->
-> *(Giai đoạn 2 — Đủ 4 khu & 15 Ngày:)*
-> Chơi thông suốt **Ngày 1 → Ngày 15** với đủ 4 khu: Trộn (lắc bịch), Nước (nhấn giữ rót), Nướng (canh lửa), Cuốn (vuốt cuốn).
-> Có yêu cầu riêng của khách, combo, chiêu 💖 Năng lượng yêu thương, và **tự lưu tiến trình**.
+> **Trạng thái: Hoàn thành cả 6 giai đoạn ✅**
+> 15 Ngày bán hàng + Ngày bí mật · 4 khu làm món (Trộn, Nước, Nướng, Cuốn) · 16 món · khách Hiếu (Tomortle), 7 người bạn, 3 khách quen có cốt truyện · 15 thẻ kỷ niệm, Album, Trái tim vàng, màn kết thúc · Cửa hàng, thú cưng, 5 giao diện mùa · Sổ đánh giá · Điểm danh, nhiệm vụ · Nhạc & âm thanh · Hướng dẫn · Tự lưu, mã sao lưu TIEM1-, chơi offline (PWA).
 
 ---
 
@@ -104,28 +94,65 @@ Bạn chỉ cần máy tính có **Google Chrome** (hoặc Microsoft Edge) và c
 - [ ] Hoạt ảnh: topping xáo trộn khi lắc, tia nước khi rót xong, lòng đỏ lan khi tán trứng, bánh phồng + khói khi nướng, ✨ khi kim ở vùng xanh, khói xám khi cháy.
 - [ ] **⚙️ Cài đặt:** công tắc Nhạc nền / Âm thanh / Rung (rung chỉ hiện trên máy hỗ trợ), nút **Cách chơi 📖** xem lại 7 thẻ.
 
-### Muốn chơi lại từ đầu?
-Tiến trình được lưu trong trình duyệt. Để thử lại từ Ngày 1, mở một **cửa sổ ẩn danh** (**Ctrl + Shift + N**, Mac: **Cmd + Shift + N**) rồi kéo file `index.html` vào cửa sổ đó. *(Nút "Xoá dữ liệu" trong Cài đặt sẽ có ở Giai đoạn 6.)*
+### Bước 10 — Kiểm tra Giai đoạn 6 (hoàn thiện)
+- [ ] **⚙️ Cài đặt → Sao lưu & Khôi phục 💾:** bấm **Sao chép mã sao lưu** (mã bắt đầu bằng `TIEM1-`), dán vào Ghi chú để cất. Mở game ở trình duyệt khác / máy khác → dán mã vào ô **Dán mã để khôi phục** → **Khôi phục** → tiền, ngày, kỷ niệm quay về đúng như cũ. Dán mã sai thì game báo lỗi, không mất dữ liệu.
+- [ ] **⚙️ Cài đặt → Xoá dữ liệu:** hỏi lại 2 lần rồi mới xoá, xong quay về popup chào mừng.
+- [ ] **Hết vốn:** nếu ví không đủ tiền nhập hàng tối thiểu, màn Chuẩn bị hiện lời nhắn của Tomortle và tặng mỗi nguyên liệu 5 phần — tiệm không bao giờ bị kẹt.
+- [ ] Xoay ngang điện thoại → hiện *"Xoay dọc điện thoại để chơi nhé 📱"* và game tự tạm dừng. Chuyển app / khoá màn hình giữa ca → tự tạm dừng.
+- [ ] Mở link game trong **Messenger / Zalo / Facebook** → hiện nhắc *"Mở bằng Safari hoặc Chrome…"*.
+- [ ] Sau khi đưa lên mạng (mục 2): mở link một lần, tắt mạng rồi mở lại → vẫn chơi được.
 
-### Lưu ý
-- Âm thanh & nhạc đều tạo bằng code nên không cần file trong `assets/sfx` và `assets/music`.
-- Trong Cài đặt, **Sao lưu & Khôi phục (mã TIEM1-)** và **Xoá dữ liệu** sẽ có ở Giai đoạn 6.
-- **Âm thanh:** mới có tiếng "tít" ngắn tạo bằng code. Nhạc nền & hiệu ứng thật ở Giai đoạn 5.
-- Các nút **Nâng cấp, Kỷ niệm, Đánh giá, Điểm danh, Nhiệm vụ, ⚙️** hiện thông báo *"sắp có"*.
-- Mở trên điện thoại thật qua link web sẽ làm ở Giai đoạn 6 (GitHub Pages).
+### Muốn chơi lại từ đầu?
+Vào **⚙️ Cài đặt → Xoá dữ liệu** (nhớ sao lưu mã trước nếu muốn giữ), hoặc mở một **cửa sổ ẩn danh** (**Ctrl + Shift + N**, Mac: **Cmd + Shift + N**) rồi kéo file `index.html` vào.
+
+### Lưu ý khi chạy bằng cách mở file trên máy tính
+- Chế độ chơi offline (PWA) chỉ bật khi mở qua link web (mục 2), không bật khi nhấn đúp file `index.html`. Mọi thứ khác đều chạy như nhau.
+- Lần đầu cần có mạng để tải font chữ đẹp; không có mạng thì game dùng font sẵn của máy.
 
 ---
 
-## 2. Tự sửa thông tin cá nhân — `personal.js`
+## 2. Đưa game lên mạng để tặng Bống 🎁
+
+### Cách A — GitHub Pages (link dạng `https://hiull.github.io/Bong-trang/`)
+1. Vào trang dự án trên GitHub → **Settings** (Cài đặt, hình bánh răng ở thanh trên).
+2. Menu bên trái chọn **Pages**.
+3. Ở mục **Build and deployment → Source** chọn **Deploy from a branch**.
+4. Ở mục **Branch** chọn nhánh chứa game (`claude/dazzling-wozniak-24772b`, hoặc `main` nếu đã gộp vào `main`), thư mục **`/ (root)`** → bấm **Save**.
+5. Chờ 1–2 phút, tải lại trang Settings → Pages sẽ hiện dòng *"Your site is live at …"* kèm link. Mở thử link đó.
+
+> ⚠️ GitHub Pages miễn phí chỉ dùng được khi dự án để **Public** (công khai). Nếu dự án đang **Private** và bạn không muốn công khai, dùng Cách B.
+
+### Cách B — Netlify Drop (không cần công khai mã)
+1. Tải ZIP và giải nén như Bước 1–2 ở trên.
+2. Mở trang **app.netlify.com/drop** (đăng ký tài khoản miễn phí nếu được hỏi).
+3. Kéo cả **thư mục game** (thư mục có `index.html`) thả vào khung trên trang → chờ vài giây là có link dạng `https://ten-ngau-nhien.netlify.app`.
+4. Có thể đổi tên link trong **Site configuration → Change site name**, ví dụ `bong-trang`.
+
+### Cài lên màn hình chính điện thoại (như một app)
+- **iPhone (Safari):** mở link → bấm nút **Chia sẻ** (ô vuông có mũi tên lên) → **Thêm vào MH chính** → **Thêm**.
+- **Android (Chrome):** mở link → bấm **⋮** góc trên phải → **Thêm vào màn hình chính** (hoặc **Cài đặt ứng dụng**).
+- Sau lần mở đầu tiên, game chơi được cả khi **không có mạng**.
+
+### Gửi link cho Bống
+Gửi link qua Messenger/Zalo vẫn được, game sẽ nhắc Bống mở bằng Safari/Chrome để lưu tiến trình tốt hơn. Tiến trình lưu trên chính điện thoại của Bống.
+
+### Khi sửa game rồi đưa lên lại
+1. Sửa file (vd. `personal.js`, thêm ảnh) rồi đưa lên lại như Cách A (đẩy lên GitHub) hoặc Cách B (kéo thả lại thư mục).
+2. Mở `service-worker.js`, đổi dòng `const CACHE_VERSION = "bongtrang-v1.0.0";` thành số mới, ví dụ `v1.0.1`. Nhờ vậy điện thoại sẽ tải bản mới thay vì dùng bản cũ đã lưu (game sẽ báo *"Có bản cập nhật mới, tải lại trang…"*).
+3. Tiến trình chơi của Bống **không bị mất** khi cập nhật.
+
+---
+
+## 3. Tự sửa thông tin cá nhân — `personal.js`
 1. Chuột phải vào `personal.js` → **Open with / Mở bằng** → **Notepad** (Windows) hoặc **TextEdit** (Mac).
 2. Chỉ sửa chữ **nằm giữa hai dấu ngoặc kép** `"..."`. Không xoá dấu phẩy `,`, dấu ngoặc `{ } [ ]`.
 3. Lưu file (**Ctrl + S** / **Cmd + S**) rồi bấm **F5** trong trình duyệt để xem thay đổi.
 
-## 3. Chỉnh độ khó, giá tiền — `config.js`
+## 4. Chỉnh độ khó, giá tiền — `config.js`
 Mọi con số cân bằng game (giá món, giá nhập hàng, số khách, mục tiêu doanh thu, thời gian kiên nhẫn, số lần lắc bịch…) và toàn bộ chữ hiển thị đều nằm trong `config.js`, có chú thích tiếng Việt. Ví dụ: muốn Ngày 1 dễ hơn, tăng `patienceMult` của `day: 1`.
 
-## 4. Thêm ảnh kỷ niệm
-Đặt ảnh vào `assets/memories/` với tên **01.jpg … 15.jpg** (ảnh dọc 4:5, ví dụ 800×1000, dưới 300 KB). Chưa có ảnh thì game tự vẽ khung trái tim hồng thay thế. Ảnh hiện trong phong bì, Album và màn kết thúc.
+## 5. Thêm ảnh kỷ niệm
+Đặt ảnh vào `assets/memories/` với tên **01.jpg … 15.jpg** (ảnh dọc 4:5, ví dụ 800×1000, dưới 300 KB — có thể nén miễn phí ở trang *squoosh.app*). Tên file phải đúng chữ thường `.jpg`. Chưa có ảnh thì game tự vẽ khung trái tim hồng thay thế. Ảnh hiện trong phong bì, Album và màn kết thúc.
 
 | File | Kỷ niệm |
 |---|---|
@@ -141,7 +168,7 @@ Mọi con số cân bằng game (giá món, giá nhập hàng, số khách, mụ
 | 10.jpg – 14.jpg | 5 tấm vé hẹn hò |
 | 15.jpg | Lời hứa của Tomortle |
 
-## 5. Cấu trúc thư mục
+## 6. Cấu trúc thư mục
 ```
 index.html          Điểm vào
 style.css           Màu sắc, bố cục, hiệu ứng
@@ -153,16 +180,19 @@ src/audio.js        Âm thanh (Web Audio API), rung
 src/screens/        Các màn hình (Tải, Chính, Bản đồ, Chuẩn bị, Bán hàng, Tổng kết, …)
 src/components/     Khách, trạm nguyên liệu, khay, công cụ giao diện
 assets/             Hình, âm thanh, nhạc, ảnh kỷ niệm
-manifest.json, service-worker.js   PWA (bật ở Giai đoạn 6)
+manifest.json, service-worker.js   PWA: cài lên màn hình chính, chơi offline
 CREDITS.md          Nguồn tài nguyên & giấy phép
 ```
 
-## 6. Lộ trình
+## 7. Lộ trình
 | Giai đoạn | Nội dung | Trạng thái |
 |---|---|---|
 | 1 | Lõi bán hàng & Chuẩn bị (Ngày 1, Quầy trộn) | ✅ Xong |
 | 2 | Đủ 4 khu & 15 Ngày, lưu game | ✅ Xong |
 | 3 | Cá nhân hoá & Kỷ niệm, khách Hiếu (Tomortle), Ending | ✅ Xong |
 | 4 | Cửa hàng, Đánh giá & Sự kiện | ✅ Xong |
-| 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ✅ Xong, chờ xác nhận |
-| 6 | Hoàn thiện, PWA & đưa lên GitHub Pages | ⏳ |
+| 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ✅ Xong |
+| 6 | Hoàn thiện, PWA & đưa lên GitHub Pages | ✅ Xong |
+
+## 8. Sao lưu tiến trình
+Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao lưu**. Cất mã vào app Ghi chú hoặc gửi qua email (đừng gửi qua Messenger/Zalo vì tin nhắn dài có thể bị cắt). Đổi máy thì dán mã vào ô **Dán mã để khôi phục**.

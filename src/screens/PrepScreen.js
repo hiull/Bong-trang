@@ -24,6 +24,11 @@ window.BT = window.BT || { Screens: {} };
       });
       const gift = M.freeStockDays.includes(day);
       if (gift) ids.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.freeStockQty); });
+      // Quỹ cứu trợ: không đủ tiền nhập hàng tối thiểu → tặng miễn phí phần còn thiếu
+      const low = ids.filter((id) => BT.Save.stock(id) < M.rescueMinStock);
+      const lowCost = low.reduce((sum, id) => sum + UI.ing(id).price, 0);
+      const rescued = low.length > 0 && S.wallet < lowCost;
+      if (rescued) low.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.rescueQty); });
       // Xếp theo khu: Trộn → Nước → Nướng → Cuốn (theo ngày mở)
       const zones = CONFIG.zones.filter((z) => z.openDay <= lv && CONFIG.build.playableZones.includes(z.id)).sort((a, b) => a.openDay - b.openDay);
       const seen = new Set();
@@ -40,6 +45,7 @@ window.BT = window.BT || { Screens: {} };
       const card = UI.el("div", "card forecast");
       card.appendChild(BT.MapHelpers.dayInfo(dc));
       if (gift) card.appendChild(UI.el("div", "gift", UI.t("prepGift", { q: M.freeStockQty })));
+      if (rescued && !gift) card.appendChild(UI.el("div", "gift", UI.t("prepRescue")));
       body.appendChild(card);
 
       const wallet = UI.el("div", "prep-wallet");

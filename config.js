@@ -11,7 +11,7 @@ window.CONFIG = {
   // Phạm vi đã làm xong theo lộ trình (Mục 23). Giai đoạn 2: đủ 4 khu, Ngày 1 → 15.
   // Ngày bí mật mở ở Giai đoạn 3 (cùng khách Hiếu & nhóm bạn).
   build: {
-    stage: 5,
+    stage: 6,
     maxPlayableDay: 15,
     playableZones: ["tron", "nuong", "cuon", "nuoc"],
     secretPlayable: true
@@ -48,7 +48,11 @@ window.CONFIG = {
     freeStockQty: 15,         // Tặng 15 phần mỗi nguyên liệu đã mở
     loseKeepRatio: 0.5,       // Thua ngày vẫn giữ 50% doanh thu
     favoriteMultiplier: 2,    // Món yêu thích (personal.js → favoriteDish) bán giá x2
-    specialRequestTip: 5      // Làm đúng yêu cầu riêng: +5k (từ Ngày 3)
+    specialRequestTip: 5,     // Làm đúng yêu cầu riêng: +5k (từ Ngày 3)
+    // Quỹ cứu trợ: đầu ngày nếu ví không đủ tiền nhập đủ hàng tối thiểu,
+    // anh tặng mỗi nguyên liệu đang thiếu đủ rescueQty phần để tiệm không bao giờ bị kẹt
+    rescueMinStock: 5,
+    rescueQty: 5
   },
 
   // Thông số trong ca bán hàng
@@ -599,6 +603,7 @@ window.CONFIG = {
     prepBuy: "+{q} phần · {x}",
     prepGift: "🎁 Quà khai trương: mỗi nguyên liệu được tặng sẵn {q} phần miễn phí",
     prepWallet: "🪙 Ví: {x}",
+    prepRescue: "💌 Bà chủ hết vốn rồi! {nick} gửi tặng nguyên liệu để {her} mở tiệm nè, cố lên nha!",
     prepSpent: "Đã chi nhập hàng: {x}",
     bought: "Đã nhập thêm {q} phần {name}",
 
@@ -822,6 +827,24 @@ window.CONFIG = {
     setHowTo: "Cách chơi 📖",
     setBackup: "Sao lưu & Khôi phục 💾",
     setWipe: "Xoá dữ liệu",
+    backupTitle: "Sao lưu & Khôi phục 💾",
+    backupCopy: "Sao chép mã sao lưu",
+    backupCopied: "Đã sao chép mã! Dán vào Ghi chú hoặc gửi qua email để cất giữ nha 💾",
+    backupCopyManual: "Nhấn giữ vào ô mã để chọn tất cả rồi sao chép nha",
+    backupWarn: "Đừng gửi mã qua Messenger hoặc Zalo vì tin nhắn dài có thể bị cắt.",
+    backupPaste: "Dán mã để khôi phục",
+    backupPlaceholder: "Dán mã TIEM1-… vào đây",
+    backupRestore: "Khôi phục",
+    backupConfirm: "Tiến trình hiện tại sẽ được thay bằng tiến trình trong mã. Khôi phục nhé?",
+    backupDone: "Khôi phục xong rồi! 🎉",
+    backupBad: "Mã không đúng hoặc bị cắt mất một phần, kiểm tra lại nha",
+    backupUnsupported: "Trình duyệt này chưa đọc được mã nén, thử mở bằng Chrome hoặc Safari mới hơn nha",
+    wipeConfirm1: "Xoá toàn bộ tiến trình, tiền, kỷ niệm đã mở… và chơi lại từ đầu?",
+    wipeConfirm2: "Chắc chắn chưa? Xoá rồi là không lấy lại được đâu (trừ khi có mã sao lưu).",
+    wipeYes: "Xoá hết",
+    wipeYes2: "Chắc chắn, xoá!",
+    cancel: "Thôi",
+    updateReady: "Có bản cập nhật mới, tải lại trang để dùng nha ✨",
     on: "Bật",
     off: "Tắt",
     // Bộ 7 thẻ "Cách chơi"

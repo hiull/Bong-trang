@@ -8,6 +8,7 @@ Game là sản phẩm gốc, không dùng tên, nhân vật, hình, nhạc hay m
 | Font **Nunito** | Google Fonts (Vernon Adams và cộng sự) | SIL Open Font License 1.1 |
 | Font **Dancing Script** | Google Fonts (Impallari Type) | SIL Open Font License 1.1 |
 | Biểu tượng emoji (nguyên liệu, khách, mèo Miu…) | Bộ emoji có sẵn của hệ điều hành người chơi, không đóng gói kèm game | Theo hệ điều hành |
+| Biểu tượng app `assets/img/icon-*.png` | Tự dựng: nền hồng vẽ bằng code + emoji 🥗💕 của bộ **Noto Color Emoji** (Google) | SIL Open Font License 1.1 |
 | Mặt tiền tiệm, mái hiên, dây đèn, hoa giấy, ghế nhựa, khay, thanh kiên nhẫn | Tự vẽ bằng CSS trong `style.css` | Thuộc dự án |
 | Toàn bộ hiệu ứng âm thanh (chạm, xèo xèo, rót, đập trứng, xu, sao…) | Tự tạo bằng code (Web Audio API) trong `src/audio.js` | Thuộc dự án |
 | 4 bản nhạc nền (tiệm, trong ca, trời mưa, màn kết thúc) | Tự soạn & phát bằng code (Web Audio API) trong `src/audio.js` | Thuộc dự án |

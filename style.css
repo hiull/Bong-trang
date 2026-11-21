@@ -1607,3 +1607,13 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .switch.on { background: var(--green); color: var(--white); }
 .btn.danger { color: var(--red); border-color: var(--red); }
 .set-footer { text-align: center; font-size: 15px; opacity: 0.8; margin-top: 4px; }
+
+/* ================= GIAI ĐOẠN 6 ================= */
+.btn-red { background: var(--red); }
+.backup { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.backup-code { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 15px; border: 2px solid var(--brown); border-radius: 12px; padding: 6px 8px; resize: none; background: var(--white); color: var(--brown); user-select: text; -webkit-user-select: text; word-break: break-all; }
+.backup-warn { font-size: 15px; color: #C2410C; font-weight: 800; }
+.backup-label { font-weight: 800; margin-top: 4px; }
+.embed-banner { position: fixed; left: 50%; transform: translateX(-50%); width: min(444px, calc(100% - 16px)); top: calc(8px + env(safe-area-inset-top, 0px)); z-index: 9000; font-size: 15px; color: var(--brown); display: flex; align-items: center; gap: 8px;
+  background: #FFF3C4; border: var(--border) solid var(--brown); border-radius: 14px; padding: 8px 10px; font-weight: 800; box-shadow: 0 6px 16px var(--shadow); }
+.embed-banner span { flex: 1; line-height: 1.3; }
