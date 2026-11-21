@@ -33,7 +33,7 @@ window.BT = window.BT || { Screens: {} };
       checkin: { streak: 0, lastDate: "" },
       dailyQuests: { date: "", list: [] },
       settings: { music: true, sfx: true, vibrate: true, fullscreen: true },
-      tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false },
+      tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false, day16: false },
       endingSeen: false,
       appVersionSeen: CONFIG.version,
       // Thêm ngoài mẫu Mục 17

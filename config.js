@@ -13,7 +13,7 @@ window.CONFIG = {
   build: {
     stage: 6,
     maxPlayableDay: 15,
-    playableZones: ["tron", "nuong", "cuon", "nuoc"],
+    playableZones: ["tron", "nuong", "cuon", "nuoc", "che"],
     secretPlayable: true
   },
 
@@ -236,7 +236,8 @@ window.CONFIG = {
     { id: "tron", icon: "🥣", name: "Trộn", openDay: 1, container: "Bịch nilon" },
     { id: "nuong", icon: "🔥", name: "Nướng", openDay: 4, container: "Vỉ nướng" },
     { id: "cuon", icon: "🌯", name: "Cuốn", openDay: 7, container: "Thớt tre" },
-    { id: "nuoc", icon: "🧋", name: "Nước", openDay: 2, container: "Ly nhựa" }
+    { id: "nuoc", icon: "🧋", name: "Nước", openDay: 2, container: "Ly nhựa" },
+    { id: "che", icon: "🍧", name: "Chè", openDay: 16, container: "Cốc chè" }
   ],
 
   // Vai trò nguyên liệu theo khu: đế (cho đầu tiên) / kết thúc (cho sau cùng)
@@ -244,7 +245,8 @@ window.CONFIG = {
     tron: { base: ["bt_soi"], finish: ["tac"] },
     nuong: { base: ["bt_tron"], finish: ["mayo", "tuong_ot"] },
     cuon: { base: ["bt_phoi_suong"], finish: ["nuoc_cham"] },
-    nuoc: { base: ["ly"], finish: ["tra", "nuoc_mia", "da"] }
+    nuoc: { base: ["ly"], finish: ["tra", "nuoc_mia", "da"] },
+    che: { base: ["coc_che"], finish: ["da", "dua_nao"] }
   },
 
   // Nguyên liệu (Mục 7.2). price = giá nhập 5 phần. short = tên ngắn dùng trong câu thoại.
@@ -259,7 +261,7 @@ window.CONFIG = {
     hanh_phi:      { name: "Hành phi",                short: "hành phi",       emoji: "🧅", zones: ["tron", "nuong", "cuon"], openDay: 2, price: 4 },
     ly:            { name: "Ly nhựa",                 short: "ly",             emoji: "🥤", zones: ["nuoc"], openDay: 2, price: 2 },
     tra:           { name: "Bình trà",                short: "trà",            emoji: "🫖", zones: ["nuoc"], openDay: 2, price: 3 },
-    da:            { name: "Đá",                      short: "đá",             emoji: "🧊", zones: ["nuoc"], openDay: 2, price: 1 },
+    da:            { name: "Đá",                      short: "đá",             emoji: "🧊", zones: ["nuoc", "che"], openDay: 2, price: 1 },
     sa_te:         { name: "Sa tế",                   short: "sa tế",          emoji: "🌶️", zones: ["tron", "nuong"], openDay: 3, price: 5 },
     kho_muc:       { name: "Khô mực xé",              short: "khô mực",        emoji: "🦑", zones: ["tron"], openDay: 3, price: 18 },
     bt_tron:       { name: "Bánh tráng tròn (nướng)", short: "bánh tráng tròn", emoji: "⚪", zones: ["nuong"], openDay: 4, price: 5 },
@@ -277,7 +279,18 @@ window.CONFIG = {
     nuoc_mia:      { name: "Nước mía",                short: "nước mía",       emoji: "🎋", zones: ["nuoc"], openDay: 8, price: 8 },
     pho_mai:       { name: "Phô mai",                 short: "phô mai",        emoji: "🧀", zones: ["nuong"], openDay: 9, price: 15 },
     tom_kho:       { name: "Tép (tôm khô)",           short: "tép",            emoji: "🦐", zones: ["tron"], openDay: 10, price: 12 },
-    tran_chau:     { name: "Trân châu",               short: "trân châu",      emoji: "⚫", zones: ["nuoc"], openDay: 11, price: 6 }
+    tran_chau:     { name: "Trân châu",               short: "trân châu",      emoji: "⚫", zones: ["nuoc", "che"], openDay: 11, price: 6 },
+    // Quầy chè (Mùa 2). color = màu dải lớp trong cốc.
+    coc_che: { name: "Cốc chè", short: "cốc", emoji: "🥃", zones: ["che"], openDay: 16, price: 2, color: "#F3E5D8" },
+    dau_xanh: { name: "Đậu xanh", short: "đậu xanh", emoji: "🟢", zones: ["che"], openDay: 16, price: 5, color: "#E8D27A" },
+    sua_chua: { name: "Sữa chua", short: "sữa chua", emoji: "🥛", zones: ["che"], openDay: 16, price: 8, color: "#FFF8EE" },
+    nuoc_cot_dua: { name: "Nước cốt dừa", short: "nước cốt dừa", emoji: "🥥", zones: ["che"], openDay: 16, price: 6, color: "#FFFDF5" },
+    dau_do: { name: "Đậu đỏ", short: "đậu đỏ", emoji: "🫘", zones: ["che"], openDay: 17, price: 5, color: "#A2453B" },
+    suong_sao: { name: "Sương sáo", short: "sương sáo", emoji: "🌑", zones: ["che"], openDay: 18, price: 5, color: "#3B3030" },
+    mit: { name: "Mít", short: "mít", emoji: "🍈", zones: ["che"], openDay: 19, price: 10, color: "#F6C445" },
+    thach: { name: "Thạch rau câu", short: "thạch", emoji: "💠", zones: ["che"], openDay: 20, price: 6, color: "#7FD1C7" },
+    nep_cam: { name: "Nếp cẩm", short: "nếp cẩm", emoji: "🟣", zones: ["che"], openDay: 21, price: 7, color: "#6B2E5C" },
+    dua_nao: { name: "Dừa nạo", short: "dừa nạo", emoji: "☁️", zones: ["che"], openDay: 24, price: 6, color: "#FFFFFF" }
   },
 
   // Công thức 16 món (Mục 7.3).
@@ -316,7 +329,38 @@ window.CONFIG = {
     { id: "tra_sua_tran_chau", name: "Trà sữa trân châu", short: "Trà sữa", emoji: "🧋", zone: "nuoc", base: "ly",
       toppings: ["tran_chau"], finish: ["rot:tra", "da"], price: 20, openDay: 11 },
     { id: "combo_tinh_yeu", name: "Combo Tình Yêu", short: "Combo Tình Yêu", emoji: "💕", zone: "combo", base: null,
-      toppings: [], finish: [], combo: ["bt_tron_kho_bo", "tra_tac"], price: 60, openDay: 14 }
+      toppings: [], finish: [], combo: ["bt_tron_kho_bo", "tra_tac"], price: 60, openDay: 14 },
+    // Quầy chè (Mùa 2): toppings = các LỚP theo đúng thứ tự từ dưới lên; finish = lớp phủ.
+    { id: "che_dau_xanh", name: "Chè đậu xanh", short: "Chè đậu xanh", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["dau_xanh", "nuoc_cot_dua"], finish: ["da"], price: 15, openDay: 16 },
+    { id: "sua_chua_da", name: "Sữa chua đá", short: "Sữa chua đá", emoji: "🍦", zone: "che", base: "coc_che",
+      toppings: ["sua_chua"], finish: ["da"], price: 12, openDay: 16 },
+    { id: "che_dau_do", name: "Chè đậu đỏ", short: "Chè đậu đỏ", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["dau_do", "nuoc_cot_dua"], finish: ["da"], price: 15, openDay: 17 },
+    { id: "che_suong_sao", name: "Chè sương sáo", short: "Chè sương sáo", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["suong_sao", "nuoc_cot_dua"], finish: ["da"], price: 15, openDay: 18 },
+    { id: "sua_chua_mit", name: "Sữa chua mít", short: "Sữa chua mít", emoji: "🍦", zone: "che", base: "coc_che",
+      toppings: ["mit", "sua_chua"], finish: ["da"], price: 20, openDay: 19 },
+    { id: "che_thap_cam", name: "Chè thập cẩm", short: "Chè thập cẩm", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["dau_xanh", "dau_do", "thach", "nuoc_cot_dua"], finish: ["da"], price: 25, openDay: 20 },
+    { id: "sua_chua_nep_cam", name: "Sữa chua nếp cẩm", short: "SC nếp cẩm", emoji: "🍦", zone: "che", base: "coc_che",
+      toppings: ["nep_cam", "sua_chua"], finish: ["da"], price: 22, openDay: 21 },
+    { id: "che_thai", name: "Chè Thái", short: "Chè Thái", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["mit", "thach", "tran_chau", "nuoc_cot_dua"], finish: ["da"], price: 28, openDay: 22 },
+    { id: "sua_chua_tran_chau", name: "Sữa chua trân châu", short: "SC trân châu", emoji: "🍦", zone: "che", base: "coc_che",
+      toppings: ["tran_chau", "sua_chua"], finish: ["da"], price: 20, openDay: 23 },
+    { id: "che_dua_non", name: "Chè dừa non", short: "Chè dừa non", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["thach", "nuoc_cot_dua"], finish: ["dua_nao", "da"], price: 22, openDay: 24 },
+    { id: "che_ba_mau", name: "Chè ba màu", short: "Chè ba màu", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["dau_do", "dau_xanh", "thach", "nuoc_cot_dua"], finish: ["da"], price: 25, openDay: 25 },
+    { id: "sua_chua_dua", name: "Sữa chua dừa", short: "Sữa chua dừa", emoji: "🍦", zone: "che", base: "coc_che",
+      toppings: ["sua_chua", "nuoc_cot_dua"], finish: ["dua_nao"], price: 22, openDay: 26 },
+    { id: "che_dac_biet", name: "Chè đặc biệt", short: "Chè đặc biệt", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["dau_xanh", "nep_cam", "mit", "thach", "tran_chau", "nuoc_cot_dua"], finish: ["dua_nao", "da"], price: 38, openDay: 28 },
+    { id: "ly_che_hen_ho", name: "Ly Chè Hẹn Hò", short: "Chè Hẹn Hò", emoji: "🍧", zone: "che", base: "coc_che",
+      toppings: ["sua_chua", "mit", "tran_chau", "nuoc_cot_dua"], finish: ["dua_nao"], price: 45, openDay: 30 },
+    { id: "combo_mua_he", name: "Combo Mùa Hè", short: "Combo Mùa Hè", emoji: "🌴", zone: "combo", base: null,
+      toppings: [], finish: [], combo: ["che_thai", "tra_tac"], price: 40, openDay: 27 }
   ],
 
   // Loại khách (Mục 8.1). patience = giây kiên nhẫn gốc. tip = [thấp nhất, cao nhất].
@@ -353,7 +397,8 @@ window.CONFIG = {
     1: { zone: "tron", key: "day1" },
     2: { zone: "nuoc", key: "day2" },
     4: { zone: "nuong", key: "day4" },
-    7: { zone: "cuon", key: "day7" }
+    7: { zone: "cuon", key: "day7" },
+    16: { zone: "che", key: "day16" }
   },
 
   // Yêu cầu riêng của khách (Mục 7.4)
@@ -364,6 +409,9 @@ window.CONFIG = {
     { id: "it_da", type: "remove", ing: "da", text: "ít đá" },
     { id: "them_trung", type: "double", ing: "trung_cut", text: "thêm trứng cút" },
     { id: "nhieu_kho_bo", type: "double", ing: "kho_bo", text: "nhiều khô bò" },
+    { id: "no_nuoc_cot", type: "remove", ing: "nuoc_cot_dua", text: "không nước cốt dừa" },
+    { id: "nhieu_tran_chau", type: "double", ing: "tran_chau", text: "nhiều trân châu" },
+    { id: "nhieu_mit", type: "double", ing: "mit", text: "nhiều mít" },
     { id: "nuong_gion", type: "crispy", text: "nướng giòn" },
     { id: "cay", type: "spicy", text: "🌶️ x{n}" }
   ],
@@ -463,21 +511,21 @@ window.CONFIG = {
     { day: 15, customers: 18, target: 720, spawn: [3, 4],     patienceMult: 1.00, unlock: [], weather: "sunset", tipMult: 1,
       note: "Hoàn thành mở màn kết thúc & Ngày bí mật" },
     // Mùa 2 · Quầy chè (mốc lớn 16–30). unlock điền ở bước quầy chè.
-    { day: 16, customers: 18, target: 760, spawn: [3.0, 4.0], patienceMult: 1.0, unlock: [], weather: "sunny", tipMult: 1, cheWeight: 0.5, hints: true },
-    { day: 17, customers: 18, target: 810, spawn: [2.97, 3.96], patienceMult: 1.0, unlock: [], weather: "windy", tipMult: 1, cheWeight: 0.5 },
-    { day: 18, customers: 19, target: 860, spawn: [2.94, 3.91], patienceMult: 0.99, unlock: [], weather: "payday", tipMult: 2, cheWeight: 0.5 },
-    { day: 19, customers: 19, target: 910, spawn: [2.91, 3.87], patienceMult: 0.99, unlock: [], weather: "hot", tipMult: 1, drinkWeight: 2 },
-    { day: 20, customers: 20, target: 960, spawn: [2.88, 3.82], patienceMult: 0.99, unlock: [], weather: "sunny", tipMult: 1 },
-    { day: 21, customers: 20, target: 1010, spawn: [2.85, 3.77], patienceMult: 0.98, unlock: [], weather: "reviewer", tipMult: 1, ratingWeight: 3 },
-    { day: 22, customers: 21, target: 1060, spawn: [2.82, 3.73], patienceMult: 0.98, unlock: [], weather: "rain", tipMult: 1, grillWeight: 2 },
-    { day: 23, customers: 21, target: 1110, spawn: [2.79, 3.69], patienceMult: 0.97, unlock: [], weather: "windy", tipMult: 1 },
-    { day: 24, customers: 22, target: 1170, spawn: [2.76, 3.64], patienceMult: 0.97, unlock: [], weather: "school", tipMult: 1, groupOf: 3 },
-    { day: 25, customers: 22, target: 1230, spawn: [2.73, 3.6], patienceMult: 0.97, unlock: [], weather: "payday", tipMult: 2 },
-    { day: 26, customers: 23, target: 1290, spawn: [2.7, 3.55], patienceMult: 0.96, unlock: [], weather: "hot", tipMult: 1, drinkWeight: 2 },
-    { day: 27, customers: 23, target: 1350, spawn: [2.67, 3.5], patienceMult: 0.96, unlock: [], weather: "sunny", tipMult: 1 },
-    { day: 28, customers: 24, target: 1410, spawn: [2.64, 3.46], patienceMult: 0.96, unlock: [], weather: "rain", tipMult: 1, grillWeight: 2 },
+    { day: 16, customers: 18, target: 760, spawn: [3.0, 4.0], patienceMult: 1.0, unlock: ["che_dau_xanh", "sua_chua_da"], weather: "sunny", tipMult: 1, cheWeight: 0.5, hints: true },
+    { day: 17, customers: 18, target: 810, spawn: [2.97, 3.96], patienceMult: 1.0, unlock: ["che_dau_do"], weather: "windy", tipMult: 1, cheWeight: 0.5 },
+    { day: 18, customers: 19, target: 860, spawn: [2.94, 3.91], patienceMult: 0.99, unlock: ["che_suong_sao"], weather: "payday", tipMult: 2, cheWeight: 0.5 },
+    { day: 19, customers: 19, target: 910, spawn: [2.91, 3.87], patienceMult: 0.99, unlock: ["sua_chua_mit"], weather: "hot", tipMult: 1, drinkWeight: 2 },
+    { day: 20, customers: 20, target: 960, spawn: [2.88, 3.82], patienceMult: 0.99, unlock: ["che_thap_cam"], weather: "sunny", tipMult: 1 },
+    { day: 21, customers: 20, target: 1010, spawn: [2.85, 3.77], patienceMult: 0.98, unlock: ["sua_chua_nep_cam"], weather: "reviewer", tipMult: 1, ratingWeight: 3 },
+    { day: 22, customers: 21, target: 1060, spawn: [2.82, 3.73], patienceMult: 0.98, unlock: ["che_thai"], weather: "rain", tipMult: 1, grillWeight: 2 },
+    { day: 23, customers: 21, target: 1110, spawn: [2.79, 3.69], patienceMult: 0.97, unlock: ["sua_chua_tran_chau"], weather: "windy", tipMult: 1 },
+    { day: 24, customers: 22, target: 1170, spawn: [2.76, 3.64], patienceMult: 0.97, unlock: ["che_dua_non"], weather: "school", tipMult: 1, groupOf: 3 },
+    { day: 25, customers: 22, target: 1230, spawn: [2.73, 3.6], patienceMult: 0.97, unlock: ["che_ba_mau"], weather: "payday", tipMult: 2 },
+    { day: 26, customers: 23, target: 1290, spawn: [2.7, 3.55], patienceMult: 0.96, unlock: ["sua_chua_dua"], weather: "hot", tipMult: 1, drinkWeight: 2 },
+    { day: 27, customers: 23, target: 1350, spawn: [2.67, 3.5], patienceMult: 0.96, unlock: ["combo_mua_he"], weather: "sunny", tipMult: 1 },
+    { day: 28, customers: 24, target: 1410, spawn: [2.64, 3.46], patienceMult: 0.96, unlock: ["che_dac_biet"], weather: "rain", tipMult: 1, grillWeight: 2 },
     { day: 29, customers: 24, target: 1460, spawn: [2.61, 3.42], patienceMult: 0.95, unlock: [], weather: "festival", tipMult: 1.5 },
-    { day: 30, customers: 24, target: 1500, spawn: [2.6, 3.4], patienceMult: 0.95, unlock: [], weather: "sunset", tipMult: 1 },
+    { day: 30, customers: 24, target: 1500, spawn: [2.6, 3.4], patienceMult: 0.95, unlock: ["ly_che_hen_ho"], weather: "sunset", tipMult: 1 },
     { day: "secret", customers: 15, target: 0, spawn: [3, 4], patienceMult: 1.00, unlock: [], weather: "secret", tipMult: 1, cannotLose: true }
   ],
 
@@ -719,6 +767,7 @@ window.CONFIG = {
     leaveConfirm: "Rời tiệm giữa ca thì ca này sẽ tính lại từ đầu nha.",
     bookTitle: "Sổ công thức 📖",
     bookBase: "Đế",
+    bookLayers: "Lớp (dưới → trên)",
     bookToppings: "Topping",
     bookFinish: "Kết thúc",
     bookShake: "Lắc",
@@ -751,6 +800,10 @@ window.CONFIG = {
     // Phản hồi của khách ({Self} = tự xưng viết hoa, {call} = gọi bà chủ)
     wrongNotOrdered: "{Self} đâu có gọi cái này!",
     wrongMissing: "Còn thiếu {ing} nè {call}!",
+    wrongOrder: "Sai thứ tự lớp rồi {call}, {ing} chưa đúng chỗ!",
+    badOrder: "Sai thứ tự lớp: {ing}",
+    needLayer: "Xếp ít nhất một lớp trước rồi mới thêm {ing} nha",
+    layerAfterTop: "Đã thêm lớp phủ rồi, không xếp lớp nữa nha",
     wrongExtra: "Ủa, {self} không gọi {ing} mà {call}!",
     wrongNotMixed: "Chưa trộn đều nè!",
     praise: ["Ngon quá!", "Tuyệt cú mèo!", "Bà chủ {her} giỏi ghê!", "Mai ghé nữa nha!", "Đúng vị luôn!", "10 điểm!", "Nhớ ý ghê!"],
@@ -1017,6 +1070,9 @@ window.CONFIG = {
       tabNuoc: "Khách gọi nước nè! Chạm tab 🧋 Nước (hoặc vuốt ngang khu nguyên liệu) để sang Quầy nước",
       tabNuong: "Khách gọi bánh nướng! Chạm tab 🔥 Nướng để sang Bếp nướng",
       tabCuon: "Khách gọi bánh cuốn! Chạm tab 🌯 Cuốn để sang Quầy cuốn",
+      tabChe: "Khách gọi chè nè! Chạm tab 🍧 Chè để sang Quầy chè",
+      layer: "Lớp {n}: chạm {name}. Chè phải xếp đúng thứ tự từ dưới lên nha!",
+      cheTop: "Xong các lớp rồi, thêm {name} lên trên",
       base: "Chạm {name} để bắt đầu",
       toppings: "Chạm các topping giống trong bong bóng của khách (thứ tự tuỳ ý)",
       tac: "Đủ topping rồi, vắt Tắc 🍋 nha",

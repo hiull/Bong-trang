@@ -368,6 +368,7 @@ window.BT = window.BT || { Screens: {} };
       if (d.drinkWeight && r.zone === "nuoc") w *= d.drinkWeight;
       if (d.grillWeight && r.zone === "nuong") w *= d.grillWeight;
       if (d.focus === r.id) w *= d.focusWeight || 1;
+      if (d.cheWeight && r.zone === "che") w *= d.cheWeight;
       return w;
     }
 
@@ -385,8 +386,9 @@ window.BT = window.BT || { Screens: {} };
       const r = req.r;
       const unlocked = (id) => UI.ing(id).openDay <= this.dayNum;
       const options = CONFIG.specialRequests.filter((q) => {
-        if (q.type === "remove") return req.need[q.ing] !== undefined || req.finishIngs.includes(q.ing);
-        if (q.type === "double") return req.need[q.ing] !== undefined;
+        const inLayers = !!(req.layers && req.layers.includes(q.ing));
+        if (q.type === "remove") return req.need[q.ing] !== undefined || req.finishIngs.includes(q.ing) || (inLayers && req.layers.length > 1);
+        if (q.type === "double") return req.need[q.ing] !== undefined || inLayers;
         if (q.type === "crispy") return r.zone === "nuong";
         if (q.type === "spicy") return (r.zone === "tron" && unlocked("sa_te")) || (r.zone === "nuong" && unlocked("tuong_ot"));
         return false;
@@ -664,8 +666,10 @@ window.BT = window.BT || { Screens: {} };
         const vars = c.vars({ ing: bad.ing ? UI.ing(bad.ing).short : "" });
         const key = {
           notOrdered: "wrongNotOrdered", missing: "wrongMissing", extra: "wrongExtra", notMixed: "wrongNotMixed",
-          notRolled: "wrongNotRolled", notCooked: "wrongNotCooked", burnt: "wrongBurnt", notCrispy: "wrongNotCrispy"
+          notRolled: "wrongNotRolled", notCooked: "wrongNotCooked", burnt: "wrongBurnt", notCrispy: "wrongNotCrispy",
+          order: "wrongOrder"
         }[bad.reason];
+        if (bad.reason === "order") UI.toast(UI.t("badOrder", { ing: UI.ing(bad.ing).name }));
         c.react(UI.t(key, vars), "😕", G.reactionShowSec);
         c.penalize(G.wrongPatiencePenalty);
         c.wrongOnce = true;
@@ -800,6 +804,12 @@ window.BT = window.BT || { Screens: {} };
         steps.push({ id: "grillTop", text: UI.fmt(tt.grillTop), target: () => this.grid.el, hand: "tap", done: () => toppingsOk() || (tray() && tray().folded) });
         steps.push({ id: "fold", text: UI.fmt(tt.fold), target: () => (tray() || {}).el, hand: "tap", done: () => tray() && (tray().folded || tray().burnt) });
         steps.push({ id: "sauce", text: UI.fmt(tt.sauce), target: cell(sauce), hand: "tap", done: () => tray() && Object.keys(req.sauces).every((id) => (tray().sauces[id] || 0) >= req.sauces[id]) });
+      } else if (T.zone === "che") {
+        steps.push(onZone, base);
+        req.layers.forEach((id, i) => steps.push({ id: "layer" + i, text: UI.fmt(tt.layer, { n: i + 1, name: UI.ing(id).emoji + " " + UI.ing(id).name }), target: cell(id), hand: "tap",
+          done: () => tray() && tray().layers.length > i }));
+        req.finishIngs.forEach((id) => steps.push({ id: "top" + id, text: UI.fmt(tt.cheTop, { name: UI.ing(id).emoji + " " + UI.ing(id).name }), target: cell(id), hand: "tap",
+          done: () => tray() && tray().finish.includes(id) }));
       } else if (T.zone === "cuon") {
         steps.push(onZone, base, { id: "toppings", text: UI.fmt(tt.toppings), target: () => this.grid.el, hand: "tap", done: toppingsOk });
         steps.push({ id: "rollBtn", text: UI.fmt(tt.rollBtn), target: () => tray() && tray().el.querySelector("[data-action]"), hand: "tap", done: () => !!this.shakeLayer || (tray() && tray().rolled) });
@@ -1516,7 +1526,8 @@ window.BT = window.BT || { Screens: {} };
           line("🎁", r.combo.map((id) => UI.recipe(id).name).join(" + "));
         } else {
           line(UI.t("bookBase"), name(r.base));
-          if (r.toppings.length) line(UI.t("bookToppings"), r.toppings.map(name).join(", "));
+          if (r.zone === "che") line(UI.t("bookLayers"), r.toppings.map((s, i) => (i + 1) + ". " + name(s)).join("  "));
+          else if (r.toppings.length) line(UI.t("bookToppings"), r.toppings.map(name).join(", "));
           line(UI.t("bookFinish"), r.finish.map(name).join(" → "));
         }
         list.appendChild(row);

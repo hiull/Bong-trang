@@ -75,6 +75,7 @@ window.BT = window.BT || { Screens: {} };
       this.quality = null; // "ok" | "good"
       this.burnt = false;
       this.sauces = {};
+      this.layers = [];    // quầy chè: các lớp theo đúng thứ tự chạm
     }
 
     isEmpty() { return !this.base; }
@@ -82,7 +83,7 @@ window.BT = window.BT || { Screens: {} };
 
     count() {
       const sum = (o) => Object.values(o).reduce((a, b) => a + b, 0);
-      return sum(this.items) + sum(this.sauces) + this.finish.length + (this.base ? 1 : 0);
+      return sum(this.items) + sum(this.sauces) + this.finish.length + this.layers.length + (this.base ? 1 : 0);
     }
 
     canShake() { return !!this.base && this.zone === "tron" && !this.tied; }
@@ -150,6 +151,18 @@ window.BT = window.BT || { Screens: {} };
             return { ok: true };
           }
           return topping();
+
+        case "che":
+          // Lớp phủ (đá, dừa nạo) chỉ thêm sau khi đã có lớp; lớp thì phải xếp trước lớp phủ
+          if (roleOf(ingId, "che") === "finish") {
+            if (!this.layers.length) return fail("needLayer", { ing: ing.short });
+            if (this.finish.includes(ingId)) return fail("finishTwice", { ing: ing.short });
+            this.finish.push(ingId);
+            return { ok: true };
+          }
+          if (this.finish.length) return fail("layerAfterTop");
+          this.layers.push(ingId);
+          return { ok: true };
 
         case "nuong":
           if (this.burnt) return fail("burntTrash");
@@ -243,6 +256,11 @@ window.BT = window.BT || { Screens: {} };
           add(UI.ing(this.base).emoji, 1);
         }
         if (this.zone === "nuoc" && this.poured) add(UI.ing(this.poured).emoji, 1);
+        if (this.zone === "che" && this.layers.length) {
+          const cup = UI.el("div", "che-cup");
+          this.layers.forEach((id) => { const l = UI.el("span", "layer"); l.style.setProperty("--c", UI.ing(id).color || "#EEE"); l.title = UI.ing(id).name; cup.appendChild(l); });
+          items.appendChild(cup);
+        }
         if (!this.burnt && !(this.zone === "cuon" && this.rolled) && !(this.zone === "nuong" && this.folded)) {
           Object.keys(this.items).forEach((id) => {
             const cls = id === "trung_cut" && this.zone === "nuong" && this.cracked ? "cracked" : "";
@@ -302,6 +320,16 @@ window.BT = window.BT || { Screens: {} };
     if (r.zone === "nuong") r.finish.forEach((s) => { if (s === "mayo" || s === "tuong_ot") sauces[s] = (sauces[s] || 0) + 1; });
     const pour = (r.finish.find((s) => s.indexOf("rot:") === 0) || "").slice(4) || null;
     let crispy = false;
+    // Quầy chè: thứ tự lớp theo công thức (áp yêu cầu bỏ / gấp đôi)
+    let layers = null;
+    if (r.zone === "che") {
+      layers = r.toppings.slice();
+      (dish.reqs || []).forEach((q) => {
+        if (q.type === "remove") layers = layers.filter((x) => x !== q.ing);
+        else if (q.type === "double") { const i = layers.indexOf(q.ing); if (i >= 0) layers.splice(i + 1, 0, q.ing); }
+      });
+      Object.keys(need).forEach((k) => delete need[k]);
+    }
     (dish.reqs || []).forEach((q) => {
       if (q.type === "remove") {
         delete need[q.ing];
@@ -315,13 +343,25 @@ window.BT = window.BT || { Screens: {} };
         else need.sa_te = q.n;
       }
     });
-    return { r, need, finishIngs, sauces, pour, crispy };
+    return { r, need, finishIngs, sauces, pour, crispy, layers };
   };
 
   Tray.evaluate = function (tray, dish) {
-    const { r, need, finishIngs, sauces, pour, crispy } = Tray.requirements(dish);
+    const { r, need, finishIngs, sauces, pour, crispy, layers } = Tray.requirements(dish);
     const fail = (reason, ing) => ({ ok: false, reason, ing });
     if (!tray.base || tray.base !== r.base) return fail("notOrdered");
+    if (tray.zone === "che") {
+      const got = tray.layers;
+      const n = Math.max(got.length, layers.length);
+      for (let i = 0; i < n; i++) {
+        if (got[i] === layers[i]) continue;
+        if (got[i] === undefined) return fail("missing", layers[i]);
+        if (layers[i] === undefined) return fail("extra", got[i]);
+        // cùng tập nguyên liệu nhưng sai chỗ → sai thứ tự; khác tập → thiếu/thừa
+        if (layers.includes(got[i]) && got.filter((x) => x === got[i]).length <= layers.filter((x) => x === got[i]).length) return fail("order", got[i]);
+        return layers.includes(got[i]) ? fail("extra", got[i]) : fail("extra", got[i]);
+      }
+    }
     if (tray.zone === "nuong" && tray.burnt) return fail("burnt");
     if (tray.zone === "nuoc") {
       if (!tray.poured) return fail("missing", pour);

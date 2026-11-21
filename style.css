@@ -1724,3 +1724,13 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
     box-shadow: 0 0 40px var(--shadow);
   }
 }
+
+/* ---------------- Quầy chè: cốc nhiều lớp ---------------- */
+.che-cup { display: inline-flex; flex-direction: column-reverse; width: 30px; height: 40px; border: 2px solid var(--brown); border-top: none; border-radius: 0 0 9px 9px; overflow: hidden; background: rgba(255,255,255,0.6); vertical-align: middle; margin: 0 3px; }
+.che-cup .layer { flex: 1; background: var(--c); border-top: 1px solid rgba(93,64,55,0.25); }
+/* 5 quầy trên màn hẹp: nút gọn hơn */
+@media (max-width: 420px) {
+  .tabs { gap: 2px; }
+  .tab { font-size: 13px; padding: 0 2px; letter-spacing: -0.2px; }
+  .tab-icon { font-size: 15px; }
+}
