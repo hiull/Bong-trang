@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
-  <script>/* Điện thoại cảm ứng: luôn tràn màn hình, kể cả khi Safari thu phóng trang */(function(){try{var s=Math.min(screen.width,screen.height);if(s<600&&window.matchMedia("(pointer: coarse)").matches)document.documentElement.className+=" phone";}catch(e){}})();</script>
+  <script>/* Máy cảm ứng (điện thoại, iPad, kể cả iPad tự báo là "Macintosh"): luôn tràn màn hình */(function(){try{var m=window.matchMedia,ipad=navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent);if(ipad||m("(hover: none) and (pointer: coarse)").matches)document.documentElement.className+=" touch";}catch(e){}})();</script>
   <meta name="theme-color" content="#FF5C8A">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">

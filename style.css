@@ -71,7 +71,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 
 /* Máy tính: cột giữa tối đa 460px, tỉ lệ 9:16, đổ bóng mềm */
 @media (min-width: 501px) {
-  html:not(.phone) #app {
+  html:not(.touch) #app {
     width: min(460px, calc(min(100vh, 818px) * 9 / 16));
     height: min(100vh, 818px);
     border-radius: 22px;
@@ -1713,3 +1713,14 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .daily-again { font-size: var(--fs-s); opacity: 0.85; }
 
 .result-stars.hidden { display: none; }
+
+/* Máy tính bảng nằm ngang: game thiết kế khổ dọc → cột dọc cao kín màn hình, nằm giữa */
+@media (orientation: landscape) {
+  html.touch #app {
+    width: min(100vw, calc(100vh * 3 / 4));
+    width: min(100vw, calc(100dvh * 3 / 4));
+    height: 100vh;
+    height: 100dvh;
+    box-shadow: 0 0 40px var(--shadow);
+  }
+}
