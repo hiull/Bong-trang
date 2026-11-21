@@ -3,7 +3,10 @@
 Game nấu ăn – quản lý thời gian bán bánh tráng, làm tặng **Bống (Sarose)** từ **Hiếu (Tomortle)**.
 Chạy trên trình duyệt, không cần cài đặt, không quảng cáo, không gửi dữ liệu đi đâu cả.
 
-> **Trạng thái hiện tại: Giai đoạn 3 / 6 — Cá nhân hoá & Kỷ niệm.**
+> **Trạng thái hiện tại: Giai đoạn 4 / 6 — Cửa hàng, Đánh giá & Sự kiện.**
+> Cửa hàng nâng cấp, trang trí, thú cưng, 5 giao diện mùa, Sổ đánh giá, sự cố nước đổ, điểm danh 7 ngày, nhiệm vụ hằng ngày, cấp độ tiệm.
+>
+> *(Giai đoạn 3 — Cá nhân hoá & Kỷ niệm:)*
 > Có khách **Hiếu (Tomortle)**, 7 người bạn, 3 khách quen có cốt truyện, 15 thẻ kỷ niệm & Album, Trái tim vàng, màn kết thúc sau Ngày 15 và **Ngày bí mật ★**.
 >
 > *(Giai đoạn 2 — Đủ 4 khu & 15 Ngày:)*
@@ -80,12 +83,22 @@ Bạn chỉ cần máy tính có **Google Chrome** (hoặc Microsoft Edge) và c
 - [ ] Sau màn kết thúc, **Ngày bí mật ★** trên bản đồ mở: chỉ có anh Hiếu (3 lần) và nhóm bạn, không thể thua.
 - [ ] Ngày **11/01** hằng năm hoặc tròn **100, 200, 300… ngày** yêu → màn hình chính bắn pháo hoa + banner chúc mừng.
 
+### Bước 8 — Kiểm tra Giai đoạn 4 (cửa hàng, đánh giá, sự kiện)
+- [ ] **Nâng cấp → tab Thiết bị:** mua *Thêm khay* (3 khay), *Thêm vỉ nướng* (3–4 vỉ), *Than hồng loại 1* (kim nhanh hơn, vùng xanh rộng hơn), *Thêm ghế khách* (4 khách cùng lúc), *Quạt máy* (khách kiên nhẫn hơn), *Loa nhạc chill* (tip +20%), *Quạt than tay* (khó cháy hơn), *Bịch dây kéo* (lắc 4 lần). Vào ca sau sẽ thấy tác dụng.
+- [ ] **Tab Trang trí & Thú cưng:** đèn lồng, chậu hoa giấy, biển hiệu neon, mèo thần tài vẫy tay, rèm hồng — hiện ngay trên mặt tiền (màn hình chính & khi bán hàng). Mua **Cún Bông** 🐶 và **Hamster Hạt Dẻ** 🐹; chạm vào thú cưng (kể cả Miu) để xem câu thoại.
+- [ ] **Tab Giao diện mùa:** Valentine, Trung Thu, Tết, Noel (Miu đội mũ Noel 🎅). Đúng dịp lễ thật, cửa hàng tự gợi ý giao diện hợp mùa.
+- [ ] **Đánh giá ⭐:** mỗi khách để lại 1–5 sao kèm câu nhận xét; bấm **Trả lời** để chọn 1 trong 3 câu của bà chủ. Trả lời đánh giá ≤ 3 sao → khách sửa thành +1 sao.
+- [ ] **Sự cố nhỏ (từ Ngày 3, tối đa 1 lần/ngày):** vũng nước 💦 trước quầy làm bếp chậm 20%, chạm 3 lần để lau; hoặc mèo hoang ghé xin trứng (từ Ngày 7).
+- [ ] **Điểm danh 🎁:** mỗi ngày thật nhận 1 phần quà (20k → 150k ở ngày 7) kèm lời nhắn của anh Hiếu. Lỡ một ngày thì bắt đầu lại từ ô 1.
+- [ ] **Nhiệm vụ 📋:** mỗi ngày thật có 3 nhiệm vụ (phục vụ khách, đạt combo, nướng giòn…), xong bấm **Nhận** để lấy tiền. Nút có chấm đỏ khi có quà chưa nhận.
+- [ ] **Cấp độ tiệm:** màn hình chính hiện *Cấp N* + danh hiệu (*Gánh hàng nhỏ → Tiệm đầu ngõ → Tiệm quen khu phố → Tiệm nổi tiếng → Bống tráng — Nhất quả đất*) và thanh kinh nghiệm.
+
 ### Muốn chơi lại từ đầu?
 Tiến trình được lưu trong trình duyệt. Để thử lại từ Ngày 1, mở một **cửa sổ ẩn danh** (**Ctrl + Shift + N**, Mac: **Cmd + Shift + N**) rồi kéo file `index.html` vào cửa sổ đó. *(Nút "Xoá dữ liệu" trong Cài đặt sẽ có ở Giai đoạn 6.)*
 
-### Lưu ý ở Giai đoạn 3
-- Đồ trang trí khách tặng (đèn lồng, chậu hoa giấy) đã được lưu, sẽ hiện trên tiệm khi có Cửa hàng ở Giai đoạn 4.
-- Nhạc nền màn kết thúc (`music_ending.mp3`) sẽ thêm ở Giai đoạn 5.
+### Lưu ý
+- Nhạc nền, hiệu ứng âm thanh thật và bộ 7 thẻ "Cách chơi" sẽ thêm ở Giai đoạn 5.
+- Nút ⚙️ Cài đặt (âm thanh, rung, sao lưu mã TIEM1-, xoá dữ liệu) sẽ có ở Giai đoạn 6.
 - **Âm thanh:** mới có tiếng "tít" ngắn tạo bằng code. Nhạc nền & hiệu ứng thật ở Giai đoạn 5.
 - Các nút **Nâng cấp, Kỷ niệm, Đánh giá, Điểm danh, Nhiệm vụ, ⚙️** hiện thông báo *"sắp có"*.
 - Mở trên điện thoại thật qua link web sẽ làm ở Giai đoạn 6 (GitHub Pages).
@@ -138,7 +151,7 @@ CREDITS.md          Nguồn tài nguyên & giấy phép
 |---|---|---|
 | 1 | Lõi bán hàng & Chuẩn bị (Ngày 1, Quầy trộn) | ✅ Xong |
 | 2 | Đủ 4 khu & 15 Ngày, lưu game | ✅ Xong |
-| 3 | Cá nhân hoá & Kỷ niệm, khách Hiếu (Tomortle), Ending | ✅ Xong, chờ xác nhận |
-| 4 | Cửa hàng, Đánh giá & Sự kiện | ⏳ |
+| 3 | Cá nhân hoá & Kỷ niệm, khách Hiếu (Tomortle), Ending | ✅ Xong |
+| 4 | Cửa hàng, Đánh giá & Sự kiện | ✅ Xong, chờ xác nhận |
 | 5 | Hoạt ảnh, Âm thanh & Hướng dẫn | ⏳ |
 | 6 | Hoàn thiện, PWA & đưa lên GitHub Pages | ⏳ |

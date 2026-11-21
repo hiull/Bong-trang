@@ -64,6 +64,15 @@ window.BT = window.BT || { Screens: {} };
       });
 
       this.planSpecials();
+      this.q = { served: 0, comboMax: 0, crispy: 0, five: 0, fav: 0, req: 0, tomo: 0 };
+      // Sự cố nhỏ: vũng nước đổ (tối đa 1 sự cố/ngày, có nước đổ thì không có mèo hoang)
+      const I = CONFIG.incidents;
+      this.spillAt = -1;
+      this.spillLeft = 0;
+      if (!this.secret && this.dayNum >= I.fromDay && Math.random() < I.spillRate) {
+        this.spillAt = Math.max(1, Math.round(this.total * UI.rand(I.spillAtProgress[0], I.spillAtProgress[1])));
+        this.catsToday = G.catMaxPerDay;
+      }
       this.build(root);
       this.loop();
       this.countdown();
@@ -154,16 +163,11 @@ window.BT = window.BT || { Screens: {} };
         stool.style.left = c + "%";
         front.appendChild(stool);
       });
-      const pet = UI.el("button", "pet", "🐈");
-      pet.type = "button";
-      pet.setAttribute("aria-label", UI.fmt("{pet}"));
-      pet.appendChild(UI.el("span", "pet-z", "💤"));
-      pet.addEventListener("click", () => {
-        UI.toast(UI.fmt(UI.pick(CONFIG.pets.miu.lines)));
-        pet.classList.remove("wiggle"); void pet.offsetWidth; pet.classList.add("wiggle");
-        BT.Audio.play("pop");
-      });
-      front.appendChild(pet);
+      UI.decorateFront(front);
+      this.spillEl = UI.el("button", "spill", "💦");
+      this.spillEl.type = "button";
+      this.spillEl.addEventListener("click", () => this.wipeSpill());
+      front.appendChild(this.spillEl);
       this.custArea = UI.el("div", "customers");
       this.custArea.style.setProperty("--cw", (100 / this.seatCount - 2) + "%");
       front.appendChild(this.custArea);
@@ -289,7 +293,7 @@ window.BT = window.BT || { Screens: {} };
       let warn = false;
       const zones = BT.Tray.cookZones();
       this.grills.forEach((g) => {
-        if (g.updateCook(dt) === "burnt") {
+        if (g.updateCook(this.spillLeft > 0 ? dt * (1 - CONFIG.incidents.spillSlow) : dt) === "burnt") {
           g.render();
           BT.Audio.play("angry");
           BT.Audio.vibrate(G.vibrateBad);
@@ -413,6 +417,7 @@ window.BT = window.BT || { Screens: {} };
         this.spawn(seat, typeId, order);
       }
       this.spawned++;
+      if (this.spawned === this.spillAt) this.showSpill();
       this.spawnTimer = this.groupPending > 0 ? G.groupSpawnGapSec : UI.rand(d.spawn[0], d.spawn[1]);
     }
 
@@ -448,7 +453,7 @@ window.BT = window.BT || { Screens: {} };
       };
       const dish = this.dishPool.some((r) => r.id === def.dish) ? def.dish : this.makeOrder().items[0].id;
       return this.spawn(seat, null, { items: [{ id: dish, reqs: this.makeRequests(dish) }] },
-        { typeDef, tag: def.name, loyal, regularId: plan.id, chapter: plan.chapter });
+        { typeDef, tag: def.name.split(" ").slice(0, 2).join(" "), loyal, regularId: plan.id, chapter: plan.chapter });
     }
 
     spawn(seat, typeId, order, extra) {
@@ -511,8 +516,11 @@ window.BT = window.BT || { Screens: {} };
     }
 
     addRating(stars, c) {
+      const weight = c && c.reviewer ? this.dayCfg.ratingWeight || 1 : 1;
       this.stats.ratings.push(stars);
-      this.stats.weights.push(c && c.reviewer ? this.dayCfg.ratingWeight || 1 : 1);
+      this.stats.weights.push(weight);
+      if (c) BT.Progress.addReview({ day: UI.dayName(this.dayId), name: c.tag || c.type.name, avatar: c.avatar, stars, weight });
+      if (stars === 5) this.q.five++;
     }
 
     avgRating() {
@@ -582,6 +590,9 @@ window.BT = window.BT || { Screens: {} };
       match.crispy = res.crispy;
       c.markDone(match);
       this.combo = Math.min(G.comboMax, this.combo + 1);
+      this.q.comboMax = Math.max(this.q.comboMax, this.combo);
+      if (res.crispy) this.q.crispy++;
+      if (match.id === window.PERSONAL.favoriteDish) this.q.fav++;
       if (this.dayNum >= G.loveOpenDay) this.love = Math.min(1, this.love + G.loveChargePerDish);
       tray.clear();
       tray.render();
@@ -625,6 +636,9 @@ window.BT = window.BT || { Screens: {} };
       this.stats.revenue += pay + comboBonus;
       this.stats.tips += tip;
       this.stats.served++;
+      this.q.served++;
+      if (reqTip) this.q.req += c.items.filter((it) => it.reqs.length).length;
+      if (c.isTomortle) this.q.tomo++;
       this.addRating(stars, c);
       this.S.wallet += pay + comboBonus + tip;
       this.done++;
@@ -647,6 +661,27 @@ window.BT = window.BT || { Screens: {} };
         this.scope.timeout(() => this.tomortleStory(), G.tomortleHeartsSec * 700);
       } else if (c.regularId && c.chapter >= 0) {
         this.scope.timeout(() => this.regularStory(c.regularId, c.chapter), 600);
+      }
+    }
+
+    // ---------------- Sự cố: nước đổ ----------------
+    showSpill() {
+      this.spillLeft = CONFIG.incidents.spillTaps;
+      this.spillEl.classList.add("show");
+      UI.toast(UI.t("spillAppear"), 2400);
+      BT.Audio.play("wrong");
+    }
+
+    wipeSpill() {
+      if (this.spillLeft <= 0 || this.isPaused()) return;
+      this.spillLeft--;
+      this.spillEl.style.transform = "scale(" + (0.4 + 0.6 * this.spillLeft / CONFIG.incidents.spillTaps) + ")";
+      BT.Audio.play("shake");
+      if (this.spillLeft <= 0) {
+        this.spillEl.classList.remove("show");
+        this.spillEl.style.transform = "";
+        UI.toast(UI.t("spillClean"));
+        BT.Audio.play("star");
       }
     }
 
@@ -1265,14 +1300,20 @@ window.BT = window.BT || { Screens: {} };
       if (passed) this.S.loseStreak = null;
       else if (this.S.loseStreak && this.S.loseStreak.day === this.dayId) this.S.loseStreak.n++;
       else this.S.loseStreak = { day: this.dayId, n: 1 };
+      const lvBefore = BT.Progress.level(this.S.xp).level;
       this.S.xp += Math.round(income / 10);
+      const lv = BT.Progress.level(this.S.xp);
+      const levelUp = lv.level > lvBefore ? lv : null;
+      Object.keys(this.q).forEach((k) => BT.Progress.questAdd(k, this.q[k]));
+      BT.Progress.questAdd("income", Math.round(income));
+      BT.Progress.questAdd("days", 1);
       if (this.S.dayBackup) this.S.dayBackup.finished = true;
       this.S.today = null;
       BT.Save.persist();
 
       const summary = {
         day: this.dayId, passed, lostHearts, stars, firstClear, secret: this.secret,
-        memory: newMemory, newGold, allGold, ending,
+        memory: newMemory, newGold, allGold, ending, levelUp,
         income, kept, target: d.target,
         revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
         net: kept - this.stats.expense,

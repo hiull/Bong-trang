@@ -1,5 +1,5 @@
-// MenuScreen.js — Màn hình chính: biển hiệu, số ngày bên nhau, các nút chính.
-// Giai đoạn 1: Mở tiệm hoạt động. Điểm danh, nhiệm vụ, cài đặt, skin sẽ có ở Giai đoạn 4–6.
+// MenuScreen.js — Màn hình chính: biển hiệu, số ngày bên nhau, cấp độ & danh hiệu tiệm,
+// điểm danh 7 ngày, nhiệm vụ hằng ngày, trang trí & thú cưng, giao diện mùa.
 window.BT = window.BT || { Screens: {} };
 
 (function () {
@@ -9,14 +9,15 @@ window.BT = window.BT || { Screens: {} };
     mount(root, params, router) {
       const S = BT.Save.state;
       const P = window.PERSONAL;
-      const el = UI.el("div", "screen menu");
+      const Pr = BT.Progress;
+      const el = UI.el("div", "screen menu skin-" + S.activeSkin);
 
       // Góc trên
       const top = UI.el("div", "menu-top");
       const stats = UI.el("div", "menu-stats");
       stats.appendChild(UI.el("div", "pill", "🪙 " + UI.money(S.wallet)));
-      const ratings = Object.values(S.days).map((d) => d.avgRating).filter((x) => x > 0);
-      stats.appendChild(UI.el("div", "pill", "⭐ " + (ratings.length ? UI.rating(ratings.reduce((a, b) => a + b, 0) / ratings.length) : "–")));
+      const rating = Pr.shopRating();
+      stats.appendChild(UI.el("div", "pill", "⭐ " + (rating ? UI.rating(rating) : "–")));
       stats.appendChild(UI.el("div", "pill", UI.t("goldHearts", { a: S.goldHearts, b: CONFIG.build.maxPlayableDay })));
       top.appendChild(stats);
       top.appendChild(UI.iconButton("⚙️", UI.t("btnSettings"), () => UI.toast(UI.t("comingSoonShort")), "settings-btn"));
@@ -29,14 +30,24 @@ window.BT = window.BT || { Screens: {} };
       facade.appendChild(UI.el("div", "flowers"));
       facade.appendChild(UI.el("div", "menu-sign", P.shopName));
       facade.appendChild(UI.el("div", "love-days", UI.t("loveDays", { n: UI.loveDays() })));
-      facade.appendChild(UI.el("div", "shop-title", "🏷️ " + UI.fmt(CONFIG.titles[0].name)));
+      // Cấp độ & danh hiệu
+      const lv = Pr.level(S.xp);
+      const badge = UI.el("div", "shop-title");
+      badge.appendChild(UI.el("span", "level-chip", UI.t("levelLabel", { n: lv.level })));
+      badge.appendChild(UI.el("span", "", " " + UI.fmt(lv.title)));
+      if (lv.next) {
+        const bar = UI.el("div", "xp-bar");
+        const fill = UI.el("div", "xp-fill");
+        fill.style.width = Math.min(100, ((S.xp - lv.from) / (lv.next - lv.from)) * 100) + "%";
+        bar.appendChild(fill);
+        badge.appendChild(bar);
+      }
+      facade.appendChild(badge);
       const owner = UI.el("div", "owner");
       owner.appendChild(UI.el("div", "owner-avatar", "👩‍🍳"));
       owner.appendChild(UI.el("div", "owner-name", UI.t("ownerLabel")));
       facade.appendChild(owner);
-      const pet = UI.el("div", "menu-pet", "🐈");
-      pet.appendChild(UI.el("span", "pet-z", "💤"));
-      facade.appendChild(pet);
+      UI.decorateFront(facade);
       el.appendChild(facade);
 
       // Nút chính
@@ -48,12 +59,98 @@ window.BT = window.BT || { Screens: {} };
 
       const small = UI.el("div", "menu-small");
       small.appendChild(UI.button(UI.t("btnReviews"), "btn-white small", () => router.go("Review")));
-      small.appendChild(UI.button(UI.t("btnCheckin"), "btn-white small", () => UI.toast(UI.t("comingSoonShort"))));
-      small.appendChild(UI.button(UI.t("btnQuests"), "btn-white small", () => UI.toast(UI.t("comingSoonShort"))));
+      const checkBtn = UI.button(UI.t("btnCheckin"), "btn-white small", () => openCheckin());
+      const questBtn = UI.button(UI.t("btnQuests"), "btn-white small", () => openQuests());
+      small.appendChild(checkBtn);
+      small.appendChild(questBtn);
       el.appendChild(small);
 
       el.appendChild(UI.el("div", "footer", UI.t("footer")));
       root.appendChild(el);
+
+      function refreshDots() {
+        checkBtn.classList.toggle("has-dot", !Pr.checkinInfo().claimedToday);
+        questBtn.classList.toggle("has-dot", Pr.questsClaimable() > 0);
+      }
+      refreshDots();
+
+      // ---------- Điểm danh 7 ngày ----------
+      function openCheckin() {
+        const info = Pr.checkinInfo();
+        const last = CONFIG.checkinRewards.length - 1;
+        const grid = UI.el("div", "checkin-grid");
+        CONFIG.checkinRewards.forEach((r, i) => {
+          const done = info.claimedToday ? i <= info.index : i < info.index;
+          const cell = UI.el("div", "checkin-cell" + (done ? " done" : "") + (i === info.index && !info.claimedToday ? " today" : "") + (i === last ? " big" : ""));
+          cell.appendChild(UI.el("div", "ck-day", UI.t("checkinDay", { n: i + 1 })));
+          cell.appendChild(UI.el("div", "ck-icon", done ? "✅" : i === last ? "💝" : "🎁"));
+          cell.appendChild(UI.el("div", "ck-reward", UI.money(r)));
+          grid.appendChild(cell);
+        });
+        const body = UI.el("div", "checkin");
+        body.appendChild(grid);
+        if (info.claimedToday) body.appendChild(UI.el("div", "ck-note", UI.t("checkinDone")));
+        const buttons = [];
+        if (!info.claimedToday) {
+          buttons.push({
+            label: UI.t("checkinClaim"),
+            cls: "btn-pink",
+            onClick: () => {
+              const got = Pr.checkinClaim();
+              if (!got) return;
+              BT.Audio.play("win");
+              UI.confetti(40);
+              UI.modal({
+                title: UI.t("checkinGot", { x: UI.money(got.reward) }),
+                body: P.dailyCheckinMessages[got.index] || "",
+                className: "modal-welcome",
+                buttons: [{ label: UI.t("btnClose"), cls: "btn-pink", onClick: () => router.go("Menu", {}, { replace: true }) }]
+              });
+            }
+          });
+        }
+        buttons.push({ label: UI.t("btnClose"), cls: "btn-white" });
+        UI.modal({ title: UI.t("checkinTitle"), body, dismissable: true, buttons });
+      }
+
+      // ---------- Nhiệm vụ hằng ngày ----------
+      function openQuests() {
+        const list = UI.el("div", "quest-list");
+        Pr.quests().forEach((q) => {
+          const def = CONFIG.quests.find((x) => x.id === q.id);
+          const done = q.progress >= def.n;
+          const row = UI.el("div", "quest-row" + (q.claimed ? " claimed" : done ? " done" : ""));
+          const info = UI.el("div", "quest-info");
+          info.appendChild(UI.el("div", "quest-text", UI.fmt(def.text, { n: def.n, x: UI.money(def.n) })));
+          const bar = UI.el("div", "xp-bar");
+          const fill = UI.el("div", "xp-fill");
+          fill.style.width = Math.min(100, (q.progress / def.n) * 100) + "%";
+          bar.appendChild(fill);
+          info.appendChild(bar);
+          const prog = def.money
+            ? UI.money(Math.min(q.progress, def.n)) + " / " + UI.money(def.n)
+            : UI.t("questProgress", { a: Math.min(q.progress, def.n), b: def.n });
+          info.appendChild(UI.el("div", "quest-prog", prog + " · " + UI.t("questReward", { x: UI.money(def.reward) })));
+          row.appendChild(info);
+          const btn = UI.button(q.claimed ? UI.t("questClaimed") : UI.t("questClaim"), "btn-green small", () => {
+            if (q.claimed || !done) return;
+            q.claimed = true;
+            S.wallet += def.reward;
+            BT.Save.persist();
+            BT.Audio.play("coin");
+            UI.toast(UI.t("questDone", { x: UI.money(def.reward) }));
+            btn.textContent = UI.t("questClaimed");
+            btn.disabled = true;
+            row.classList.add("claimed");
+            refreshDots();
+            stats.firstChild.textContent = "🪙 " + UI.money(S.wallet);
+          });
+          if (q.claimed || !done) btn.disabled = true;
+          row.appendChild(btn);
+          list.appendChild(row);
+        });
+        UI.modal({ title: UI.t("questTitle"), body: list, dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-white" }] });
+      }
 
       // Ngày đặc biệt: 11/01 hằng năm hoặc tròn bội số 100 ngày yêu → pháo hoa + banner
       const ann = String(P.anniversary).split("-").map(Number);

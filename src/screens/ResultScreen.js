@@ -121,6 +121,7 @@ window.BT = window.BT || { Screens: {} };
         }, 400 + i * 450);
       });
       const after = 400 + 3 * 450;
+      if (s.levelUp) scope.timeout(() => { UI.toast(UI.t("levelUp", { n: s.levelUp.level, title: UI.fmt(s.levelUp.title) }), 3000); BT.Audio.play("win"); }, after + 100);
       if (s.stars === 3) scope.timeout(() => UI.confetti(80), after);
       if (envelope) scope.timeout(() => { envelope.classList.add("drop"); BT.Audio.play("pop"); }, after + 200);
       else if (s.allGold && !S.bonusSeen) scope.timeout(() => showBonus(), after + 400);

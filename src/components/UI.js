@@ -382,5 +382,40 @@ window.BT = window.BT || { Screens: {} };
     }
   };
 
+  // Vẽ trang trí, thú cưng và lớp giao diện mùa lên mặt tiền tiệm (dùng ở màn hình chính & màn bán hàng)
+  UI.decorateFront = function (front) {
+    const S = BT.Save.state;
+    front.querySelectorAll(".skin-fx, .decor, .pets, .curtain").forEach((x) => x.remove());
+    front.appendChild(UI.el("div", "skin-fx"));
+    S.decor.forEach((id) => {
+      const d = CONFIG.decor.find((x) => x.id === id);
+      if (!d) return;
+      if (id === "rem_hong") {
+        front.appendChild(UI.el("div", "curtain left"));
+        front.appendChild(UI.el("div", "curtain right"));
+        return;
+      }
+      if (id === "neon") { front.classList.add("has-neon"); return; }
+      front.appendChild(UI.el("div", "decor decor-" + id, d.emoji));
+    });
+    const pets = UI.el("div", "pets");
+    S.pets.forEach((id) => {
+      const p = CONFIG.pets[id];
+      if (!p) return;
+      const b = UI.el("button", "pet pet-" + id, p.emoji);
+      b.type = "button";
+      b.setAttribute("aria-label", UI.fmt(p.name));
+      if (id === "miu") b.appendChild(UI.el("span", "pet-z", "💤"));
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (p.lines.length) UI.toast(UI.fmt(UI.pick(p.lines)));
+        b.classList.remove("wiggle"); void b.offsetWidth; b.classList.add("wiggle");
+        BT.Audio.play("pop");
+      });
+      pets.appendChild(b);
+    });
+    front.appendChild(pets);
+  };
+
   BT.UI = UI;
 })();

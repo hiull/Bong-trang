@@ -11,7 +11,7 @@ window.CONFIG = {
   // Phạm vi đã làm xong theo lộ trình (Mục 23). Giai đoạn 2: đủ 4 khu, Ngày 1 → 15.
   // Ngày bí mật mở ở Giai đoạn 3 (cùng khách Hiếu & nhóm bạn).
   build: {
-    stage: 3,
+    stage: 4,
     maxPlayableDay: 15,
     playableZones: ["tron", "nuong", "cuon", "nuoc"],
     secretPlayable: true
@@ -395,12 +395,13 @@ window.CONFIG = {
     lac_nhanh:  { name: "Bịch dây kéo", min: 0, max: 1, prices: [200], desc: "Lắc bịch chỉ cần 4 lần" }
   },
 
+  // Trang trí tiệm (hiện trực tiếp trên mặt tiền)
   decor: [
-    { id: "den_long", name: "Đèn lồng giấy", price: 100 },
-    { id: "hoa_giay", name: "Chậu hoa giấy cổng trường", price: 150 },
-    { id: "neon", name: "Biển hiệu đèn neon", price: 300 },
-    { id: "meo_than_tai", name: "Mèo thần tài vẫy tay", price: 200 },
-    { id: "rem_hong", name: "Rèm hồng pastel", price: 120 }
+    { id: "den_long", name: "Đèn lồng giấy", emoji: "🏮", price: 100 },
+    { id: "hoa_giay", name: "Chậu hoa giấy cổng trường", emoji: "🪴", price: 150 },
+    { id: "neon", name: "Biển hiệu đèn neon", emoji: "💡", price: 300 },
+    { id: "meo_than_tai", name: "Mèo thần tài vẫy tay", emoji: "😺", price: 200 },
+    { id: "rem_hong", name: "Rèm hồng pastel", emoji: "🎀", price: 120 }
   ],
 
   pets: {
@@ -412,25 +413,124 @@ window.CONFIG = {
         "{pet} nhìn bịch khô bò không chớp mắt 👀",
         "{pet} kêu meo meo đòi bà chủ vuốt ve"
       ] },
-    cun_bong: { name: "Cún Bông", emoji: "🐶", price: 250, lines: [] },
-    hamster: { name: "Hamster Hạt Dẻ", emoji: "🐹", price: 200, lines: [] }
+    cun_bong: { name: "Cún Bông", emoji: "🐶", price: 250,
+      lines: [
+        "Cún Bông vẫy đuôi tít mù chào khách 🐶",
+        "Cún Bông nằm ngửa đòi {her} gãi bụng",
+        "Cún Bông sủa \"gâu\" một tiếng thật dễ thương",
+        "Cún Bông ngậm cái dép chạy vòng vòng quanh quầy",
+        "Cún Bông dụi mũi vào chân {pet} rồi nằm ngủ chung"
+      ] },
+    hamster: { name: "Hamster Hạt Dẻ", emoji: "🐹", price: 200,
+      lines: [
+        "Hạt Dẻ nhét đầy hạt hướng dương vào hai má 🐹",
+        "Hạt Dẻ chạy bánh xe vèo vèo không nghỉ",
+        "Hạt Dẻ đứng hai chân nhìn {her} chằm chằm",
+        "Hạt Dẻ rửa mặt bằng hai tay bé xíu",
+        "Hạt Dẻ cuộn tròn ngủ trong hộp khăn giấy"
+      ] }
   },
 
+  // Giao diện theo mùa. season = khoảng ngày (tháng-ngày) để tự gợi ý skin hợp dịp lễ.
   skins: [
-    { id: "default", name: "Mặc định", price: 0 },
-    { id: "valentine", name: "Valentine", price: 300 },
-    { id: "trung_thu", name: "Trung Thu", price: 300 },
-    { id: "tet", name: "Tết", price: 350 },
-    { id: "noel", name: "Noel", price: 350 }
+    { id: "default", name: "Mặc định", icon: "🌸", price: 0, desc: "Tiệm vỉa hè chiều tà tông hồng kem pastel" },
+    { id: "valentine", name: "Valentine", icon: "💝", price: 300, desc: "Trái tim hồng, bóng bay, hộp socola trên quầy", season: ["02-01", "02-16"] },
+    { id: "trung_thu", name: "Trung Thu", icon: "🏮", price: 300, desc: "Đèn lồng ông sao, đèn cá chép, ánh trăng rằm", season: ["09-01", "10-10"] },
+    { id: "tet", name: "Tết", icon: "🧧", price: 350, desc: "Hoa mai vàng, hoa đào, câu đối đỏ", season: ["01-15", "02-25"] },
+    { id: "noel", name: "Noel", icon: "🎄", price: 350, desc: "Cây thông nhỏ, dây đèn, tuyết rơi, mũ Noel cho {pet}", season: ["12-01", "12-31"] }
   ],
 
-  // Danh hiệu tiệm (Mục 25.12). Mốc kinh nghiệm là giá trị tạm, chỉnh ở Giai đoạn 4.
+  // Sổ đánh giá (Mục 25.7): mẫu câu nhận xét chia 3 nhóm theo số sao
+  reviewTemplates: {
+    good: [
+      "Bánh tráng ngon xỉu, bà chủ dễ thương nữa!",
+      "Trộn đều tay, vị chua cay vừa miệng, 10 điểm!",
+      "Phục vụ nhanh như chớp, chưa kịp lướt điện thoại đã có món.",
+      "Khô bò thơm, xoài giòn, ăn một lần là ghiền.",
+      "Tiệm xinh xắn, đèn vàng lung linh, chụp hình đẹp lắm.",
+      "Giá sinh viên mà chất lượng nhà hàng luôn!",
+      "Bà chủ nhớ ý khách ghê, dặn gì làm đúng nấy.",
+      "Bánh nướng giòn rụm, trứng béo ngậy, mê!",
+      "Trà tắc mát lạnh, uống chung bánh tráng là hết sảy.",
+      "Có bé mèo trước quầy siêu dễ thương, ghé hoài luôn.",
+      "Ăn xong muốn quay lại liền, mai ghé tiếp nha!",
+      "Bánh tráng cuốn bơ béo ngậy, cuốn chặt tay, đỉnh!",
+      "Đi ngang mùi thơm quá phải ghé, không hối hận chút nào.",
+      "Tiệm ruột của mình từ giờ rồi đó!",
+      "Quán sạch sẽ, gọn gàng, bà chủ cười tươi rói.",
+      "Phần ăn đầy đặn, topping bỏ không tiếc tay.",
+      "Tan học ghé ăn một bịch là quên hết mệt.",
+      "Đánh giá 5 sao không cần suy nghĩ!"
+    ],
+    ok: [
+      "Ngon nhưng hôm nay đợi hơi lâu xíu.",
+      "Vị ổn, lần sau cho thêm chút sa tế nữa là tuyệt.",
+      "Bánh được, mà đông khách quá nên chờ hơi lâu.",
+      "Cũng ngon, chắc ghé lại thử món khác.",
+      "Món ổn áp, mong quán làm nhanh hơn chút.",
+      "Lần đầu bị giao nhầm món, nhưng bà chủ sửa liền nên ok.",
+      "Trà hơi nhạt, bánh tráng thì ngon.",
+      "Bình thường, không có gì để chê lắm.",
+      "Giá ổn, vị ổn, chỗ ngồi hơi chật.",
+      "Ngon mà phải đứng chờ hơi mỏi chân.",
+      "Được, lần sau mong có thêm ghế ngồi."
+    ],
+    bad: [
+      "Đợi lâu quá nên bỏ về luôn rồi…",
+      "Đói xỉu mà chưa tới lượt, buồn ghê.",
+      "Đông khách quá, chờ không nổi.",
+      "Hôm nay quán làm chậm quá trời.",
+      "Đứng chờ mỏi chân mà chưa có món.",
+      "Tiếc ghê, nhìn ngon mà không đợi được.",
+      "Chắc hôm khác vắng khách mới ghé lại.",
+      "Hết giờ nghỉ trưa rồi mà chưa có bánh…",
+      "Chờ lâu quá, lần sau phải ghé sớm hơn.",
+      "Quán ngon nhưng chờ lâu thì chịu thua.",
+      "Bỏ về giữa chừng, tiếc hùi hụi.",
+      "Đợi hoài không tới lượt, thôi mua chỗ khác."
+    ]
+  },
+  reviewReplies: [
+    "Cảm ơn bạn đã ủng hộ {shop} ạ 💕",
+    "Xin lỗi vì để bạn đợi lâu, lần sau quán sẽ làm siêu tốc!",
+    "Bà chủ ghi nhận liền, ghé ủng hộ tiếp nha!"
+  ],
+  reviewKeep: 80,               // giữ tối đa 80 đánh giá gần nhất
+  reviewReplyBonusMax: 3,        // trả lời đánh giá ≤ 3 sao → khách sửa thành +1 sao
+
+  // Điểm danh 7 ngày: quà (k) mỗi ngày, kèm lời nhắn dailyCheckinMessages trong personal.js
+  checkinRewards: [20, 30, 40, 50, 60, 80, 150],
+
+  // Nhiệm vụ hằng ngày (mỗi ngày thật chọn ngẫu nhiên 3 nhiệm vụ)
+  questsPerDay: 3,
+  quests: [
+    { id: "served", text: "Phục vụ {n} khách", n: 20, reward: 40 },
+    { id: "comboMax", text: "Đạt combo x{n} trong một ca", n: 5, reward: 40, best: true },
+    { id: "crispy", text: "Nướng giòn {n} bánh (vùng xanh)", n: 3, reward: 50, fromDay: 4 },
+    { id: "five", text: "Nhận {n} đánh giá 5 sao", n: 10, reward: 40 },
+    { id: "fav", text: "Bán {n} phần món yêu thích", n: 4, reward: 50 },
+    { id: "income", text: "Thu về {x} trong một ca", n: 250, reward: 60, best: true, money: true },
+    { id: "req", text: "Làm đúng {n} yêu cầu riêng", n: 5, reward: 50, fromDay: 3 },
+    { id: "tomo", text: "Phục vụ anh {me} {n} lần", n: 2, reward: 40, fromDay: 3 },
+    { id: "days", text: "Hoàn thành {n} ca bán hàng", n: 2, reward: 50 }
+  ],
+
+  // Sự cố nhỏ trong ca (tối đa 1 lần/ngày)
+  incidents: {
+    fromDay: 3,
+    spillRate: 0.35,             // tỉ lệ có vũng nước đổ trong ngày
+    spillAtProgress: [0.25, 0.6],// xuất hiện khi đã có 25–60% số khách
+    spillTaps: 3,                // chạm 3 lần để lau
+    spillSlow: 0.2               // bếp chậm 20% khi chưa lau
+  },
+
+  // Cấp độ & danh hiệu tiệm (Mục 25.12). Kinh nghiệm = doanh thu mỗi ca / 10.
   titles: [
     { name: "Gánh hàng nhỏ", xp: 0 },
-    { name: "Tiệm đầu ngõ", xp: 300 },
-    { name: "Tiệm quen khu phố", xp: 800 },
-    { name: "Tiệm nổi tiếng", xp: 1500 },
-    { name: "{shop} — Nhất quả đất", xp: 2500 }
+    { name: "Tiệm đầu ngõ", xp: 60 },
+    { name: "Tiệm quen khu phố", xp: 200 },
+    { name: "Tiệm nổi tiếng", xp: 400 },
+    { name: "{shop} — Nhất quả đất", xp: 700 }
   ],
 
   // Toàn bộ chữ hiển thị (Mục 19). {her} {me} {nick} {shop} {pet} lấy từ personal.js.
@@ -656,6 +756,49 @@ window.CONFIG = {
     secretInfo: "Chỉ có anh {me} và nhóm bạn ghé chơi. Không thể thua 💕",
     noTarget: "Không giới hạn",
     secretResult: "Một ngày bán hàng thật vui cùng mọi người 💕",
+    // Cửa hàng
+    shopTitle: "Cửa hàng 🛍️",
+    shopTabEquip: "Thiết bị",
+    shopTabDecor: "Trang trí & Thú cưng",
+    shopTabSkin: "Giao diện mùa",
+    shopBuyPrice: "Mua · {x}",
+    shopOwned: "Đã có",
+    shopUse: "Dùng",
+    shopInUse: "Đang dùng",
+    shopLevel: "Cấp {a}/{b}",
+    shopBought: "Đã mua {name}! 🎉",
+    shopDecorTitle: "Trang trí tiệm",
+    shopPetTitle: "Thú cưng",
+    shopSuggest: "Đang mùa {name} nè! Thử giao diện {icon} cho tiệm nha",
+    shopDefaultPet: "Bé mèo cam của tiệm",
+    // Đánh giá
+    reviewTitle: "Sổ đánh giá ⭐",
+    reviewAvg: "Điểm trung bình tiệm",
+    reviewCount: "{n} đánh giá",
+    reviewEmpty: "Chưa có đánh giá nào. Mở tiệm bán hàng để nhận đánh giá nha!",
+    reviewReply: "Trả lời",
+    reviewReplyTitle: "Bà chủ trả lời",
+    reviewReplied: "Bà chủ: {text}",
+    reviewFixed: "Khách vui vẻ sửa lại thành {n} sao 💕",
+    reviewDay: "Ngày {n}",
+    // Sự cố
+    spillAppear: "Ối, nước đổ trước quầy! Chạm 3 lần để lau nha 💦",
+    spillClean: "Lau sạch rồi! ✨",
+    // Điểm danh & nhiệm vụ
+    checkinTitle: "Quà điểm danh 7 ngày 🎁",
+    checkinDay: "Ngày {n}",
+    checkinClaim: "Nhận quà hôm nay",
+    checkinDone: "Hôm nay nhận rồi, mai quay lại nha 💕",
+    checkinGot: "+{x} vào ví 🪙",
+    questTitle: "Nhiệm vụ hôm nay 📋",
+    questClaim: "Nhận",
+    questClaimed: "Đã nhận",
+    questProgress: "{a}/{b}",
+    questReward: "+{x}",
+    questDone: "Hoàn thành nhiệm vụ! +{x} 🪙",
+    // Cấp độ
+    levelLabel: "Cấp {n}",
+    levelUp: "Tiệm lên cấp {n}: {title}! 🎉",
     stepNames: { lac: "💫 Lắc", nuong: "🔥 Canh lửa", gap: "🫓 Gấp bánh", cuon: "🌯 Cuốn", "rot:tra": "🫖 Rót trà (giữ 2 giây)", "rot:nuoc_mia": "🎋 Rót nước mía (giữ 2 giây)" },
     zonePrev: "Khu trước",
     zoneNext: "Khu sau",
