@@ -295,23 +295,40 @@ window.BT = window.BT || { Screens: {} };
         .replace(/[^a-z0-9]+/g, " ").trim();
     },
 
-    // đúng nếu khớp hẳn một đáp án, hoặc chứa trọn một đáp án dài từ 4 ký tự
+    // chữ thường, giữ dấu tiếng Việt, bỏ ký tự lạ (để phân biệt "dẫm"/"dâm", "mê"/"me")
+    soft(s) {
+      return String(s || "").toLowerCase().normalize("NFC").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    },
+
+    // Đúng nếu khớp một đáp án. Gõ lại chính câu đố thì không tính.
+    // Đáp án ≥4 ký tự: chấp nhận câu có chứa đáp án (không dấu); đáp án ngắn: chỉ khi khớp có dấu.
     check(index, input) {
       const item = this.list()[index];
       const got = this.normalize(input);
       if (!item || !got) return false;
+      const has = (hay, needle) => !!needle && (" " + hay + " ").indexOf(" " + needle + " ") >= 0;
+      const clue = item.lines.join(" ");
+      const echo = has(this.normalize(clue), got);       // bỏ dấu đi thì input nằm trong câu đố
+      const inSoft = this.soft(input);
       return item.answers.some((a) => {
-        const want = this.normalize(a);
-        return want && (got === want || (want.length >= 4 && (" " + got + " ").indexOf(" " + want + " ") >= 0));
+        const wantH = this.normalize(a);
+        const wantS = this.soft(a);
+        if (echo) return has(inSoft, wantS) && !has(this.soft(clue), inSoft);
+        return got === wantH || (wantH.length >= 4 && has(got, wantH)) || has(inSoft, wantS);
       });
     },
 
-    // câu kế tiếp theo thứ tự, hết danh sách thì quay lại từ đầu
+    // Câu kế tiếp chưa giải (theo thứ tự); giải hết rồi thì quay vòng cả danh sách
     take() {
       const f = Save.state.flirt;
       const n = this.list().length;
       if (!n) return -1;
-      const i = ((f.next % n) + n) % n;
+      const start = ((f.next % n) + n) % n;
+      let i = start;
+      for (let k = 0; k < n; k++) {
+        const j = (start + k) % n;
+        if (!f.solved[j]) { i = j; break; }
+      }
       f.next = (i + 1) % n;
       return i;
     },

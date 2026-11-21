@@ -325,7 +325,7 @@ window.BT = window.BT || { Screens: {} };
       const allServed = this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0;
       // Tới mốc thả thính (hoặc hết khách mà còn lượt chưa ghé) → anh Hiếu vào khi tiệm đang rảnh tay
       const due = this.flirtDone < this.flirtAt.length && (allServed || this.done / this.total >= this.flirtAt[this.flirtDone]);
-      if (due && !this.flirtActive && !UI.modals.length && !this.shakeLayer && !this.tut) this.startFlirt();
+      if (due && !this.flirtActive && !this.storyPending && !UI.modals.length && !this.shakeLayer && !this.tut) this.startFlirt();
       if (allServed && this.flirtDone >= this.flirtAt.length && !this.flirtActive) this.finish(false);
     }
 
@@ -677,9 +677,11 @@ window.BT = window.BT || { Screens: {} };
       if (c.isTomortle) {
         UI.heartBurst(G.tomortleHearts, G.tomortleHeartsSec);
         BT.Audio.play("heart");
-        this.scope.timeout(() => this.tomortleStory(), G.tomortleHeartsSec * 700);
+        this.storyPending = (this.storyPending || 0) + 1;
+        this.scope.timeout(() => { this.storyPending--; this.tomortleStory(); }, G.tomortleHeartsSec * 700);
       } else if (c.regularId && c.chapter >= 0) {
-        this.scope.timeout(() => this.regularStory(c.regularId, c.chapter), 600);
+        this.storyPending = (this.storyPending || 0) + 1;
+        this.scope.timeout(() => { this.storyPending--; this.regularStory(c.regularId, c.chapter); }, 600);
       }
     }
 
@@ -821,6 +823,9 @@ window.BT = window.BT || { Screens: {} };
       const input = UI.el("textarea", "flirt-input");
       input.rows = 2;
       input.placeholder = UI.t("flirtPlaceholder");
+      // tắt tự viết hoa / tự sửa chữ của bàn phím điện thoại
+      ["autocapitalize", "autocomplete", "autocorrect"].forEach((k) => input.setAttribute(k, "off"));
+      input.spellcheck = false;
       body.appendChild(input);
       const result = UI.el("div", "flirt-result");
       body.appendChild(result);
@@ -864,7 +869,9 @@ window.BT = window.BT || { Screens: {} };
         BT.Audio.play("letter");
         finish(2600);
       };
-      input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); submit(); }
+      });
       const m = UI.modal({
         title: UI.t("flirtTitle"),
         body,
@@ -901,6 +908,12 @@ window.BT = window.BT || { Screens: {} };
     // ---------------- Cốt truyện ----------------
     storyDialog(title, avatar, text, choices) {
       if (this.over) return;
+      // đang có popup khác (vd. anh Hiếu thả thính) → đợi rảnh rồi mới hiện, không chồng popup
+      if (this.flirtActive || UI.modals.length) {
+        this.storyPending = (this.storyPending || 0) + 1;
+        this.scope.timeout(() => { this.storyPending--; this.storyDialog(title, avatar, text, choices); }, 300);
+        return;
+      }
       this.pauseReasons.add("story");
       const body = UI.el("div", "story");
       const av = UI.el("div", "story-avatar");

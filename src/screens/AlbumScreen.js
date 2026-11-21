@@ -25,7 +25,7 @@ window.BT = window.BT || { Screens: {} };
       const fc = BT.Flirt.count();
       const fbook = UI.el("button", "flirt-book-card");
       fbook.type = "button";
-      fbook.appendChild(UI.el("span", "fb-icon", "😈"));
+      fbook.appendChild(UI.el("span", "fb-icon", "💌"));
       fbook.appendChild(UI.el("span", "fb-label", UI.t("flirtBookCount", { a: fc.solved, b: fc.total })));
       fbook.addEventListener("click", () => {
         BT.Audio.play("pop");

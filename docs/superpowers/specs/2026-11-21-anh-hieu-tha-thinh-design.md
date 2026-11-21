@@ -34,3 +34,7 @@ giải hết bộ câu. **Bắt buộc:** đưa đủ tất cả các câu chơi
 ## Để lại cho người làm
 Vị trí bong bóng/ô nhập trên màn bán hàng, hoạt ảnh anh đi vào/đi ra, câu phản ứng khi đúng/sai, cách nhóm các dòng
 trong danh sách người dùng thành từng câu.
+
+## Cập nhật sau duyệt (người dùng, 21/11/2026)
+- **Chỉ giữ các câu thả thính dễ thương, bỏ hết câu tục tĩu.** Trong bộ câu đã gửi chỉ 3 câu đạt (xương nhất trình, lúc xào… ninh, vị anh đơ); câu không chắc nghĩa cũng bỏ. Phản ứng của anh Hiếu đổi sang giọng dễ thương (💕 thay 😈).
+- Sau đánh giá mã: gõ lại câu đố không được tính; đáp án ngắn nhận cả câu có chứa đáp án (khi có dấu); câu chưa giải được ưu tiên; không bao giờ chồng popup thả thính với câu chuyện khách quen; ô nhập tắt tự sửa chữ của bàn phím.
