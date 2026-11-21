@@ -140,6 +140,7 @@ window.BT = window.BT || { Screens: {} };
       ms.shifts = Object.keys(days).filter((k) => Number(k)).length;
       st.goldHearts = this.list().filter((m) => m.major && ms.best[m.index] && ms.best[m.index].stars >= 3).length;
       st.regularNext = {};
+      (st.reviews || []).forEach((r) => { const k = Number(r.day); if (k) r.day = this.majorIndex(k); });
       const b = st.dayBackup;
       if (b && !b.finished) { st.wallet = b.wallet; st.inventory = JSON.parse(JSON.stringify(b.inventory || {})); st.today = null; }
       st.dayBackup = null;

@@ -379,7 +379,7 @@ window.CONFIG = {
     school:   { icon: "🎒", label: "Học sinh tan trường", note: "Giữa ca có nhóm 3 học sinh đến cùng lúc" },
     festival: { icon: "🏮", label: "Lễ hội phố", note: "Khách đến nhộn nhịp, tip cao" },
     sunset:   { icon: "🌅", label: "Hoàng hôn kỷ niệm" },
-    secret:   { icon: "★", label: "Ngày bí mật", note: "Không thể thua" }
+    secret:   { icon: "★", label: "Ca bí mật", note: "Không thể thua" }
   },
 
   // Mùa & mốc: 15 ngày bên dưới là 15 mốc lớn; giữa các mốc lớn có mốc nhỏ (minorPerMajor).
@@ -644,7 +644,7 @@ window.CONFIG = {
     maxed: "Đã tối đa",
     lacking: "Thiếu {x}",
     target: "Mục tiêu",
-    dayN: "Ngày {n}",
+    dayN: "Mốc {n}",
     secretDay: "Ca bí mật",
     back: "Quay lại",
     comingSoon: "Góc này {nick} đang xây, bản cập nhật tới sẽ mở cho {her} nha 💕",
@@ -691,7 +691,7 @@ window.CONFIG = {
     notThisZone: "Nguyên liệu này không dùng cho bịch này",
     outOfStock: "Hết {ing} rồi, bấm Nhập nhanh nha!",
     stockEmpty: "Hết",
-    zoneLocked: "Khu {zone} mở ở Ngày {n}",
+    zoneLocked: "Khu {zone} mở ở Mốc {n}",
     zoneLaterBuild: "Khu {zone} sẽ có ở bản cập nhật tới 💕",
     pickTrayFirst: "Chọn một bịch đã làm rồi chạm khách để giao nha",
     trayIsEmpty: "Bịch này còn trống mà",
@@ -699,7 +699,7 @@ window.CONFIG = {
     trashed: "Đã bỏ vào thùng rác",
     trashNothing: "Chọn bịch muốn bỏ trước nha",
     pauseTitle: "Tạm dừng",
-    leaveConfirm: "Rời tiệm giữa ca thì ngày này sẽ tính lại từ đầu nha.",
+    leaveConfirm: "Rời tiệm giữa ca thì ca này sẽ tính lại từ đầu nha.",
     bookTitle: "Sổ công thức 📖",
     bookBase: "Đế",
     bookToppings: "Topping",
@@ -739,7 +739,7 @@ window.CONFIG = {
     praise: ["Ngon quá!", "Tuyệt cú mèo!", "Bà chủ {her} giỏi ghê!", "Mai ghé nữa nha!", "Đúng vị luôn!", "10 điểm!", "Nhớ ý ghê!"],
     fast: ["Nhanh quá! ⚡", "Siêu tốc!", "Chớp nhoáng!"],
     angry: ["Lâu quá à...", "Thôi đi chỗ khác!", "Đói xỉu rồi 😩"],
-    loseLines: ["Không sao, mình làm lại nha {her}! 💪", "Em làm tốt lắm rồi, thử lại ngày này nào!", "Anh {me} tin bà chủ làm được mà ❤️"],
+    loseLines: ["Không sao, mình làm lại nha {her}! 💪", "Em làm tốt lắm rồi, thử ca nữa nào!", "Anh {me} tin bà chủ làm được mà ❤️"],
     friendGreet: ["Ghé tiệm {shop} nè!", "Nghe nói tiệm của {her} ngon nhất phố!", "Cho mình như cũ nha {her}!"],
 
     // Tổng kết
@@ -753,7 +753,7 @@ window.CONFIG = {
     statExpense: "Chi phí nhập hàng",
     statNet: "Lãi ròng",
     statServed: "Số khách phục vụ",
-    statRating: "Điểm đánh giá trung bình ngày",
+    statRating: "Điểm đánh giá trung bình ca",
     statIncome: "Tổng thu / Mục tiêu",
     nextDaySoon: "Ngày {n} sẽ mở ở bản cập nhật tới 💕",
 
@@ -815,6 +815,9 @@ window.CONFIG = {
     msCleared: "Qua {t}! 🎉",
     msMinorCoins: "Thưởng qua mốc: +{x}",
     msTaleTitle: "Chuyện vặt",
+    talesBookTitle: "Chuyện vặt của khách",
+    talesBookCount: "Chuyện vặt · {a} chuyện",
+    talesBookEmpty: "Qua mốc nhỏ để nghe khách kể chuyện nha",
     endlessBtn: "Ca vô tận",
     endlessBest: "Kỷ lục: {n} khách",
     hudEndless: "Khách: {d}",
@@ -923,7 +926,7 @@ window.CONFIG = {
     reviewReplyTitle: "Bà chủ trả lời",
     reviewReplied: "Bà chủ: {text}",
     reviewFixed: "Khách vui vẻ sửa lại thành {n} sao 💕",
-    reviewDay: "Ngày {n}",
+    reviewDay: "Mốc {n}",
     // Sự cố
     spillAppear: "Ối, nước đổ trước quầy! Chạm 3 lần để lau nha 💦",
     spillClean: "Lau sạch rồi! ✨",

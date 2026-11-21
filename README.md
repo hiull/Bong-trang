@@ -215,3 +215,10 @@ Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao
 - **Thêm vào màn hình chính** (Android): app mở thẳng toàn màn hình, không còn thanh địa chỉ.
 - **iPhone / iPad:** Safari không cho trang web bật toàn màn hình. Hãy bấm **Chia sẻ → Thêm vào MH chính** rồi mở game từ biểu tượng đó để không còn thanh địa chỉ.
 
+## 12. Mốc, Thử thách & Ca vô tận
+- **Mốc thay cho ngày:** Mùa 1 có **30 mốc** — 15 mốc lớn (15 ngày cũ: món mới, truyện, kỷ niệm) xen 15 mốc nhỏ (tiền thưởng + một "chuyện vặt" của khách). Mỗi ca bán cộng tiến độ cho mốc hiện tại (thắng +1 ca, 3 sao +1,25, thua vẫn được ít nhất 0,25). Đủ thanh là qua mốc. Qua mốc 30 thì tới đoạn kết.
+- **Thử thách hôm nay** (mở ở Mốc 5): mỗi ngày một đề riêng. Lần chơi đầu trong ngày mở **một lời nhắn**, cộng 1 ca tiến độ và tiền thưởng theo hạng. Xem lại lời nhắn ở **Album → Sổ lời nhắn**.
+- **Ca vô tận** (mở ở Mốc 7): khách đến mãi, nhanh dần, 3 tim. Kỷ lục 50/100/200 khách có thưởng. Cũng cộng tiến độ mốc.
+- **Sửa lời nhắn / chuyện vặt:** `personal.js` → `dailyNotes` (lời nhắn mỗi ngày) và `minorTales` (chuyện vặt). Thêm câu mới thì thêm vào cuối.
+- **Chỉnh độ dài mùa:** `config.js` → `seasons[0].minorPerMajor` (1 = 30 mốc, 2 = 45 mốc), `milestones.shiftsBase` / `shiftsGrowth` (số ca cần cho mỗi mốc). Thử thách: `daily`. Ca vô tận: `endless`.
+- Bản lưu cũ tự chuyển: đang ở Ngày N thì thành mốc lớn tương ứng, sao và Tim vàng giữ nguyên.

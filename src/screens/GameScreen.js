@@ -1395,7 +1395,7 @@ window.BT = window.BT || { Screens: {} };
     onTab(z) {
       const open = this.openZones.some((o) => o.id === z.id);
       if (!open) {
-        if (z.openDay > this.dayNum) UI.toast(UI.t("zoneLocked", { zone: z.name, n: z.openDay }));
+        if (z.openDay > this.dayNum) UI.toast(UI.t("zoneLocked", { zone: z.name, n: BT.MS.majorIndex(z.openDay) }));
         else UI.toast(UI.t("zoneLaterBuild", { zone: z.name }));
         return;
       }

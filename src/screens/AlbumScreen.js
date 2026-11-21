@@ -63,6 +63,29 @@ window.BT = window.BT || { Screens: {} };
           buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
       });
       scroll.appendChild(nbook);
+      // Chuyện vặt (qua mốc nhỏ)
+      const tales = (P.minorTales || []);
+      const tSeen = [...new Set(S.talesSeen)].sort((a, b) => a - b);
+      const tbook = UI.el("button", "flirt-book-card tales-book-card");
+      tbook.type = "button";
+      tbook.appendChild(UI.el("span", "fb-icon", "★"));
+      tbook.appendChild(UI.el("span", "fb-label", UI.t("talesBookCount", { a: tSeen.length })));
+      tbook.addEventListener("click", () => {
+        BT.Audio.play("pop");
+        const list = UI.el("div", "fb-list");
+        if (!tSeen.length) list.appendChild(UI.el("div", "fb-locked", UI.t("talesBookEmpty")));
+        tSeen.forEach((i) => {
+          const t = tales[i];
+          if (!t) return;
+          const row = UI.el("div", "fb-item solved tb-item");
+          row.appendChild(UI.el("div", "fb-answer", UI.fmt(t.who)));
+          row.appendChild(UI.el("div", "fb-line", UI.fmt(t.text)));
+          list.appendChild(row);
+        });
+        UI.modal({ title: UI.t("talesBookTitle"), body: list, className: "modal-flirt-book modal-tales-book", dismissable: true,
+          buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+      });
+      scroll.appendChild(tbook);
       // Lời nhắn bí mật
       const bonus = UI.el("button", "bonus-card" + (S.goldHearts >= maxDay ? " open" : ""));
       bonus.type = "button";

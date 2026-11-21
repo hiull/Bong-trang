@@ -17,7 +17,6 @@ window.BT = window.BT || { Screens: {} };
       wallet: CONFIG.money.startWallet,
       xp: 0,
       days: {},
-      unlockedDay: 1,
       dayBackup: null,
       upgrades: defaultUpgrades(),
       decor: [],
@@ -209,7 +208,7 @@ window.BT = window.BT || { Screens: {} };
       const S = Save.state;
       const today = this.today();
       if (S.dailyQuests.date !== today || !S.dailyQuests.list.length) {
-        const pool = CONFIG.quests.filter((q) => (q.fromDay || 1) <= S.unlockedDay);
+        const pool = CONFIG.quests.filter((q) => (q.fromDay || 1) <= (BT.MS ? BT.MS.current().level : 1));
         const list = [];
         while (list.length < CONFIG.questsPerDay && pool.length) {
           const q = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
