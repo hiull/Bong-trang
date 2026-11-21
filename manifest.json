@@ -1,0 +1,13 @@
+{
+  "name": "Bống tráng",
+  "short_name": "Bống tráng",
+  "description": "Tiệm bánh tráng nhỏ dành tặng Bống",
+  "lang": "vi",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF6EC",
+  "theme_color": "#FF5C8A",
+  "icons": []
+}

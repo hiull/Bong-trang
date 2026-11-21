@@ -1,0 +1,3 @@
+Đặt ảnh kỷ niệm vào đây, đặt tên đúng 01.jpg ... 15.jpg (xem danh sách trong README.md).
+Khuyến nghị: ảnh dọc 4:5 (800x1000), nặng dưới 300 KB.
+Chưa có ảnh cũng không sao: game tự vẽ khung trái tim hồng thay thế.

@@ -1,0 +1,2 @@
+Thư mục hiệu ứng âm thanh (sfx_tap.mp3, sfx_coin.mp3, ...).
+Giai đoạn 1 chưa cần: tiếng "tít" đang được tạo bằng code. Giai đoạn 5 sẽ thêm file có giấy phép CC0.

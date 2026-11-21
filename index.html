@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#FF5C8A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>Bống tráng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Dancing+Script:wght@600;700&family=Nunito:wght@600;700;800&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage">
+    <div id="app"></div>
+  </div>
+
+  <div id="rotate-overlay" aria-hidden="true">
+    <div class="rotate-icon">📱</div>
+    <p id="rotate-text">Xoay dọc điện thoại để chơi nhé 📱</p>
+  </div>
+
+  <noscript>
+    <p class="noscript">Trình duyệt đang tắt JavaScript nên chưa mở được tiệm. Bật JavaScript lên rồi tải lại trang nha 💕</p>
+  </noscript>
+
+  <!-- Thứ tự nạp: thông tin cá nhân → cấu hình → lõi → thành phần → màn hình → khởi động -->
+  <script src="personal.js"></script>
+  <script src="config.js"></script>
+  <script src="src/save.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/components/UI.js"></script>
+  <script src="src/components/Tray.js"></script>
+  <script src="src/components/Station.js"></script>
+  <script src="src/components/Customer.js"></script>
+  <script src="src/screens/BootScreen.js"></script>
+  <script src="src/screens/MenuScreen.js"></script>
+  <script src="src/screens/MapScreen.js"></script>
+  <script src="src/screens/PrepScreen.js"></script>
+  <script src="src/screens/GameScreen.js"></script>
+  <script src="src/screens/ResultScreen.js"></script>
+  <script src="src/screens/ShopScreen.js"></script>
+  <script src="src/screens/AlbumScreen.js"></script>
+  <script src="src/screens/ReviewScreen.js"></script>
+  <script src="src/screens/EndingScreen.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>
