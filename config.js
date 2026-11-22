@@ -527,7 +527,7 @@ window.CONFIG = {
   helper: {
     fromSeason: 2, fromMilestone: 3, levelAt: [0, 8, 20],
     waiterSec: [1.5, 1.1, 0.8], drinkSec: [6, 5, 4], cheSec: [1.2, 0.9, 0.6], patienceSlow: 0.1,
-    drinks: ["tra_da", "tra_tac", "nuoc_mia_ly"], eventRate: 0.1, lateShare: 0.2, bubbleEverySec: [14, 22]
+    drinks: ["tra_da", "tra_tac", "nuoc_mia_ly"], eventRate: 0.1, lateShare: 0.2, lateEndlessServed: 5, bubbleEverySec: [14, 22]
   },
 
   // Bác Sáu chủ nhà (Mùa 2): ghé thu tiền mặt bằng ở ca đầu các mốc lớn chẵn từ ngày fromDay.
@@ -948,7 +948,7 @@ window.CONFIG = {
     landlordOwed: "(gồm {x} còn nợ)",
     landlordPay: "Gửi bác {x}",
     landlordDefer: "Khất bác tuần sau",
-    landlordAuto: "Ví hết tiền, bác Sáu cho khất tới lần sau nè",
+    landlordAuto: "Ví chưa đủ tiền nhà, bác Sáu cho khất tới lần sau nè",
     landlordAutoPaid: "Gửi bác được {x}, còn nợ {y}",
     rivalArrive: "Xe chè đối thủ đậu bên kia đường! Phục vụ liền {n} khách để giữ khách nha",
     rivalWin: "Xe chè đối thủ chịu thua, dọn đi rồi! +{x}",
@@ -963,6 +963,9 @@ window.CONFIG = {
     helperLevel: "Ăn ý cấp {n} · {s} ca làm chung",
     helperChapterTitle: "Sau giờ đóng cửa · Chương {n}",
     helperLocked: "Chương này mở khi hai người ăn ý hơn",
+    goldHearts2: "Mùa 2 · 💛 {a}/{b}",
+    bonusCard2: "Lời nhắn bí mật Mùa 2",
+    bonusLocked2: "Đạt 3 sao ở cả 15 mốc lớn Mùa 2 để mở",
     card2Get: "Thẻ công thức mới!",
     memory2Get: "Có kỷ niệm mới, chạm để mở 💌",
     seasonCardTitle: "Mùa 2 mở rồi! 🍧",

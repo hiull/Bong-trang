@@ -18,6 +18,7 @@ window.BT = window.BT || { Screens: {} };
       const info = UI.el("div", "album-info");
       info.appendChild(UI.el("div", "pill", UI.t("albumCount", { a: unlocked.length, b: total })));
       info.appendChild(UI.el("div", "pill gold", UI.t("goldHearts", { a: S.goldHearts, b: maxDay })));
+      if (S.s2 && S.s2.started) info.appendChild(UI.el("div", "pill gold", UI.t("goldHearts2", { a: S.s2.goldHearts, b: maxDay })));
       el.appendChild(info);
 
       const scroll = UI.el("div", "album-scroll");
@@ -157,6 +158,18 @@ window.BT = window.BT || { Screens: {} };
           buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
       });
       scroll.appendChild(bonus);
+      if (S.s2 && S.s2.started) {
+        const open2 = S.s2.goldHearts >= maxDay;
+        const b2 = UI.el("button", "bonus-card bonus-card-2" + (open2 ? " open" : ""));
+        b2.type = "button";
+        b2.appendChild(UI.el("div", "bonus-title", UI.t("bonusCard2")));
+        b2.appendChild(UI.el("div", "bonus-sub", open2 ? "💌" : UI.t("bonusLocked2")));
+        b2.addEventListener("click", () => {
+          if (!open2) { UI.toast(UI.t("bonusLocked2")); return; }
+          UI.modal({ title: UI.t("bonusCard2"), body: P.bonusMessage2, className: "modal-welcome", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+        });
+        scroll.appendChild(b2);
+      }
 
       const grid = UI.el("div", "album-grid");
       P.memories.forEach((m, i) => {

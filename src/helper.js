@@ -71,7 +71,8 @@ window.BT = window.BT || { Screens: {} };
       const lv = this.level() - 1;
       h.t += dt;
       // Đi trễ: chưa làm gì trong 20% đầu ca
-      if (h.late && g.done < Math.ceil(g.total * C.lateShare)) return;
+      const lateUntil = g.total === Infinity ? C.lateEndlessServed : Math.ceil(g.total * C.lateShare);
+      if (h.late && g.done < lateUntil) return;
       h.bubbleAt -= dt;
       if (h.bubbleAt <= 0) { this.say(g); h.bubbleAt = UI.rand(C.bubbleEverySec[0], C.bubbleEverySec[1]); }
       if (h.role === "waiter") this.tickWaiter(g, dt, C.waiterSec[lv]);
@@ -172,7 +173,7 @@ window.BT = window.BT || { Screens: {} };
       S.helper.shifts++;
       const after = this.level();
       let chapter = null;
-      if (after > before && S.helper.chapters < after) chapter = after - 1;
+      if (after > before && S.helper.chapters < after) { chapter = after - 1; S.helper.chapters = after; }
       return { levelUp: after > before, level: after, chapter };
     }
   };

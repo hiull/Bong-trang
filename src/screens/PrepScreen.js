@@ -24,12 +24,18 @@ window.BT = window.BT || { Screens: {} };
         return ing.openDay <= lv && ing.zones.some((z) => CONFIG.build.playableZones.includes(z));
       });
       const gift = run.mode === "story" && run.ms === 1 && S.ms.shifts === 0;
-      if (gift) ids.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.freeStockQty); });
+      // Quà khai trương: Mùa 1 tặng mọi nguyên liệu; mùa sau chỉ tặng nguyên liệu mới của mùa đó
+      const firstDay = BT.MS.season(run.season).majorDays[0];
+      if (gift) ids.filter((id) => (run.season || 1) === 1 || UI.ing(id).openDay >= firstDay).forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.freeStockQty); });
       // Quỹ cứu trợ: không đủ tiền nhập hàng tối thiểu → tặng miễn phí phần còn thiếu
-      const low = ids.filter((id) => BT.Save.stock(id) < M.rescueMinStock);
-      const lowCost = low.reduce((sum, id) => sum + UI.ing(id).price, 0);
-      const rescued = low.length > 0 && S.wallet < lowCost;
-      if (rescued) low.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.rescueQty); });
+      const rescue = () => {
+        const low = ids.filter((id) => BT.Save.stock(id) < M.rescueMinStock);
+        const lowCost = low.reduce((sum, id) => sum + UI.ing(id).price, 0);
+        const hit = low.length > 0 && S.wallet < lowCost;
+        if (hit) low.forEach((id) => { S.inventory[id] = Math.max(BT.Save.stock(id), M.rescueQty); });
+        return hit;
+      };
+      const rescued = rescue();
       // Xếp theo khu: Trộn → Nước → Nướng → Cuốn (theo ngày mở)
       const zones = CONFIG.zones.filter((z) => z.openDay <= lv && CONFIG.build.playableZones.includes(z.id)).sort((a, b) => a.openDay - b.openDay);
       const seen = new Set();
@@ -132,18 +138,23 @@ window.BT = window.BT || { Screens: {} };
       refresh();
 
       // Bác Sáu ghé thu tiền mặt bằng
+      const afterRent = () => {
+        if (rescue()) UI.toast(UI.t("prepRescue"), 2600);
+        refresh();
+      };
       const due = BT.Rent.due(run);
       if (due) {
-        if (S.wallet <= 0) {
+        if (S.wallet < due.total) {
+          // Ví không đủ: chưa khất thì tự khất; đã khất rồi thì gửi hết số đang có
           const r = BT.Rent.pay(S.rent.deferredOnce ? "pay" : "defer", due);
           UI.toast(r.paid ? UI.t("landlordAutoPaid", { x: UI.money(r.paid), y: UI.money(r.owed) }) : UI.t("landlordAuto"), 3000);
-          refresh();
+          afterRent();
         } else {
           const lb = UI.el("div", "story");
           lb.appendChild(UI.el("div", "story-text", UI.fmt(UI.pick(window.PERSONAL.landlordLines || [""]))));
           lb.appendChild(UI.el("div", "info-line", UI.t("landlordAmount", { x: UI.money(due.total) }) + (due.owed ? " " + UI.t("landlordOwed", { x: UI.money(due.owed) }) : "")));
-          const buttons = [{ label: UI.t("landlordPay", { x: UI.money(Math.min(S.wallet, due.total)) }), cls: "btn-pink", onClick: () => { BT.Rent.pay("pay", due); BT.Audio.play("coin"); refresh(); } }];
-          if (!S.rent.deferredOnce) buttons.push({ label: UI.t("landlordDefer"), cls: "btn-white", onClick: () => { BT.Rent.pay("defer", due); refresh(); } });
+          const buttons = [{ label: UI.t("landlordPay", { x: UI.money(Math.min(S.wallet, due.total)) }), cls: "btn-pink", onClick: () => { BT.Rent.pay("pay", due); BT.Audio.play("coin"); afterRent(); } }];
+          if (!S.rent.deferredOnce) buttons.push({ label: UI.t("landlordDefer"), cls: "btn-white", onClick: () => { BT.Rent.pay("defer", due); afterRent(); } });
           UI.modal({ title: UI.t("landlordTitle"), body: lb, className: "modal-landlord", buttons });
         }
       }

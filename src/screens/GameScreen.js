@@ -1650,6 +1650,7 @@ window.BT = window.BT || { Screens: {} };
         ending = progress.cleared === MS.count() && !(sid === 1 ? S.endingSeen : S.s2.endingSeen);
         if (sid >= CONFIG.helper.fromSeason && progress.cleared === CONFIG.helper.fromMilestone - 1 && !S.helper.unlocked) {
           S.helper.unlocked = true;
+          S.helper.chapters = Math.max(S.helper.chapters, 1);
           helperChapter = 0;
         }
       }
