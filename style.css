@@ -1434,6 +1434,26 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .badge-icon { font-size: 22px; color: #E0A800; }
 .badge-name { font-weight: 800; font-size: 13px; margin: 2px 0; }
 .badge-desc { font-size: 11px; color: #7a6a70; }
+.kitchen-new .kitchen-name { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 12px; border: 2px solid #FFC9D8; font: inherit; font-size: 16px; }
+.kitchen-zones, .ing-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.zone-chip.on, .ing-chip.on { background: #FF5C8A; color: #fff; }
+.kitchen-price { margin-top: 8px; font-size: 13px; color: #7a6a70; }
+.custom-row { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 12px; background: #FFF4F7; margin: 6px 0; }
+.custom-txt { flex: 1; min-width: 0; }
+.custom-name { font-weight: 800; }
+.custom-ings { font-size: 12px; color: #7a6a70; }
+.new-custom { width: 100%; margin-top: 6px; }
+.date-btn { display: block; margin: 10px auto 0; }
+.date-timer { text-align: center; font-weight: 800; color: #C2185B; margin-bottom: 8px; }
+.date-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.mcard { position: relative; aspect-ratio: 3 / 4; border: 0; border-radius: 12px; background: #FF8FAB; color: #fff; font-size: 26px; font-weight: 800; box-shadow: 0 3px 0 #E05A80; cursor: pointer; padding: 0; }
+.mcard .mface { display: none; }
+.mcard.up { background: #FFF; box-shadow: 0 3px 0 #F2C6D2; }
+.mcard.up .mface { display: inline; }
+.mcard.up .mback { display: none; }
+.mcard.done { background: #FFF1C9; box-shadow: none; opacity: 0.85; }
+.date-note { font-size: 16px; line-height: 1.5; text-align: center; }
+.date-reward { margin-top: 8px; text-align: center; font-weight: 800; color: #8a6200; }
 .badge-get { margin-top: 6px; padding: 6px 10px; border-radius: 10px; background: #FFF1C9; color: #8a6200; font-weight: 800; text-align: center; }
 .decor-meo_than_tai { right: 16%; bottom: 4%; font-size: max(24px, calc(var(--u) * 44)); animation: wave 1.2s ease-in-out infinite; transform-origin: 50% 100%; }
 @keyframes wave { 50% { transform: rotate(-10deg); } }

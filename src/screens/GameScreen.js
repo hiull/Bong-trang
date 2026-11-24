@@ -76,7 +76,8 @@ window.BT = window.BT || { Screens: {} };
       this.openZones = C.zones.filter((z) => z.openDay <= this.dayNum && C.build.playableZones.includes(z.id));
       this.zone = this.openZones[0].id;
       const zoneIds = this.openZones.map((z) => z.id);
-      this.dishPool = this.dishPoolAll = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))));
+      this.dishPool = this.dishPoolAll = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))))
+        .concat(BT.Fun.customRecipes().filter((r) => zoneIds.includes(r.zone)));   // món sáng tạo của Bống
       this.typePool = Object.keys(C.customerTypes).filter((id) => {
         const t = C.customerTypes[id];
         return t.kind === "normal" && t.openDay <= this.dayNum;
@@ -411,6 +412,7 @@ window.BT = window.BT || { Screens: {} };
       if (d.grillWeight && r.zone === "nuong") w *= d.grillWeight;
       if (d.focus === r.id) w *= d.focusWeight || 1;
       if (d.cheWeight && r.zone === "che") w *= d.cheWeight;
+      if (r.custom) w *= CONFIG.customDish.weight;
       return w;
     }
 
@@ -791,7 +793,10 @@ window.BT = window.BT || { Screens: {} };
         tip: loyal ? def.tip.map((x) => x * G.regularLoyalTipMult) : def.tip,
         self: def.self, call: def.call, lines: [UI.t("regularOrder")], enterSec: CONFIG.gameplay.customerEnterSec, kind: "regular"
       };
-      const dish = this.dishPool.some((r) => r.id === def.dish) ? def.dish : this.makeOrder().items[0].id;
+      let dish = this.dishPool.some((r) => r.id === def.dish) ? def.dish : this.makeOrder().items[0].id;
+      // Khách quen thích thử món sáng tạo của tiệm
+      const customs = this.dishPool.filter((r) => r.custom);
+      if (customs.length && Math.random() < CONFIG.customDish.regularChance) dish = UI.pick(customs).id;
       return this.spawn(seat, null, { items: [{ id: dish, reqs: this.makeRequests(dish) }] },
         { typeDef, tag: def.name.split(" ").slice(0, 2).join(" "), loyal, regularId: plan.id, chapter: plan.chapter });
     }
@@ -979,6 +984,7 @@ window.BT = window.BT || { Screens: {} };
       let base = 0;
       if (c.combo) base = UI.recipe("combo_tinh_yeu").price;
       else c.items.forEach((it) => { base += UI.recipePrice(it.id) * (it.crispy ? 1 + G.crispyBonus : 1); });
+      c.items.forEach((it) => { if (UI.recipe(it.id) && UI.recipe(it.id).custom) this.S.life.customsSold++; });
       const pay = Math.round(base * speed);
       let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1) * (this.rush ? CONFIG.rush.tipMult : 1);
       if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
@@ -2002,8 +2008,11 @@ window.BT = window.BT || { Screens: {} };
       const badges = BT.Fun.checkBadges();
       BT.Save.persist();
 
+      // Hẹn hò sau ca: qua mốc lớn, hoặc ngẫu nhiên sau ca thắng
+      const majorCleared = !!(progress && progress.cleared && (MS.get(progress.cleared) || {}).major);
+      const dateOffer = passed && !this.secret && (majorCleared || Math.random() < CONFIG.dateGame.rate);
       const summary = {
-        badges,
+        badges, dateOffer,
         day: this.dayId, run, title: UI.runTitle(run), endSeason: S.season || 1, passed, lostHearts, stars, secret: this.secret,
         units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter, petCoins, newRecord,
         memory: newMemory, newGold, allGold, ending, levelUp,

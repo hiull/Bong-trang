@@ -88,6 +88,10 @@ window.BT = window.BT || { Screens: {} };
       row(UI.t("statRating"), s.avgRating ? "⭐ " + UI.rating(s.avgRating) : "–");
       body.appendChild(table);
 
+      if (s.dateOffer) {
+        const db = UI.button(UI.t("dateBtn"), "btn-purple small date-btn", () => { if (db.disabled) return; db.disabled = true; BT.Fun.dateGame(); });
+        body.appendChild(db);
+      }
       if (s.newRecord) body.appendChild(UI.el("div", "new-record", UI.t("newRecord")));
       (s.badges || []).forEach((id) => {
         const b = CONFIG.badges.find((x) => x.id === id);

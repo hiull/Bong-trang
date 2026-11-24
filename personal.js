@@ -244,6 +244,24 @@ window.PERSONAL = {
     "Đã gần ba tháng rồi đó. Em kiên nhẫn ghê, giống y như lúc em chờ anh trễ hẹn.",
     "Lá thư cuối trong hộp thư rồi. Mấy lá tiếp theo, anh muốn nói trực tiếp với em."
   ],
+  // Hẹn hò sau ca: mỗi lần thắng trò lật thẻ mở một ghi chú (theo thứ tự). Nháp, anh sửa thoải mái.
+  dateNotes: [
+    "Buổi hẹn đầu tiên sau ca: hai đứa ngồi ăn ké phần bánh tráng còn dư, ngon hơn mọi nhà hàng.",
+    "Đi bộ một vòng hồ cho tiêu bớt. Em kể chuyện khách hôm nay, anh nghe mà cười suốt.",
+    "Tạt vào tiệm trà sữa quen. Em gọi ít đường, anh gọi giống em cho đỡ phải nghĩ.",
+    "Trời mưa nên ngồi dưới mái hiên chờ tạnh. Không đi đâu cả mà vẫn tính là một buổi hẹn.",
+    "Ra chợ đêm, em chấm điểm từng xe bánh tráng. Xe nào cũng thua tiệm mình.",
+    "Ngồi đếm tiền lẻ trong hộp, em tính sổ còn anh làm bộ là kế toán.",
+    "Xem một bộ phim dở tệ, cười suốt vì nó dở. Lần sau vẫn để em chọn phim.",
+    "Chạy xe vòng vòng không có điểm đến, gió mát, em ngồi sau hát lạc tông.",
+    "Ăn ốc ở quán vỉa hè, em gắp cho anh con to nhất rồi nói là con nhỏ nhất.",
+    "Hôm nay chỉ ngồi im cạnh nhau ở bậc thềm tiệm. Vậy thôi mà thấy đủ."
+  ],
+  dateLose: [
+    "Hết giờ mất rồi, nhưng anh vẫn chờ ở đầu hẻm. Hẹn bù lần sau nha.",
+    "Lật nhầm một tí thôi. Buổi hẹn dời qua mai, chỗ cũ, giờ cũ.",
+    "Thua trò chơi chứ không thua buổi tối. Về nghỉ sớm cho khoẻ nha em."
+  ],
 
   // Lời nhắn mỗi ngày: mở một câu khi chơi Thử thách hôm nay lần đầu trong ngày (lần lượt, hết thì quay lại).
   // Sửa thoải mái; thêm câu mới thì thêm vào cuối.

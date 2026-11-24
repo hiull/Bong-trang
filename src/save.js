@@ -55,7 +55,9 @@ window.BT = window.BT || { Screens: {} };
       specialSeen: {},    // quà ngày đặc biệt đã nhận (theo ngày)
       lettersRead: 0,     // số thư hằng tuần đã đọc
       life: { served: 0, rushes: 0, vips: 0, perfect: 0, crispy: 0, customsSold: 0, datesWon: 0 }, // bộ đếm trọn đời (huy hiệu)
-      badges: {},         // huy hiệu đã mở
+      badges: {},
+      customs: [],        // món sáng tạo (tối đa 3)
+      datesNotes: [],     // ghi chú hẹn hò đã mở         // huy hiệu đã mở
       weekly: { week: "", list: [], claimed: false }, // nhiệm vụ tuần
       talesSeen: [],      // chuyện vặt đã xem (theo thứ tự)
       flirt: { next: 0, solved: {} }, // câu thính: câu kế tiếp, câu đã giải ("self" tự giải / "told" anh nói)

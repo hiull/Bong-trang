@@ -111,7 +111,7 @@ window.BT = window.BT || { Screens: {} };
   };
 
   UI.ing = (id) => CONFIG.ingredients[id];
-  UI.recipe = (id) => CONFIG.recipes.find((r) => r.id === id);
+  UI.recipe = (id) => CONFIG.recipes.find((r) => r.id === id) || (BT.Fun && BT.Fun.customRecipe ? BT.Fun.customRecipe(id) : undefined);
   UI.dayCfg = (day) => CONFIG.days.find((d) => d.day === day);
   UI.recipePrice = function (id) {
     const r = UI.recipe(id);

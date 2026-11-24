@@ -98,6 +98,9 @@ window.BT = window.BT || { Screens: {} };
       endlessBtn.appendChild(UI.el("span", "mode-sub", BT.Endless.unlocked() ? UI.t("endlessBest", { n: S.endless.best }) : UI.t("dailyLocked", { n: CONFIG.endless.fromMilestone })));
       if (!BT.Endless.unlocked()) endlessBtn.classList.add("locked");
       modes.appendChild(endlessBtn);
+      const kitchenBtn = UI.button(UI.t("kitchenBtn"), "btn-white small kitchen-btn", () => BT.Fun.openKitchen());
+      kitchenBtn.appendChild(UI.el("span", "mode-sub", S.customs.length + "/" + CONFIG.customDish.max));
+      modes.appendChild(kitchenBtn);
       el.appendChild(modes);
 
       const small = UI.el("div", "menu-small");

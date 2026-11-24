@@ -540,6 +540,18 @@ window.CONFIG = {
     { id: "date5", name: "Hẹn hò ăn ý", desc: "Thắng 5 lần hẹn hò sau ca", stat: "dates", n: 5, reward: 80 },
     { id: "gold15", name: "Tim vàng trọn vẹn", desc: "Đủ 15 Tim vàng Mùa 1", stat: "gold", n: 15, reward: 150 }
   ],
+  // Món sáng tạo (Bếp sáng tạo): giá = tổng giá 1 phần nguyên liệu × priceMult + priceAdd
+  customDish: {
+    max: 3, minIng: 2, maxIng: 5, nameMax: 24, priceMult: 2, priceAdd: 5,
+    zones: ["tron", "cuon", "che"],
+    finish: { tron: ["tac", "lac"], cuon: ["cuon", "nuoc_cham"], che: ["da"] },
+    emoji: { tron: "🥗", cuon: "🌯", che: "🍧" },
+    weight: 0.6,          // trọng số khách lạ gọi món sáng tạo
+    regularChance: 0.35   // khách quen: xác suất gọi món sáng tạo thay món ruột
+  },
+  // Hẹn hò sau ca: lật thẻ ghép đôi
+  dateGame: { rate: 0.25, seconds: 45, pairs: 6, reward: 30, flipBackMs: 600, icons: ["💝", "🎁", "💐", "🎀", "🎈", "⭐"] },
+
   // Nhiệm vụ tuần: dùng chung chỉ số với nhiệm vụ ngày, mức cao hơn; xong cả 5 → đồ trang trí độc quyền
   weeklyCount: 5,
   weeklyRewardCoins: 200,   // nhận hết đồ độc quyền rồi thì thưởng tiền
@@ -1009,6 +1021,34 @@ window.CONFIG = {
     badgesCount: "Huy hiệu · {a}/{b}",
     badgeGet: "Huy hiệu mới: {name} (+{x})",
     weekBtn: "Tuần này",
+    kitchenBtn: "Bếp sáng tạo",
+    kitchenTitle: "Bếp sáng tạo",
+    kitchenIntro: "Tự nghĩ món của tiệm mình (tối đa {n} món). Khách sẽ thỉnh thoảng gọi, khách quen thích gọi hơn.",
+    kitchenNew: "Tạo món mới",
+    kitchenFull: "Đủ món rồi, xoá bớt để tạo mới",
+    kitchenDelete: "Xoá",
+    kitchenSave: "Lưu món",
+    kitchenNamePh: "Tên món (vd: Trộn của Bống)",
+    kitchenHint: "Chọn {a}–{b} nguyên liệu",
+    kitchenHintChe: "Chọn {a}–{b} lớp, chạm theo thứ tự từ đáy lên",
+    kitchenMade: "Đã thêm {name} vào thực đơn!",
+    kitchenErr_full: "Bếp đầy rồi, xoá bớt một món nha",
+    kitchenErr_zone: "Quầy này chưa mở",
+    kitchenErr_name: "Đặt tên món đã nha (tối đa {n} ký tự)",
+    kitchenErr_count: "Chọn từ {a} đến {b} nguyên liệu",
+    kitchenErr_ing: "Có nguyên liệu không hợp quầy này",
+    dateBtn: "Hẹn hò sau ca 💕",
+    dateTitle: "Hẹn hò sau ca",
+    dateTimer: "Lật thẻ tìm cặp · còn {n} giây",
+    dateWinTitle: "Hẹn hò thành công 💕",
+    dateLoseTitle: "Hụt mất rồi",
+    dateLose: "Không sao, mai mình hẹn tiếp.",
+    dateReward: "Anh Hiếu bao chầu này: +{x}",
+    dateAllNotes: "Sổ hẹn hò đã đầy, nhưng buổi hẹn vẫn vui như lần đầu.",
+    dateBookTitle: "Sổ hẹn hò",
+    dateBookCount: "Sổ hẹn hò · {a}/{b}",
+    dateNoteN: "Buổi hẹn {n}",
+    dateLocked: "Thắng một buổi hẹn sau ca để mở",
     weekTitle: "Nhiệm vụ tuần",
     weekReward: "Xong cả 5 nhiệm vụ: nhận {name}",
     weekRewardCoins: "Xong cả 5 nhiệm vụ: nhận {x}",

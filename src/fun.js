@@ -197,5 +197,205 @@ window.BT = window.BT || { Screens: {} };
     UI.modal({ title: UI.t("weekTitle"), body, className: "modal-weekly", dismissable: true, buttons });
   };
 
+  // ---------------- Món sáng tạo ----------------
+  const CD = () => CONFIG.customDish;
+  Fun.level = function () { return BT.MS ? BT.MS.current().level : 1; };
+  // Quầy được tạo món: trộn/cuốn/chè, đã mở theo cấp
+  Fun.customZones = function () {
+    const lv = this.level();
+    return CONFIG.zones.filter((z) => CD().zones.includes(z.id) && z.openDay <= lv && CONFIG.build.playableZones.includes(z.id)).map((z) => z.id);
+  };
+  // Nguyên liệu được chọn cho quầy (trừ đế & bước kết thúc của quầy đó)
+  Fun.customIngs = function (zone) {
+    const lv = this.level();
+    const roles = CONFIG.zoneRoles[zone] || { base: [], finish: [] };
+    const skip = roles.base.concat(roles.finish, CD().finish[zone] || []);
+    return Object.keys(CONFIG.ingredients).filter((id) => { const g = CONFIG.ingredients[id]; return g.zones.includes(zone) && g.openDay <= lv && !skip.includes(id); });
+  };
+  Fun.customPrice = function (zone, toppings) {
+    const base = CONFIG.zoneRoles[zone].base[0];
+    const all = [base].concat(toppings, (CD().finish[zone] || []).filter((x) => CONFIG.ingredients[x]));
+    const cost = all.reduce((s, id) => s + CONFIG.ingredients[id].price / 5, 0);
+    return Math.round(cost * CD().priceMult + CD().priceAdd);
+  };
+  Fun.customRecipe = function (id) {
+    const c = (BT.Save.state.customs || []).find((x) => x.id === id);
+    if (!c) return undefined;
+    return { id: c.id, name: c.name, short: c.name, emoji: CD().emoji[c.zone], zone: c.zone, base: CONFIG.zoneRoles[c.zone].base[0],
+      toppings: c.toppings.slice(), finish: CD().finish[c.zone].slice(), price: this.customPrice(c.zone, c.toppings), openDay: 1, custom: true };
+  };
+  Fun.customRecipes = function () { return (BT.Save.state.customs || []).map((c) => this.customRecipe(c.id)); };
+  Fun.createCustom = function ({ zone, name, toppings }) {
+    const S = BT.Save.state;
+    const nm = String(name || "").trim();
+    const tp = (toppings || []).slice();
+    if (S.customs.length >= CD().max) return { ok: false, why: "full" };
+    if (!this.customZones().includes(zone)) return { ok: false, why: "zone" };
+    if (!nm || nm.length > CD().nameMax) return { ok: false, why: "name" };
+    if (tp.length < CD().minIng || tp.length > CD().maxIng || new Set(tp).size !== tp.length) return { ok: false, why: "count" };
+    const okIngs = this.customIngs(zone);
+    if (!tp.every((id) => okIngs.includes(id))) return { ok: false, why: "ing" };
+    let n = 0;
+    while (S.customs.some((c) => c.id === "custom_" + n)) n++;
+    const id = "custom_" + n;
+    S.customs.push({ id, zone, name: nm, toppings: tp });
+    BT.Save.persist();
+    return { ok: true, id };
+  };
+  Fun.deleteCustom = function (id) {
+    const S = BT.Save.state;
+    S.customs = S.customs.filter((c) => c.id !== id);
+    BT.Save.persist();
+  };
+  Fun.openKitchen = function () {
+    const S = BT.Save.state;
+    const body = UI.el("div", "kitchen");
+    body.appendChild(UI.el("div", "info-note", UI.t("kitchenIntro", { n: CD().max })));
+    S.customs.forEach((c) => {
+      const r = this.customRecipe(c.id);
+      const row = UI.el("div", "custom-row");
+      const txt = UI.el("div", "custom-txt");
+      txt.appendChild(UI.el("div", "custom-name", r.emoji + " " + r.name + " · " + UI.money(r.price)));
+      txt.appendChild(UI.el("div", "custom-ings", r.toppings.map((id) => UI.ing(id).short).join(", ")));
+      row.appendChild(txt);
+      row.appendChild(UI.button(UI.t("kitchenDelete"), "btn-white small", () => { this.deleteCustom(c.id); UI.closeAllModals(); this.openKitchen(); }));
+      body.appendChild(row);
+    });
+    const full = S.customs.length >= CD().max;
+    const nb = UI.button(full ? UI.t("kitchenFull") : UI.t("kitchenNew"), "btn-pink small new-custom", () => { if (full) return; UI.closeAllModals(); this.openNewCustom(); });
+    if (full) nb.disabled = true;
+    body.appendChild(nb);
+    UI.modal({ title: UI.t("kitchenTitle"), body, className: "modal-kitchen", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-white" }] });
+  };
+  Fun.openNewCustom = function () {
+    const zones = this.customZones();
+    let zone = zones[0];
+    let picked = [];
+    const body = UI.el("div", "kitchen-new");
+    const input = document.createElement("input");
+    input.type = "text"; input.maxLength = CD().nameMax; input.placeholder = UI.t("kitchenNamePh"); input.className = "kitchen-name";
+    body.appendChild(input);
+    const zrow = UI.el("div", "kitchen-zones");
+    const chipsBox = UI.el("div", "ing-chips");
+    const price = UI.el("div", "kitchen-price");
+    const draw = () => {
+      zrow.innerHTML = "";
+      zones.forEach((z) => {
+        const zc = CONFIG.zones.find((x) => x.id === z);
+        zrow.appendChild(UI.button(zc.icon + " " + zc.name, "btn-white small zone-chip" + (z === zone ? " on" : ""), () => { zone = z; picked = []; draw(); }));
+      });
+      chipsBox.innerHTML = "";
+      this.customIngs(zone).forEach((id) => {
+        const k = picked.indexOf(id);
+        const g = UI.ing(id);
+        const chip = UI.button((k >= 0 ? (k + 1) + ". " : "") + g.emoji + " " + g.short, "btn-white small ing-chip" + (k >= 0 ? " on" : ""), () => {
+          if (k >= 0) picked.splice(k, 1); else if (picked.length < CD().maxIng) picked.push(id);
+          draw();
+        });
+        chipsBox.appendChild(chip);
+      });
+      price.textContent = UI.t(zone === "che" ? "kitchenHintChe" : "kitchenHint", { a: CD().minIng, b: CD().maxIng }) + (picked.length ? " · " + UI.money(this.customPrice(zone, picked)) : "");
+    };
+    body.appendChild(zrow);
+    body.appendChild(chipsBox);
+    body.appendChild(price);
+    draw();
+    UI.modal({ title: UI.t("kitchenNew"), body, className: "modal-kitchen-new", dismissable: true, buttons: [
+      { label: UI.t("kitchenSave"), cls: "btn-pink", keepOpen: true, onClick: (api) => {
+        const r = this.createCustom({ zone, name: input.value, toppings: picked });
+        if (!r.ok) { UI.toast(UI.t("kitchenErr_" + r.why, { a: CD().minIng, b: CD().maxIng, n: CD().nameMax })); return; }
+        api.close(true);
+        UI.toast(UI.t("kitchenMade", { name: input.value.trim() }), 2400);
+        this.openKitchen();
+      } },
+      { label: UI.t("btnClose"), cls: "btn-white" }
+    ] });
+  };
+
+  // ---------------- Hẹn hò sau ca (lật thẻ) ----------------
+  Fun.dateGame = function (onEnd) {
+    const DG = CONFIG.dateGame;
+    const S = BT.Save.state;
+    const keys = [];
+    for (let i = 0; i < DG.pairs; i++) keys.push(i, i);
+    for (let i = keys.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [keys[i], keys[j]] = [keys[j], keys[i]]; }
+    const body = UI.el("div", "date-game");
+    const timer = UI.el("div", "date-timer", "");
+    body.appendChild(timer);
+    const grid = UI.el("div", "date-grid");
+    body.appendChild(grid);
+    const gm = { over: false, won: false, left: DG.seconds, open: [], matched: 0 };
+    let api = null;
+    let iv = null;
+    const draw = () => { timer.textContent = UI.t("dateTimer", { n: Math.ceil(gm.left) }); };
+    const end = (won) => {
+      if (gm.over) return;
+      gm.over = true; gm.won = won;
+      clearInterval(iv);
+      if (api) api.close(true);
+      const box = UI.el("div", "date-end");
+      if (won) {
+        S.wallet += DG.reward;
+        S.life.datesWon++;
+        const notes = window.PERSONAL.dateNotes || [];
+        let note = null;
+        if (S.datesNotes.length < notes.length) { S.datesNotes.push(S.datesNotes.length); note = notes[S.datesNotes.length - 1]; }
+        BT.Save.persist();
+        box.appendChild(UI.el("div", "date-note", note ? UI.fmt(note) : UI.t("dateAllNotes")));
+        box.appendChild(UI.el("div", "date-reward", UI.t("dateReward", { x: UI.money(DG.reward) })));
+        UI.confetti(50);
+        BT.Audio.play("letter");
+      } else {
+        box.appendChild(UI.el("div", "date-note", UI.pick(window.PERSONAL.dateLose || [UI.t("dateLose")])));
+      }
+      UI.modal({ title: UI.t(won ? "dateWinTitle" : "dateLoseTitle"), body: box, className: won ? "modal-date-win" : "modal-date-lose", dismissable: true,
+        buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+      if (onEnd) onEnd(won);
+    };
+    gm.tick = (dt) => { if (gm.over) return; gm.left -= dt; draw(); if (gm.left <= 0) end(false); };
+    keys.forEach((k) => {
+      const c = UI.el("button", "mcard");
+      c.type = "button";
+      c.dataset.k = String(k);
+      const face = UI.el("span", "mface", DG.icons[k]);
+      c.appendChild(UI.el("span", "mback", "?"));
+      c.appendChild(face);
+      c.addEventListener("click", () => {
+        if (gm.over || c.classList.contains("up") || gm.open.length >= 2) return;
+        c.classList.add("up");
+        BT.Audio.play("pop");
+        gm.open.push(c);
+        if (gm.open.length < 2) return;
+        const [a, b] = gm.open;
+        if (a.dataset.k === b.dataset.k) {
+          a.classList.add("done"); b.classList.add("done");
+          gm.open = [];
+          gm.matched++;
+          if (gm.matched >= DG.pairs) setTimeout(() => end(true), 250);
+        } else {
+          setTimeout(() => { a.classList.remove("up"); b.classList.remove("up"); gm.open = []; }, DG.flipBackMs);
+        }
+      });
+      grid.appendChild(c);
+    });
+    draw();
+    api = UI.modal({ title: UI.t("dateTitle"), body, className: "modal-date", dismissable: false, buttons: [] });
+    iv = setInterval(() => { if (!document.body.contains(grid)) { clearInterval(iv); return; } gm.tick(1); }, 1000);
+    return gm;
+  };
+  Fun.openDateBook = function () {
+    const S = BT.Save.state;
+    const notes = window.PERSONAL.dateNotes || [];
+    const list = UI.el("div", "fb-list");
+    notes.forEach((n, i) => {
+      const got = S.datesNotes.includes(i);
+      const row = UI.el("div", "fb-item " + (got ? "solved" : "locked"));
+      if (got) { row.appendChild(UI.el("div", "fb-answer", UI.t("dateNoteN", { n: i + 1 }))); row.appendChild(UI.el("div", "fb-line", UI.fmt(n))); }
+      else row.appendChild(UI.el("div", "fb-locked", "🔒 " + UI.t("dateLocked")));
+      list.appendChild(row);
+    });
+    UI.modal({ title: UI.t("dateBookTitle"), body: list, className: "modal-flirt-book modal-dates", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+  };
+
   BT.Fun = Fun;
 })();
