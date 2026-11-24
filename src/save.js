@@ -32,7 +32,7 @@ window.BT = window.BT || { Screens: {} };
       regularCustomers: { chu_tu: 0, chi_lan: 0, be_na: 0, tomortle: 0, co_hanh: 0 },
       checkin: { streak: 0, lastDate: "" },
       dailyQuests: { date: "", list: [] },
-      settings: { music: true, sfx: true, vibrate: true, fullscreen: true },
+      settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, patienceBoost: 0 },
       tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false, day16: false },
       endingSeen: false,
       appVersionSeen: CONFIG.version,
@@ -321,12 +321,42 @@ window.BT = window.BT || { Screens: {} };
       const clue = item.lines.join(" ");
       const echo = has(this.normalize(clue), got);       // bỏ dấu đi thì input nằm trong câu đố
       const inSoft = this.soft(input);
-      return item.answers.some((a) => {
+      const exact = item.answers.some((a) => {
         const wantH = this.normalize(a);
         const wantS = this.soft(a);
         if (echo) return has(inSoft, wantS) && !has(this.soft(clue), inSoft);
         return got === wantH || (wantH.length >= 4 && has(got, wantH)) || has(inSoft, wantS);
       });
+      if (exact) return true;
+      // Nới tay: chấp nhận viết tắt (k, ko, a, e, cx, iu…) và gõ sai chút ít,
+      // miễn là câu gõ gần đáp án hơn hẳn so với câu đố. Đáp án chỉ khác câu đố ở dấu thì không nới.
+      const clueX = this.expand(this.normalize(clue));
+      const gotX = this.expand(got);
+      return item.answers.some((a) => {
+        const wantX = this.expand(this.normalize(a));
+        if (wantX.length < 8 || wantX === clueX) return false;
+        if (gotX === wantX || has(gotX, wantX)) return true;
+        const d = this.dist(gotX, wantX);
+        return d <= Math.max(1, Math.floor(wantX.length * 0.12)) && d < this.dist(gotX, clueX);
+      });
+    },
+
+    // Viết tắt thường gặp khi nhắn tin → chữ đầy đủ (đã bỏ dấu)
+    ABBR: { k: "khong", ko: "khong", kh: "khong", hk: "khong", hok: "khong", hong: "khong", hem: "khong", khum: "khong", kg: "khong",
+      a: "anh", e: "em", dc: "duoc", ng: "nguoi", vs: "voi", j: "gi", r: "roi", z: "vay", cx: "cung", cg: "cung", ms: "moi",
+      bt: "biet", trc: "truoc", iu: "yeu", nhiu: "nhieu", mk: "minh", ny: "nguoi yeu", wa: "qua", lm: "lam", ns: "noi" },
+    expand(s) { return String(s).split(" ").map((w) => this.ABBR[w] || w).join(" "); },
+
+    // Khoảng cách sửa chữ (Levenshtein)
+    dist(a, b) {
+      const m = a.length, n = b.length;
+      let prev = Array.from({ length: n + 1 }, (_, j) => j);
+      for (let i = 1; i <= m; i++) {
+        const cur = [i];
+        for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        prev = cur;
+      }
+      return prev[n];
     },
 
     // Câu kế tiếp chưa giải (theo thứ tự); giải hết rồi thì quay vòng cả danh sách

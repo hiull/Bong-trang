@@ -49,6 +49,7 @@ window.BT = window.BT || { Screens: {} };
       // Nâng cấp & trợ giúp khi thua 2 lần liên tiếp
       const up = this.S.upgrades;
       this.patienceMult = this.dayCfg.patienceMult;
+      this.patienceMult *= 1 + (this.S.settings.patienceBoost || 0);   // Cài đặt → Kiên nhẫn của khách
       if (up.quat > 0) this.patienceMult *= 1 + C.upgrades.quat.patienceBonus[up.quat - 1];
       const streak = this.S.loseStreak;
       this.helped = !!(streak && streak.day === this.dayId && streak.n >= 2);
@@ -259,6 +260,9 @@ window.BT = window.BT || { Screens: {} };
         onHoldDone: (id, cell) => this.onStationTap(id, cell, true),
         isPaused: () => this.isPaused()
       });
+      this.hintRow = UI.el("div", "hint-row");
+      this.hintKey = "";
+      ingArea.appendChild(this.hintRow);
       ingArea.appendChild(this.grid.el);
       this.bindZoneSwipe(this.grid.el);
       el.appendChild(ingArea);
@@ -344,6 +348,9 @@ window.BT = window.BT || { Screens: {} };
         if (!this.rival && pr >= CONFIG.rival.window[0] && pr < CONFIG.rival.window[1]) this.rivalOn();
         else if (this.rival && pr >= CONFIG.rival.window[1]) this.rivalOff(false);
       }
+      // Chế độ dễ: hàng gợi ý nguyên liệu (cập nhật vài lần mỗi giây)
+      this.hintT = (this.hintT || 0) - dt;
+      if (this.hintT <= 0) { this.hintT = 0.25; this.renderHints(); }
       let cdt = this.helper && this.helper.role === "waiter" ? dt * (1 - CONFIG.helper.patienceSlow) : dt;
       if (this.rival) cdt *= 1 + CONFIG.rival.patienceFaster;
       this.customers.slice().forEach((c) => c.update(cdt, this.freezeLeft > 0 || !!this.tut));
@@ -483,6 +490,90 @@ window.BT = window.BT || { Screens: {} };
       this.spawned++;
       if (this.spawned === this.spillAt) this.showSpill();
       this.spawnTimer = this.groupPending > 0 ? G.groupSpawnGapSec : this.nextGap();
+    }
+
+    // ---------------- Trợ giúp ----------------
+    // Khay có khớp món này không (chưa thừa nguyên liệu nào)
+    fitsDish(t, it) {
+      const req = BT.Tray.requirements(it);
+      if (!t || t.isEmpty()) return true;
+      if (t.base !== req.r.base) return false;
+      if (req.r.zone === "che") return t.layers.every((id, i) => req.layers[i] === id);
+      return Object.keys(t.items).every((id) => t.items[id] <= (req.need[id] || 0));
+    }
+
+    // Các nguyên liệu còn phải chạm cho món it trên khay t (theo đúng thứ tự)
+    hintSteps(t, it) {
+      const req = BT.Tray.requirements(it);
+      const r = req.r;
+      const out = [];
+      const empty = !t || t.isEmpty();
+      if (empty) out.push(r.base);
+      if (req.pour && (empty || !t.poured)) out.push(req.pour);
+      if (r.zone === "che") out.push(...req.layers.slice(empty ? 0 : t.layers.length));
+      else {
+        const ids = Object.keys(req.need).sort((a, b) => (a === "trung_cut" ? -1 : b === "trung_cut" ? 1 : 0));
+        ids.forEach((id) => { const n = req.need[id] - (empty ? 0 : t.items[id] || 0); for (let k = 0; k < n; k++) out.push(id); });
+      }
+      req.finishIngs.forEach((id) => { if (empty || !t.finish.includes(id)) out.push(id); });
+      Object.keys(req.sauces).forEach((id) => { const n = req.sauces[id] - (empty ? 0 : t.sauces[id] || 0); for (let k = 0; k < n; k++) out.push(id); });
+      return out;
+    }
+
+    renderHints() {
+      if (!this.hintRow) return;
+      if (!this.S.settings.easyHints || this.tut || this.over) { if (this.hintKey) { this.hintRow.innerHTML = ""; this.hintKey = ""; } return; }
+      const waiting = this.customers.filter((c) => c.state === "waiting" && !c.isCat).sort((a, b) => a.pct() - b.pct());
+      const sel = this.selected && !this.selected.isEmpty() ? this.selected : null;
+      let target = null;
+      for (const c of waiting) {
+        for (const it of c.pending()) {
+          const r = UI.recipe(it.id);
+          if (r.combo) continue;
+          if (sel ? this.fitsDish(sel, it) : r.zone === this.zone) { target = it; break; }
+        }
+        if (target) break;
+      }
+      if (!target && !sel) for (const c of waiting) { const it = c.pending().find((x) => !UI.recipe(x.id).combo); if (it) { target = it; break; } }
+      const steps = target ? this.hintSteps(sel, target).slice(0, 6) : [];
+      const key = steps.join(",") + "|" + (target ? target.id : "");
+      if (key === this.hintKey) return;
+      this.hintKey = key;
+      this.hintRow.innerHTML = "";
+      steps.forEach((id) => {
+        const ing = UI.ing(id);
+        const hold = CONFIG.gameplay.holdSec[id] !== undefined;
+        const b = UI.button(ing.emoji + " " + ing.short, "btn-white small", () => {
+          if (hold) { UI.toast(UI.t("hintHold", { name: ing.name })); return; }
+          const zone = UI.recipe(target.id).zone;
+          if (zone !== this.zone && !(ing.zones || []).includes(this.zone)) this.setZone(zone);
+          this.onStationTap(id, this.grid.cells && this.grid.cells[id]);
+        });
+        if (hold) b.dataset.hold = id; else b.dataset.ing = id;
+        this.hintRow.appendChild(b);
+      });
+    }
+
+    // Khay đã làm xong (lắc/cuốn/gấp/có lớp phủ) mà chỉ thiếu 1–2 phần của một món đang chờ
+    lateAddOk(t, ingId) {
+      if (!this.S.settings.lateAdd || !t || t.isEmpty()) return false;
+      const done = t.tied || t.rolled || t.folded || (t.zone === "che" && t.finish.length > 0);
+      if (!done) return false;
+      for (const c of this.customers) {
+        if (c.state !== "waiting" || c.isCat) continue;
+        for (const it of c.pending()) {
+          const req = BT.Tray.requirements(it);
+          if (req.r.base !== t.base || !this.fitsDish(t, it)) continue;
+          if (t.zone === "che") {
+            const miss = req.layers.length - t.layers.length;
+            if (miss >= 1 && miss <= 2 && req.layers[t.layers.length] === ingId) return true;
+          } else {
+            const miss = Object.keys(req.need).reduce((s, id) => s + Math.max(0, req.need[id] - (t.items[id] || 0)), 0);
+            if (miss >= 1 && miss <= 2 && (req.need[ingId] || 0) > (t.items[ingId] || 0)) return true;
+          }
+        }
+      }
+      return false;
     }
 
     // ---------------- Xe chè đối thủ ----------------
@@ -1295,7 +1386,10 @@ window.BT = window.BT || { Screens: {} };
       }
       if (!tray) { this.containers().forEach((t) => UI.shake(t.el)); UI.toast(UI.t("noTray")); return; }
       if (auto) this.select(tray);
-      const r = tray.add(ingId, this.zone);
+      // Thêm nguyên liệu sau khi đã làm xong (chỉ khi còn thiếu 1–2 phần)
+      const late = this.lateAddOk(tray, ingId);
+      if (late) { if (tray.zone === "che") tray.layers.push(ingId); else tray.items[ingId] = (tray.items[ingId] || 0) + 1; }
+      const r = late ? { ok: true } : tray.add(ingId, this.zone);
       if (!r.ok) {
         UI.shake(tray.el);
         UI.toast(r.msg);

@@ -62,8 +62,9 @@ window.BT = window.BT || { Screens: {} };
         if (run.cfg.helperOff) hp.appendChild(UI.el("div", "info-note", UI.t("helperBusyNote")));
         else {
           const row = UI.el("div", "helper-pick-row");
-          ["waiter", "drinks", "che", "off"].forEach((role) => {
-            const b = UI.button(UI.t("helperRole_" + role), "btn-white small" + (S.helper.role === role ? " active" : ""), () => {
+          const cur = BT.Helper.roleFor(lv);
+          BT.Helper.roles(lv).forEach((role) => {
+            const b = UI.button(UI.t("helperRole_" + role), "btn-white small" + (cur === role ? " active" : ""), () => {
               S.helper.role = role;
               BT.Save.persist();
               row.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x.dataset.role === role));

@@ -525,7 +525,7 @@ window.CONFIG = {
 
   // Anh Hiếu phụ tiệm (Mùa 2). levelAt = số ca làm chung để lên cấp 1/2/3; *Sec = thời gian theo cấp.
   helper: {
-    fromSeason: 2, fromMilestone: 3, levelAt: [0, 8, 20],
+    fromSeason: 1, fromMilestone: 1, levelAt: [0, 8, 20],
     waiterSec: [1.5, 1.1, 0.8], drinkSec: [6, 5, 4], cheSec: [1.2, 0.9, 0.6], patienceSlow: 0.1,
     drinks: ["tra_da", "tra_tac", "nuoc_mia_ly"], eventRate: 0.1, lateShare: 0.2, lateEndlessServed: 5, bubbleEverySec: [14, 22]
   },
@@ -943,6 +943,13 @@ window.CONFIG = {
     runMs: "Mốc {n}",
     runMsSeason: "Mùa {s} · Mốc {n}",
     helperPick: "Hôm nay anh Hiếu phụ…",
+    setAssistTitle: "Trợ giúp",
+    setEasyHints: "Gợi ý nguyên liệu (chế độ dễ)",
+    setLateAdd: "Thêm nguyên liệu sau khi làm xong",
+    setShowRecipe: "Hiện công thức trên order",
+    setPatience: "Kiên nhẫn của khách",
+    patienceLevels: ["Bình thường", "+25%", "+50%"],
+    hintHold: "Giữ ô {name} để rót",
     landlordTitle: "Bác Sáu chủ nhà ghé",
     landlordAmount: "Tiền mặt bằng: {x}",
     landlordOwed: "(gồm {x} còn nợ)",

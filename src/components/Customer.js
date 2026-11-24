@@ -99,13 +99,14 @@ window.BT = window.BT || { Screens: {} };
           dishRow.appendChild(UI.el("span", "dish-emoji", r.emoji));
           dishRow.appendChild(UI.el("span", "dish-name", r.short));
           box.appendChild(dishRow);
-          if (this.items.length === 1) {
+          if (BT.Save.state.settings.showRecipe !== false) {
             const ings = UI.el("div", "dish-ings");
             const req = BT.Tray.requirements(it);
             const list = [r.base];
             if (req.pour) list.push(req.pour);
             const tops = [];
             Object.keys(req.need).forEach((id) => { for (let i = 0; i < req.need[id]; i++) tops.push(id); });
+            if (req.layers) tops.push(...req.layers);   // quầy chè: các lớp theo thứ tự
             // Quầy nước: ly → rót → đá → topping; các khu khác: topping → bước kết thúc
             if (r.zone === "nuoc") list.push(...req.finishIngs, ...tops);
             else list.push(...tops, ...req.finishIngs);

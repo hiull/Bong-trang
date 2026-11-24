@@ -179,6 +179,26 @@ window.BT = window.BT || { Screens: {} };
         toggle("sfx", UI.t("setSfx"));
         if (navigator.vibrate) toggle("vibrate", UI.t("setVibrate"));
         if (BT.Fullscreen.supported()) toggle("fullscreen", UI.t("setFullscreen"));
+        // Trợ giúp
+        body.appendChild(UI.el("div", "set-section", UI.t("setAssistTitle")));
+        toggle("easyHints", UI.t("setEasyHints"));
+        toggle("lateAdd", UI.t("setLateAdd"));
+        toggle("showRecipe", UI.t("setShowRecipe"));
+        {
+          const levels = [0, 0.25, 0.5];
+          const row = UI.el("div", "set-row");
+          row.appendChild(UI.el("span", "set-label", UI.t("setPatience")));
+          const label = () => CONFIG.texts.patienceLevels[Math.max(0, levels.indexOf(S.settings.patienceBoost || 0))];
+          const btn = UI.button(label(), "btn-white small patience-btn", () => {
+            const i = levels.indexOf(S.settings.patienceBoost || 0);
+            S.settings.patienceBoost = levels[(i + 1) % levels.length];
+            UI.setText(btn, label());
+            BT.Save.persist();
+            BT.Audio.play("tap");
+          });
+          row.appendChild(btn);
+          body.appendChild(row);
+        }
         body.appendChild(UI.button(UI.t("setHowTo"), "btn-purple small", () => { m.close(true); UI.howTo(); }));
         body.appendChild(UI.button(UI.t("setBackup"), "btn-white small", () => { m.close(true); openBackup(); }));
         body.appendChild(UI.button(UI.t("setWipe"), "btn-white small danger", () => { m.close(true); openWipe(); }));

@@ -6,7 +6,13 @@ window.BT = window.BT || { Screens: {} };
   const UI = BT.UI;
   const H = {
     cfg() { return CONFIG.helper; },
-    unlocked() { const S = BT.Save.state; return !!(S.helper && S.helper.unlocked); },
+    unlocked() { return true; },   // anh Hiếu phụ tiệm từ Mốc 1 Mùa 1
+    // Các việc anh làm được ở cấp mốc này (chỉ quầy đã mở)
+    roles(level) {
+      const zoneOpen = (id) => CONFIG.zones.some((z) => z.id === id && z.openDay <= level);
+      return ["waiter"].concat(zoneOpen("nuoc") ? ["drinks"] : [], zoneOpen("che") ? ["che"] : [], ["off"]);
+    },
+    roleFor(level) { const r = BT.Save.state.helper.role; return this.roles(level).includes(r) ? r : "waiter"; },
     level() {
       const at = CONFIG.helper.levelAt;
       const n = BT.Save.state.helper.shifts;
@@ -18,16 +24,15 @@ window.BT = window.BT || { Screens: {} };
     working(run) {
       if (!this.unlocked() || !run) return false;
       if (run.mode === "secret") return false;
-      if ((run.season || 1) < CONFIG.helper.fromSeason) return false;
       if (run.cfg && run.cfg.helperOff) return false;
-      return BT.Save.state.helper.role !== "off";
+      return this.roleFor(run.level) !== "off";
     },
     role() { return BT.Save.state.helper.role; },
 
     // Gắn vào màn bán hàng
     attach(g) {
       const C = this.cfg();
-      g.helper = { role: this.role(), t: 0, drink: null, idleUntil: 0, bubbleAt: UI.rand(C.bubbleEverySec[0], C.bubbleEverySec[1]) };
+      g.helper = { role: this.roleFor(g.dayNum), t: 0, drink: null, idleUntil: 0, bubbleAt: UI.rand(C.bubbleEverySec[0], C.bubbleEverySec[1]) };
       const el = UI.el("div", "helper");
       el.appendChild(UI.icon("tomortle"));
       el.appendChild(UI.el("div", "helper-role", UI.t("helperRole_" + g.helper.role)));
@@ -173,7 +178,8 @@ window.BT = window.BT || { Screens: {} };
       S.helper.shifts++;
       const after = this.level();
       let chapter = null;
-      if (after > before && S.helper.chapters < after) { chapter = after - 1; S.helper.chapters = after; }
+      if (S.helper.chapters === 0) { chapter = 0; S.helper.chapters = 1; }   // ca đầu anh phụ → chương 1
+      else if (after > before && S.helper.chapters < after) { chapter = after - 1; S.helper.chapters = after; }
       return { levelUp: after > before, level: after, chapter };
     }
   };

@@ -1763,3 +1763,11 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 
 /* Xe chè đối thủ */
 .rival { position: absolute; left: 50%; transform: translateX(-50%); top: calc(64px + env(safe-area-inset-top, 0px)); z-index: 30; background: #FFF3CD; border: 2px solid var(--brown); border-radius: 12px; padding: 3px 10px; font-weight: 800; font-size: 13px; white-space: nowrap; pointer-events: none; }
+
+/* Trợ giúp: hàng gợi ý nguyên liệu */
+.hint-row { flex: none; display: flex; gap: 4px; overflow-x: auto; padding: 2px 0; }
+.hint-row:empty { display: none; }
+.hint-row .btn { flex: none; padding: 4px 8px; font-size: 13px; min-height: 36px; }
+.hint-row .btn .dd { width: 20px; height: 20px; vertical-align: -4px; }
+.set-section { margin-top: 10px; font-family: var(--font-title); color: var(--pink-dark); }
+.dish-box + .dish-box .dish-ings, .dish-box .dish-ings { flex-wrap: wrap; }
