@@ -20,6 +20,16 @@ window.BT = window.BT || { Screens: {} };
       this.secret = run.mode === "secret";
       this.endless = run.mode === "endless";
       this.helperOn = BT.Helper.working(run);   // anh Hiếu phụ tiệm ca này
+      // Giờ cao điểm, khách đặc biệt, thú cưng, kỷ lục
+      this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel;
+      this.rush = null;
+      this.rushDone = false;
+      this.vipCame = false;
+      this.petUsed = {};
+      this.emptyFor = 0;
+      const recBest = (run.mode === "story" || run.mode === "replay") ? (BT.MS.stateOf(run.season).best[run.ms] || null) : null;
+      this.recordIncome = recBest && recBest.income > 0 ? recBest.income : 0;
+      this.recordBroken = false;
       const RV = CONFIG.rival;
       this.rivalPlan = run.mode === "story" && !run.scripted && (run.season || 1) >= 2 && run.cfg.day >= RV.fromDay && Math.random() < RV.rate;
       this.rival = null;
@@ -168,6 +178,7 @@ window.BT = window.BT || { Screens: {} };
       row1.appendChild(this.hudRate);
       row1.appendChild(this.hudCombo);
       row2.appendChild(this.hudMoney);
+      if (this.recordIncome) { this.hudRecord = UI.el("div", "pill hud-record"); row2.appendChild(this.hudRecord); }
       row2.appendChild(this.hudHearts);
       left.appendChild(row1);
       left.appendChild(row2);
@@ -352,6 +363,13 @@ window.BT = window.BT || { Screens: {} };
       // Chế độ dễ: hàng gợi ý nguyên liệu (cập nhật vài lần mỗi giây)
       this.hintT = (this.hintT || 0) - dt;
       if (this.hintT <= 0) { this.hintT = 0.25; this.renderHints(); }
+      if (this.rushPlan && !this.rush && !this.rushDone && this.total !== Infinity) {
+        const pr = this.done / this.total;
+        if (pr >= CONFIG.rush.window[0] && pr < CONFIG.rush.window[1]) this.rushOn();
+      }
+      this.tickRush(dt);
+      this.petsTick(dt);
+      this.checkRecord();
       let cdt = this.helper && this.helper.role === "waiter" ? dt * (1 - CONFIG.helper.patienceSlow) : dt;
       if (this.rival) cdt *= 1 + CONFIG.rival.patienceFaster;
       this.customers.slice().forEach((c) => c.update(cdt, this.freezeLeft > 0 || !!this.tut));
@@ -478,6 +496,23 @@ window.BT = window.BT || { Screens: {} };
       if (!special && this.groupPending === 0 && this.tomoCame < this.tomoWanted && left <= G.tomortleForceWhenLeft) special = { kind: "tomortle" };
       if (this.endless && !special && !this.helperOn && this.dayNum >= G.tomortleFromDay && this.spawned > 0 && this.spawned % CONFIG.endless.tomoEvery === 0 && this.dishPool.some((r) => r.zone !== "nuoc" && !r.combo)) special = { kind: "tomortle" };
       if (special && special.kind === "tomortle" && this.tomoCame >= this.tomoWanted) special = null;
+      // Khách đặc biệt hiếm
+      const V = CONFIG.vipGuests;
+      if (!special && !this.vipCame && !this.secret && !this.endless && this.groupPending === 0 && this.dayNum >= V.fromLevel && Math.random() < V.rate) {
+        const month = new Date().getMonth() + 1;
+        const pool = V.list.filter((v) => !v.months || v.months.includes(month));
+        if (pool.length) {
+          const v = UI.pick(pool);
+          this.vipCame = true;
+          const o = this.makeOrder();
+          if (v.twoDish && o.items.length < 2) o.items.push(this.makeOrder().items[0]);
+          const c = this.spawn(seat, "hoc_sinh", o, { typeDef: Object.assign({ kind: "vip" }, v), tag: v.name, speech: UI.pick(v.lines) });
+          c.vip = v;
+          this.spawned++;
+          this.spawnTimer = this.nextGap();
+          return;
+        }
+      }
       if (special && special.kind === "tomortle") this.spawnTomortle(seat);
       else if (special && special.kind === "regular") this.spawnRegular(seat, special);
       else if (this.secret || (this.groupPending === 0 && this.dayNum >= G.friendFromDay && Math.random() < G.friendWeight * (this.dayCfg.friendMult || 1) / (this.typePool.length + G.friendWeight * (this.dayCfg.friendMult || 1)))) this.spawnFriend(seat);
@@ -579,6 +614,77 @@ window.BT = window.BT || { Screens: {} };
       return false;
     }
 
+    // ---------------- Giờ cao điểm ----------------
+    rushOn() {
+      if (this.rush || this.over) return;
+      this.rush = { left: CONFIG.rush.sec };
+      this.rush.el = UI.el("div", "rush");
+      this.el.appendChild(this.rush.el);
+      UI.setText(this.rush.el, UI.t("rushBanner", { s: Math.ceil(this.rush.left) }));
+      UI.toast(UI.t("rushStart"), 2400);
+      BT.Audio.play("win");
+      this.spawnTimer = Math.min(this.spawnTimer, 0.5);
+    }
+
+    tickRush(dt) {
+      if (!this.rush) return;
+      this.rush.left -= dt;
+      if (this.rush.left <= 0) {
+        this.rush.el.remove();
+        this.rush = null;
+        this.rushDone = true;
+        this.S.life.rushes++;
+        UI.toast(UI.t("rushEnd"), 2000);
+        return;
+      }
+      UI.setText(this.rush.el, UI.t("rushBanner", { s: Math.ceil(this.rush.left) }));
+    }
+
+    // ---------------- Thú cưng có việc làm ----------------
+    petsTick(dt) {
+      const J = CONFIG.petJobs;
+      const pets = this.S.pets || [];
+      if (this.secret || this.tut) return;
+      // Miu: khách đầu tiên sắp bỏ đi được dụi chân, hồi kiên nhẫn
+      if (pets.includes("miu") && !this.petUsed.miu) {
+        const c = this.customers.find((x) => x.state === "waiting" && !x.isCat && x.max !== Infinity && x.patience / x.max < J.miuAt);
+        if (c) {
+          this.petUsed.miu = true;
+          c.patience = Math.min(c.max, c.patience + c.max * J.miuRefill);
+          UI.toast(UI.fmt(UI.t("petMiu")), 2400);
+        }
+      }
+      // Cún Bông: tiệm vắng lâu thì kéo khách vào
+      if (pets.includes("cun_bong") && !this.petUsed.cun && this.total !== Infinity && this.spawned < this.total) {
+        const empty = this.customers.every((x) => x.isCat || x.state === "leaving" || x.state === "gone");
+        this.emptyFor = empty ? this.emptyFor + dt : 0;
+        if (this.emptyFor >= J.cunEmptySec && this.spawnTimer > 1) {
+          this.petUsed.cun = true;
+          this.spawnTimer = 0;
+          UI.toast(UI.t("petCun"), 2200);
+        }
+      }
+    }
+
+    // Hạt Dẻ nhặt được tiền rơi dưới quầy sau ca
+    hamsterCoins() {
+      const J = CONFIG.petJobs;
+      if (this.secret || !(this.S.pets || []).includes("hamster") || Math.random() >= J.hamsterRate) return 0;
+      const x = UI.randInt(J.hamsterCoins[0], J.hamsterCoins[1]);
+      this.S.wallet += x;
+      return x;
+    }
+
+    // ---------------- Kỷ lục ----------------
+    checkRecord() {
+      if (!this.recordIncome || this.recordBroken) return;
+      if (this.income() > this.recordIncome) {
+        this.recordBroken = true;
+        UI.toast(UI.t("recordBroken"), 2200);
+        BT.Audio.play("star");
+      }
+    }
+
     // ---------------- Xe chè đối thủ ----------------
     rivalOn() {
       if (this.rival || this.over) return;
@@ -610,7 +716,7 @@ window.BT = window.BT || { Screens: {} };
 
     nextGap() {
       const sp = this.endless ? BT.Endless.spawnRange(this.stats.served, this.run.cfg.spawn) : this.dayCfg.spawn;
-      const f = BT.assist("slowCustomers") ? CONFIG.assist.slowFactor : 1;
+      const f = (BT.assist("slowCustomers") ? CONFIG.assist.slowFactor : 1) * (this.rush ? CONFIG.rush.spawnFactor : 1);
       return UI.rand(sp[0], sp[1]) * f;
     }
 
@@ -853,6 +959,14 @@ window.BT = window.BT || { Screens: {} };
     // Khách nhận đủ món: tính tiền, đánh giá
     complete(c) {
       const G = CONFIG.gameplay;
+      if (c.vip && !c.vipPaid) {
+        c.vipPaid = true;
+        const v = c.vip;
+        this.S.wallet += v.reward;
+        this.S.life.vips++;
+        UI.toast(UI.t("vipServed", { name: v.name, x: UI.money(v.reward) }), 2600);
+        if (v.boostNext) { this.S.bonusNext = (this.S.bonusNext || 0) + v.boostNext; this.scope.timeout(() => UI.toast(UI.t("vipBoost", { name: v.name }), 2600), 2700); }
+      }
       if (this.rival) {
         this.rival.streak++;
         if (this.rival.streak >= CONFIG.rival.beatStreak) this.rivalOff(true);
@@ -866,7 +980,7 @@ window.BT = window.BT || { Screens: {} };
       if (c.combo) base = UI.recipe("combo_tinh_yeu").price;
       else c.items.forEach((it) => { base += UI.recipePrice(it.id) * (it.crispy ? 1 + G.crispyBonus : 1); });
       const pay = Math.round(base * speed);
-      let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1);
+      let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1) * (this.rush ? CONFIG.rush.tipMult : 1);
       if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
       const reqTip = c.hasRequests() ? M.specialRequestTip : 0;
       tip = Math.round(tip + reqTip);
@@ -1638,6 +1752,7 @@ window.BT = window.BT || { Screens: {} };
       UI.setText(this.hudCust, this.endless ? UI.t("hudEndless", { d: this.stats.served }) : UI.t("hudCustomers", { d: this.done, t: this.total }));
       const avg = this.avgRating();
       UI.setText(this.hudRate, "⭐ " + (avg ? UI.rating(avg) : "–"));
+      if (this.hudRecord) UI.setText(this.hudRecord, UI.t("hudRecord", { x: UI.money(this.recordIncome) }));
       UI.setText(this.hudMoney, "🪙 " + UI.money(this.income()) + (this.secret || this.endless ? "" : " / " + UI.money(this.dayCfg.target)));
       this.hudMoney.classList.toggle("reached", !this.secret && !this.endless && this.income() >= this.dayCfg.target);
       UI.setText(this.hudCombo, UI.t("comboLabel", { n: this.combo }));
@@ -1777,6 +1892,8 @@ window.BT = window.BT || { Screens: {} };
       const MS = BT.MS;
       const served = this.stats.served;
       const claim = BT.Endless.claim(served, income);
+      S.life.served += served;
+      const petCoins = this.hamsterCoins();
       const units = BT.Endless.units(served);
       S.ms.shifts++;
       const progress = MS.addProgress(units);
@@ -1796,7 +1913,7 @@ window.BT = window.BT || { Screens: {} };
       const summary = {
         day: this.dayId, run: this.run, title: UI.runTitle(this.run), endSeason: S.season || 1, endless: true, passed: true, lostHearts: false, stars: 0,
         served, best: S.endless.best, newBest: claim.newBest, coins: claim.coins, rewardMarks: claim.milestones,
-        memory: newMemory, ending, minor, card2, memory2: newMemory2, helperChapter, units, progress, need: MS.need(progress.before.index), levelUp,
+        memory: newMemory, ending, minor, card2, memory2: newMemory2, helperChapter, petCoins, units, progress, need: MS.need(progress.before.index), levelUp,
         income, kept: income, target: 0, revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,
         net: income - this.stats.expense, total: served, walkouts: this.stats.walkouts, avgRating: avg
       };
@@ -1853,6 +1970,12 @@ window.BT = window.BT || { Screens: {} };
       ({ newMemory, minor, ending, card2, newMemory2, helperChapter } = this.applyCleared(progress));
       if (this.helperOn) { const hr = BT.Helper.onShiftEnd(this); if (helperChapter === null) helperChapter = hr.chapter; }
       // Tim vàng tính riêng từng mùa
+      // Bộ đếm trọn đời & thú cưng sau ca
+      S.life.served += this.stats.served;
+      S.life.crispy += this.q.crispy || 0;
+      if (passed && !this.secret && this.stats.walkouts === 0) S.life.perfect++;
+      const petCoins = this.hamsterCoins();
+      const newRecord = !!(this.recordIncome && income > this.recordIncome);
       S.goldHearts = MS.goldHearts(1);
       S.s2.goldHearts = MS.goldHearts(2);
       const goldSeason = run.season || 1;
@@ -1878,7 +2001,7 @@ window.BT = window.BT || { Screens: {} };
 
       const summary = {
         day: this.dayId, run, title: UI.runTitle(run), endSeason: S.season || 1, passed, lostHearts, stars, secret: this.secret,
-        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter,
+        units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter, petCoins, newRecord,
         memory: newMemory, newGold, allGold, ending, levelUp,
         income, kept, target: d.target,
         revenue: this.stats.revenue, tips: this.stats.tips, expense: this.stats.expense,

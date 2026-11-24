@@ -54,6 +54,7 @@ window.BT = window.BT || { Screens: {} };
       firstPlay: "",      // ngày chơi đầu (thư hằng tuần)
       specialSeen: {},    // quà ngày đặc biệt đã nhận (theo ngày)
       lettersRead: 0,     // số thư hằng tuần đã đọc
+      life: { served: 0, rushes: 0, vips: 0, perfect: 0, crispy: 0, customsSold: 0, datesWon: 0 }, // bộ đếm trọn đời (huy hiệu)
       talesSeen: [],      // chuyện vặt đã xem (theo thứ tự)
       flirt: { next: 0, solved: {} }, // câu thính: câu kế tiếp, câu đã giải ("self" tự giải / "told" anh nói)
       welcomeSeen: false

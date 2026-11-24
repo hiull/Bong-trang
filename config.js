@@ -523,6 +523,25 @@ window.CONFIG = {
     ]
   },
 
+  // Giờ cao điểm: một đợt mỗi ca (khi tiến độ nằm trong window), khách nhanh gấp đôi, tip ×2
+  rush: { fromLevel: 4, window: [0.4, 0.6], sec: 20, spawnFactor: 0.5, tipMult: 2 },
+  // Khách đặc biệt hiếm (tối đa 1 người mỗi ca). reward: thưởng (k) khi phục vụ xong.
+  vipGuests: {
+    rate: 0.04, fromLevel: 5,
+    list: [
+      { id: "critic", name: "Nhà phê bình ẩm thực", avatar: "🧑‍💼", doodle: "office_m", patience: 24, tip: [5, 8], self: "tôi", call: "chủ quán", reward: 50,
+        lines: ["Tôi đến chấm điểm tiệm này. Cho tôi món ngon nhất nhé."] },
+      { id: "tiktoker", name: "Ngôi sao TikTok", avatar: "🧑", doodle: "friend_b", patience: 28, tip: [6, 10], self: "mình", call: "chị chủ", reward: 40, boostNext: 3,
+        lines: ["Hello cả nhà, hôm nay mình review tiệm bánh tráng siêu xinh nè!"] },
+      { id: "santa", name: "Ông già Noel", avatar: "🧑", doodle: "chu_tu", patience: 40, tip: [10, 10], self: "ông", call: "cháu", reward: 80, months: [12],
+        lines: ["Hô hô hô! Ông ghé tiệm cháu lấy sức đi phát quà nè!"] },
+      { id: "couple", name: "Cô dâu chú rể", avatar: "🧑", doodle: "friend_a", patience: 30, tip: [8, 12], self: "tụi mình", call: "chị chủ", reward: 60, twoDish: true,
+        lines: ["Tụi mình mới cưới xong, ghé tiệm ăn mừng nè!"] }
+    ]
+  },
+  // Thú cưng có việc làm (mỗi con một lần mỗi ca)
+  petJobs: { miuAt: 0.2, miuRefill: 0.3, cunEmptySec: 6, hamsterRate: 0.3, hamsterCoins: [10, 30] },
+
   // Chế độ thư giãn: một công tắc bật các trợ giúp này (+ kiên nhẫn +50%)
   relaxMode: ["oneTapDeliver", "oneTapAction", "tapPour", "easyGrill", "slowCustomers", "moreHearts", "easyHints"],
   // Số liệu các trợ giúp
@@ -955,6 +974,17 @@ window.CONFIG = {
     setPatience: "Kiên nhẫn của khách",
     setRelax: "Chế độ thư giãn (bật hết trợ giúp)",
     setAutoSeasonSkin: "Tự trang trí tiệm theo mùa",
+    rushStart: "GIỜ CAO ĐIỂM! Khách ùa vào, tip gấp đôi 🔥",
+    rushBanner: "GIỜ CAO ĐIỂM 🔥 {s}s",
+    rushEnd: "Hết giờ cao điểm, thở phào!",
+    vipServed: "{name} hài lòng! +{x}",
+    vipBoost: "{name} đăng clip, ca sau đông khách hơn!",
+    petMiu: "{pet} dụi chân khách, khách vui vẻ chờ thêm 🐱",
+    petCun: "Cún Bông chạy ra cửa vẫy đuôi kéo khách vào!",
+    petCoins: "Hạt Dẻ nhặt được {x} rơi dưới quầy!",
+    hudRecord: "★ {x}",
+    recordBroken: "Phá kỷ lục! ★",
+    newRecord: "Kỷ lục mới! ★",
     monthiversaryTitle: "Kỷ niệm tháng 💕",
     specialGiftBtn: "Nhận quà của anh 🎁",
     specialGift: "Quà của anh: +{x}",

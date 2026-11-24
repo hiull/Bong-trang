@@ -1777,3 +1777,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   background: linear-gradient(90deg, #FF5C8A, #FFB86B); border: var(--border) solid var(--brown); border-radius: 14px; animation: breathe 2.4s ease-in-out infinite; }
 .special-deco { position: absolute; left: 0; right: 0; top: 16%; text-align: center; font-size: 22px; letter-spacing: 8px; z-index: 3; pointer-events: none; }
 .special-deco .dd { width: 26px; height: 26px; }
+
+/* Giờ cao điểm, kỷ lục */
+.rush { position: absolute; left: 50%; transform: translateX(-50%); top: calc(96px + env(safe-area-inset-top, 0px)); z-index: 31; background: linear-gradient(90deg, #FF7043, #FFB300); color: var(--white); border: 2px solid var(--brown); border-radius: 12px; padding: 3px 12px; font-family: var(--font-title); white-space: nowrap; pointer-events: none; animation: breathe 0.8s ease-in-out infinite; }
+.hud-record { color: #B8860B; }
+.new-record { text-align: center; font-family: var(--font-title); color: #E0A800; margin-top: 6px; }
+.pet-coins { text-align: center; font-weight: 800; margin-top: 4px; }

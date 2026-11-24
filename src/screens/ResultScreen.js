@@ -88,6 +88,9 @@ window.BT = window.BT || { Screens: {} };
       row(UI.t("statRating"), s.avgRating ? "⭐ " + UI.rating(s.avgRating) : "–");
       body.appendChild(table);
 
+      if (s.newRecord) body.appendChild(UI.el("div", "new-record", UI.t("newRecord")));
+      if (s.petCoins) body.appendChild(UI.el("div", "pet-coins", UI.t("petCoins", { x: UI.money(s.petCoins) })));
+
       // Anh Hiếu: chương "Sau giờ đóng cửa"
       if (s.helperChapter !== null && s.helperChapter !== undefined) {
         const ch = (window.PERSONAL.helperChapters || [])[s.helperChapter];
