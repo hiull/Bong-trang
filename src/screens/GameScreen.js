@@ -151,7 +151,7 @@ window.BT = window.BT || { Screens: {} };
 
     // ---------------- Dựng giao diện ----------------
     build(root) {
-      const el = UI.el("div", "screen game skin-" + this.S.activeSkin + " weather-" + this.dayCfg.weather);
+      const el = UI.el("div", "screen game skin-" + BT.Fun.skin() + " weather-" + this.dayCfg.weather);
       this.el = el;
 
       // HUD
@@ -486,7 +486,9 @@ window.BT = window.BT || { Screens: {} };
         if (this.groupPending > 0) { typeId = "hoc_sinh"; this.groupPending--; }
         const order = this.makeOrder();
         order.reviewer = this.spawned === this.reviewerAt;
-        this.spawn(seat, typeId, order);
+        // Đang mùa lễ: thỉnh thoảng khách khen trang trí tiệm
+        const extra = BT.Fun.inSeasonSkin() && Math.random() < 0.15 ? { speech: UI.pick(CONFIG.texts.seasonCompliments) } : undefined;
+        this.spawn(seat, typeId, order, extra);
       }
       this.spawned++;
       if (this.spawned === this.spillAt) this.showSpill();

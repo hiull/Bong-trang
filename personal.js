@@ -218,6 +218,33 @@ window.PERSONAL = {
     "Hôm nay Cô Tư khuyến mãi, mua một tặng... một nụ cười!"
   ],
 
+  // ---------------- Ngày đặc biệt (theo ngày thật) ----------------
+  // date: "MM-DD", hoặc "anniversary" (lấy theo anniversary ở trên). gift: tiền anh tặng (k), mỗi năm một lần.
+  specialDays: [
+    {"date": "03-28", "kind": "birthday", "title": "Sinh nhật Bống 🎁", "message": "Chúc mừng sinh nhật bà chủ nhỏ của anh! Tuổi mới vẫn cứ vui, cứ xinh, cứ thương anh như vầy nha. Hôm nay tiệm đóng cửa sớm, anh dắt em đi ăn.", "gift": 500},
+    {"date": "anniversary", "kind": "anniversary", "title": "Kỷ niệm ngày mình bên nhau 💞", "message": "Thêm một năm bên nhau rồi đó. Cảm ơn em vì mọi ngày đã qua, và cả những ngày sắp tới nữa. Anh vẫn thương em như lần đầu.", "gift": 300},
+    {"date": "02-14", "kind": "holiday", "title": "Valentine 💝", "message": "Valentine này anh không cần socola đâu, chỉ cần một ly trà tắc em pha là đủ ngọt rồi.", "gift": 150},
+    {"date": "03-08", "kind": "holiday", "title": "Ngày Quốc tế Phụ nữ 💐", "message": "Chúc người phụ nữ anh thương nhất luôn được cưng chiều. Hôm nay em không cần làm gì hết, để anh lo.", "gift": 150},
+    {"date": "10-20", "kind": "holiday", "title": "Ngày Phụ nữ Việt Nam 💐", "message": "20/10 vui vẻ nha em! Cảm ơn em đã là bà chủ dễ thương nhất con hẻm này.", "gift": 150}
+  ],
+  // Lời nhắn ngày kỷ niệm hằng tháng (cùng ngày với anniversary)
+  monthiversaryMessage: "Hôm nay là ngày kỷ niệm tháng của tụi mình đó. Thương em thêm một tháng nữa nè 💕",
+  // Thư hằng tuần: mở thêm một lá mỗi 7 ngày kể từ lần chơi đầu
+  weeklyLetters: [
+    "Tuần đầu mở tiệm, em làm giỏi hơn anh tưởng nhiều đó. Cứ từ từ thôi, không cần vội.",
+    "Hôm qua anh đi ngang một xe bánh tráng trộn, lại nhớ tiệm của em. Ngoài đời chắc em trộn ngon hơn nhiều.",
+    "Có tuần nào mệt quá thì cứ đóng tiệm nghỉ một hôm. Khách quen vẫn chờ, anh cũng vậy.",
+    "Anh để ý em hay cười khi qua mốc mới. Anh thích nụ cười đó lắm.",
+    "Tuần này nhớ ăn uống đầy đủ nha. Bà chủ mà gầy là khách lo đó.",
+    "Cảm ơn em đã chơi tới giờ. Mỗi lần thấy em mở game là anh vui cả ngày.",
+    "Nếu có chuyện gì buồn, kể anh nghe nha. Anh không giỏi an ủi nhưng anh giỏi nghe.",
+    "Tuần này anh đố em: món nào trong tiệm em thích nhất? Trả lời anh ngoài đời nha.",
+    "Anh nghĩ mình nên đi ăn bánh tráng thật một bữa. Em chọn chỗ, anh chở.",
+    "Mỗi lá thư này anh viết lúc nghĩ tới em. Đọc chậm thôi nha.",
+    "Đã gần ba tháng rồi đó. Em kiên nhẫn ghê, giống y như lúc em chờ anh trễ hẹn.",
+    "Lá thư cuối trong hộp thư rồi. Mấy lá tiếp theo, anh muốn nói trực tiếp với em."
+  ],
+
   // Lời nhắn mỗi ngày: mở một câu khi chơi Thử thách hôm nay lần đầu trong ngày (lần lượt, hết thì quay lại).
   // Sửa thoải mái; thêm câu mới thì thêm vào cuối.
   dailyNotes: [

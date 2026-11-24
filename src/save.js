@@ -34,7 +34,7 @@ window.BT = window.BT || { Screens: {} };
       dailyQuests: { date: "", list: [] },
       settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, patienceBoost: 0,
         relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false,
-        fewerRequests: false, bookPause: false, moreHearts: false, softFail: false, threeTrays: false },
+        fewerRequests: false, bookPause: false, moreHearts: false, softFail: false, threeTrays: false, autoSeasonSkin: true },
       tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false, day16: false },
       endingSeen: false,
       appVersionSeen: CONFIG.version,
@@ -51,6 +51,9 @@ window.BT = window.BT || { Screens: {} };
       endless: { best: 0, bestIncome: 0, rewards: {} }, // ca vô tận
       helper: { unlocked: false, role: "waiter", shifts: 0, chapters: 0 }, // anh Hiếu phụ tiệm
       rent: { owed: 0, deferredOnce: false, lastDay: 0 }, // tiền mặt bằng bác Sáu
+      firstPlay: "",      // ngày chơi đầu (thư hằng tuần)
+      specialSeen: {},    // quà ngày đặc biệt đã nhận (theo ngày)
+      lettersRead: 0,     // số thư hằng tuần đã đọc
       talesSeen: [],      // chuyện vặt đã xem (theo thứ tự)
       flirt: { next: 0, solved: {} }, // câu thính: câu kế tiếp, câu đã giải ("self" tự giải / "told" anh nói)
       welcomeSeen: false

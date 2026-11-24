@@ -10,7 +10,9 @@ window.BT = window.BT || { Screens: {} };
       const S = BT.Save.state;
       const P = window.PERSONAL;
       const Pr = BT.Progress;
-      const el = UI.el("div", "screen menu skin-" + S.activeSkin);
+      BT.Fun.ensureFirstPlay();
+      const special = BT.Fun.specialToday();
+      const el = UI.el("div", "screen menu skin-" + BT.Fun.skin() + (special ? " special-day" : ""));
 
       // Góc trên
       const top = UI.el("div", "menu-top");
@@ -48,6 +50,7 @@ window.BT = window.BT || { Screens: {} };
       owner.appendChild(UI.el("div", "owner-name", UI.t("ownerLabel")));
       facade.appendChild(owner);
       UI.decorateFront(facade);
+      if (special) facade.appendChild(UI.el("div", "special-deco", "🎈 💝 🎁 💝 🎈"));
       el.appendChild(facade);
 
       // Nút chính
@@ -56,6 +59,9 @@ window.BT = window.BT || { Screens: {} };
       main.appendChild(UI.button(UI.t("btnUpgrade"), "btn-orange big", () => router.go("Shop")));
       main.appendChild(UI.button(UI.t("btnMemories"), "btn-purple big", () => router.go("Album")));
       el.appendChild(main);
+
+      // Ngày đặc biệt (theo ngày thật)
+      if (special) el.appendChild(UI.el("div", "special-banner", special.title));
 
       // Mùa mới
       if (BT.MS.nextSeasonReady()) {
@@ -100,6 +106,8 @@ window.BT = window.BT || { Screens: {} };
       const questBtn = UI.button(UI.t("btnQuests"), "btn-white small", () => openQuests());
       small.appendChild(checkBtn);
       small.appendChild(questBtn);
+      const mailBtn = UI.button(UI.t("mailBtn"), "btn-white small mail-btn", () => { BT.Fun.openMail(); refreshDots(); });
+      small.appendChild(mailBtn);
       el.appendChild(small);
 
       el.appendChild(UI.el("div", "footer", UI.t("footer")));
@@ -109,8 +117,23 @@ window.BT = window.BT || { Screens: {} };
         checkBtn.classList.toggle("has-dot", !Pr.checkinInfo().claimedToday);
         questBtn.classList.toggle("has-dot", Pr.questsClaimable() > 0);
         dailyBtn.classList.toggle("has-dot", BT.Daily.unlocked() && !BT.Daily.playedToday());
+        mailBtn.classList.toggle("has-dot", BT.Fun.unreadLetters() > 0);
       }
       refreshDots();
+
+      // Quà của anh Hiếu ngày đặc biệt (mỗi ngày một lần)
+      const gift = S.welcomeSeen ? BT.Fun.giftDue() : null;
+      if (gift) {
+        setTimeout(() => {
+          UI.confetti(80);
+          BT.Audio.play("letter");
+          const body = UI.el("div", "story");
+          body.appendChild(UI.el("div", "story-text", UI.fmt(gift.message)));
+          if (gift.gift) body.appendChild(UI.el("div", "info-note", UI.t("specialGift", { x: UI.money(gift.gift) })));
+          UI.modal({ title: gift.title, body, className: "modal-welcome modal-special",
+            buttons: [{ label: UI.t("specialGiftBtn"), cls: "btn-pink", onClick: () => { BT.Fun.claimGift(gift); router.go("Menu", {}, { replace: true }); } }] });
+        }, 300);
+      }
 
       // ---------- Thử thách hôm nay ----------
       function openDaily() {
@@ -181,6 +204,7 @@ window.BT = window.BT || { Screens: {} };
         if (BT.Fullscreen.supported()) toggle("fullscreen", UI.t("setFullscreen"));
         // Trợ giúp
         body.appendChild(UI.el("div", "set-section", UI.t("setAssistTitle")));
+        toggle("autoSeasonSkin", UI.t("setAutoSeasonSkin"));
         toggle("relaxMode", UI.t("setRelax"));
         toggle("oneTapDeliver", UI.t("setOneTapDeliver"));
         toggle("oneTapAction", UI.t("setOneTapAction"));

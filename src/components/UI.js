@@ -458,11 +458,12 @@ window.BT = window.BT || { Screens: {} };
     const S = BT.Save.state;
     front.querySelectorAll(".skin-fx, .decor, .pets, .curtain").forEach((x) => x.remove());
     const fx = UI.el("div", "skin-fx");
+    const skin = BT.Fun ? BT.Fun.skin() : S.activeSkin;
     const add = (cls, text) => fx.appendChild(UI.el("div", cls, text));
-    if (S.activeSkin === "valentine") { add("sfx-row", "🎈 💕 🎈 💕 🎈"); add("sfx-corner", "🍫💝"); }
-    if (S.activeSkin === "trung_thu") { add("sfx-moon", "🌕"); add("sfx-row", "🏮 ⭐ 🐟 ⭐ 🏮"); }
-    if (S.activeSkin === "tet") { add("sfx-row wide", "🌼 🌸 🌼"); add("sfx-couplet", "An Khang · Thịnh Vượng"); }
-    if (S.activeSkin === "noel") { add("sfx-snow", ""); add("sfx-tree", "🎄"); }
+    if (skin === "valentine") { add("sfx-row", "🎈 💕 🎈 💕 🎈"); add("sfx-corner", "🍫💝"); }
+    if (skin === "trung_thu") { add("sfx-moon", "🌕"); add("sfx-row", "🏮 ⭐ 🐟 ⭐ 🏮"); }
+    if (skin === "tet") { add("sfx-row wide", "🌼 🌸 🌼"); add("sfx-couplet", "An Khang · Thịnh Vượng"); }
+    if (skin === "noel") { add("sfx-snow", ""); add("sfx-tree", "🎄"); }
     front.appendChild(fx);
     S.decor.forEach((id) => {
       const d = CONFIG.decor.find((x) => x.id === id);
