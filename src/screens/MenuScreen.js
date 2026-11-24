@@ -181,6 +181,17 @@ window.BT = window.BT || { Screens: {} };
         if (BT.Fullscreen.supported()) toggle("fullscreen", UI.t("setFullscreen"));
         // Trợ giúp
         body.appendChild(UI.el("div", "set-section", UI.t("setAssistTitle")));
+        toggle("relaxMode", UI.t("setRelax"));
+        toggle("oneTapDeliver", UI.t("setOneTapDeliver"));
+        toggle("oneTapAction", UI.t("setOneTapAction"));
+        toggle("tapPour", UI.t("setTapPour"));
+        toggle("easyGrill", UI.t("setEasyGrill"));
+        toggle("slowCustomers", UI.t("setSlowCustomers"));
+        toggle("fewerRequests", UI.t("setFewerRequests"));
+        toggle("bookPause", UI.t("setBookPause"));
+        toggle("moreHearts", UI.t("setMoreHearts"));
+        toggle("softFail", UI.t("setSoftFail"));
+        toggle("threeTrays", UI.t("setThreeTrays"));
         toggle("easyHints", UI.t("setEasyHints"));
         toggle("lateAdd", UI.t("setLateAdd"));
         toggle("showRecipe", UI.t("setShowRecipe"));

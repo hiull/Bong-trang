@@ -20,6 +20,12 @@ window.BT = window.BT || { Screens: {} };
     const widen = G.goodWidenPerLevel * (up.bep_nhanh || 0);
     z.good += widen;
     z.raw -= widen;
+    if (BT.assist && BT.assist("easyGrill")) {
+      // Bếp nướng hiền: vùng xanh rộng gấp đôi (lấy bớt từ hai vùng vàng)
+      let need = z.good;
+      const grab = (k, keep) => { const t = Math.max(0, Math.min(need, z[k] - keep)); z[k] -= t; need -= t; z.good += t; };
+      grab("ok1", 0.03); grab("ok2", 0.03); grab("raw", 0.08);
+    }
     if (up.chong_chay > 0) {
       const extra = Math.min(z.ok2, z.burn - 0.02);
       z.ok2 += extra;
@@ -197,6 +203,11 @@ window.BT = window.BT || { Screens: {} };
     updateCook(dt) {
       if (!this.cooking || this.folded || this.burnt) return null;
       this.cook += dt / cookSec();
+      // Bếp nướng hiền: kim dừng trước vùng cháy
+      if (BT.assist && BT.assist("easyGrill")) {
+        const burnFrom = cookZones().find((z) => z.q === "burn").from;
+        if (this.cook > burnFrom - 0.005) this.cook = burnFrom - 0.005;
+      }
       if (this.cook >= 1) {
         this.cook = 1;
         this.burnt = true;

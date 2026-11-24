@@ -239,4 +239,6 @@ Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao
   - *Thêm nguyên liệu sau khi làm xong:* bịch đã lắc / bánh đã cuốn, gấp / chè đã thêm đá vẫn bỏ thêm được nếu chỉ thiếu 1–2 phần.
   - *Hiện công thức trên order:* mọi món khách gọi đều hiện nguyên liệu (tắt để khó hơn).
   - *Kiên nhẫn của khách:* Bình thường / +25% / +50%.
+  - *Chế độ thư giãn:* một công tắc bật giao một chạm, lắc/cuốn một chạm, rót một chạm, bếp nướng hiền, khách đến thưa, 5 tim, gợi ý nguyên liệu và kiên nhẫn +50%.
+  - Bật riêng từng cái: *Giao một chạm*, *Lắc, cuốn một chạm*, *Rót một chạm*, *Bếp nướng hiền* (vùng xanh rộng gấp đôi, không cháy), *Khách đến thưa hơn*, *Ít yêu cầu riêng & đơn 2 món*, *Tạm dừng khi xem sổ công thức*, *5 tim*, *Thua vẫn cộng nửa ca tiến độ*, *Có sẵn 3 khay*.
 - **Câu thính** chấp nhận viết tắt (k, ko, a, e, cx, iu…) và gõ sai một chữ cái; câu dài chỉ cần gõ đúng phần chơi chữ. Thêm đáp án: điền vào `answers` trong `personal.js`.

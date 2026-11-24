@@ -33,7 +33,7 @@ window.BT = window.BT || { Screens: {} };
       this.total = this.endless ? Infinity : this.dayCfg.customers + (this.S.bonusCustomers || 0);
       this.spawned = 0;
       this.done = 0;
-      this.hearts = G.hearts;
+      this.hearts = BT.assist("moreHearts") ? CONFIG.assist.hearts : G.hearts;
       this.combo = 0;
       this.love = 0;
       this.freezeLeft = 0;
@@ -49,7 +49,7 @@ window.BT = window.BT || { Screens: {} };
       // Nâng cấp & trợ giúp khi thua 2 lần liên tiếp
       const up = this.S.upgrades;
       this.patienceMult = this.dayCfg.patienceMult;
-      this.patienceMult *= 1 + (this.S.settings.patienceBoost || 0);   // Cài đặt → Kiên nhẫn của khách
+      this.patienceMult *= 1 + BT.patienceBoost();   // Cài đặt → Kiên nhẫn của khách (thư giãn ≥ +50%)
       if (up.quat > 0) this.patienceMult *= 1 + C.upgrades.quat.patienceBonus[up.quat - 1];
       const streak = this.S.loseStreak;
       this.helped = !!(streak && streak.day === this.dayId && streak.n >= 2);
@@ -212,7 +212,8 @@ window.BT = window.BT || { Screens: {} };
       const counter = UI.el("div", "counter");
       this.trayGroup = UI.el("div", "tray-group");
       this.grillGroup = UI.el("div", "tray-group grills");
-      for (let i = 0; i < this.S.upgrades.khay; i++) {
+      const trayCount = BT.assist("threeTrays") ? Math.max(this.S.upgrades.khay, CONFIG.assist.trays) : this.S.upgrades.khay;
+      for (let i = 0; i < trayCount; i++) {
         const t = new BT.Tray(i, "tray");
         this.trays.push(t);
         this.trayGroup.appendChild(t.el);
@@ -403,7 +404,7 @@ window.BT = window.BT || { Screens: {} };
         Object.keys(map).map(Number).sort((a, b) => a - b).forEach((k) => { if (this.dayNum >= k) v = map[k]; });
         return v;
       };
-      if (Math.random() >= byDay(G.specialRequestRate)) return [];
+      if (Math.random() >= byDay(G.specialRequestRate) * (BT.assist("fewerRequests") ? CONFIG.assist.requestFactor : 1)) return [];
       const n = UI.randInt(1, byDay(G.specialRequestMax));
       const req = BT.Tray.requirements({ id: dishId, reqs: [] });
       const r = req.r;
@@ -433,7 +434,7 @@ window.BT = window.BT || { Screens: {} };
       const r = UI.weighted(this.dishPool, (x) => this.dishWeight(x));
       if (r.combo) return { items: r.combo.map((id) => ({ id, reqs: [] })), combo: true };
       const items = [{ id: r.id, reqs: this.makeRequests(r.id) }];
-      if (this.dayNum >= G.twoDishFromDay && r.zone !== "nuoc" && Math.random() < G.twoDishRate) {
+      if (this.dayNum >= G.twoDishFromDay && r.zone !== "nuoc" && Math.random() < G.twoDishRate * (BT.assist("fewerRequests") ? CONFIG.assist.requestFactor : 1)) {
         const drinks = this.dishPool.filter((x) => x.zone === "nuoc");
         if (drinks.length) {
           const dr = UI.weighted(drinks, (x) => this.dishWeight(x));
@@ -522,7 +523,7 @@ window.BT = window.BT || { Screens: {} };
 
     renderHints() {
       if (!this.hintRow) return;
-      if (!this.S.settings.easyHints || this.tut || this.over) { if (this.hintKey) { this.hintRow.innerHTML = ""; this.hintKey = ""; } return; }
+      if (!BT.assist("easyHints") || this.tut || this.over) { if (this.hintKey) { this.hintRow.innerHTML = ""; this.hintKey = ""; } return; }
       const waiting = this.customers.filter((c) => c.state === "waiting" && !c.isCat).sort((a, b) => a.pct() - b.pct());
       const sel = this.selected && !this.selected.isEmpty() ? this.selected : null;
       let target = null;
@@ -542,7 +543,7 @@ window.BT = window.BT || { Screens: {} };
       this.hintRow.innerHTML = "";
       steps.forEach((id) => {
         const ing = UI.ing(id);
-        const hold = CONFIG.gameplay.holdSec[id] !== undefined;
+        const hold = CONFIG.gameplay.holdSec[id] !== undefined && !BT.assist("tapPour");
         const b = UI.button(ing.emoji + " " + ing.short, "btn-white small", () => {
           if (hold) { UI.toast(UI.t("hintHold", { name: ing.name })); return; }
           const zone = UI.recipe(target.id).zone;
@@ -607,7 +608,8 @@ window.BT = window.BT || { Screens: {} };
 
     nextGap() {
       const sp = this.endless ? BT.Endless.spawnRange(this.stats.served, this.run.cfg.spawn) : this.dayCfg.spawn;
-      return UI.rand(sp[0], sp[1]);
+      const f = BT.assist("slowCustomers") ? CONFIG.assist.slowFactor : 1;
+      return UI.rand(sp[0], sp[1]) * f;
     }
 
     // Ca vô tận: món làm được khi mọi nguyên liệu còn hàng hoặc đủ tiền nhập
@@ -1310,6 +1312,12 @@ window.BT = window.BT || { Screens: {} };
       }
       this.select(t);
       BT.Audio.play("tap");
+      // Giao một chạm: khay đã đúng món của một khách đang chờ → giao luôn (khách đợi lâu nhất)
+      if (BT.assist("oneTapDeliver") && !t.isEmpty() && !this.isPaused()) {
+        const c = this.customers.filter((x) => x.state === "waiting" && !x.isCat).sort((a, b) => a.pct() - b.pct())
+          .find((x) => x.pending().some((it) => BT.Tray.evaluate(t, it).ok));
+        if (c) this.deliver(c, t);
+      }
     }
 
     crack(t) {
@@ -1372,7 +1380,10 @@ window.BT = window.BT || { Screens: {} };
       if (this.isPaused()) return;
       if (this.endless && BT.Save.stock(ingId) <= 0) this.autoRestock(ingId);
       if (BT.Save.stock(ingId) <= 0) { UI.toast(UI.t("outOfStock", { ing: UI.ing(ingId).short })); if (cell) UI.shake(cell); return; }
-      if (!fromHold && CONFIG.gameplay.holdSec[ingId] !== undefined) { UI.toast(UI.t("holdToPour")); return; }
+      if (!fromHold && CONFIG.gameplay.holdSec[ingId] !== undefined) {
+        if (BT.assist("tapPour")) fromHold = true;   // rót một chạm
+        else { UI.toast(UI.t("holdToPour")); return; }
+      }
       const { tray, auto } = this.targetFor(ingId);
       // Mèo hoang đang chờ: cầm trứng cút lên tay
       const catWaiting = this.customers.some((c) => c.isCat && c.state === "waiting");
@@ -1430,6 +1441,13 @@ window.BT = window.BT || { Screens: {} };
       if (this.over) return;
       if (mode === "shake" && !tray.canShake()) return;
       if (mode === "roll" && !tray.canRoll()) return;
+      // Lắc, cuốn một chạm
+      if (BT.assist("oneTapAction")) {
+        if (mode === "roll") { tray.rolled = true; BT.Audio.play("roll"); } else { tray.tied = true; BT.Audio.play("tie"); }
+        tray.render();
+        this.updateHint();
+        return;
+      }
       if (this.shakeLayer) this.shakeLayer.close();
       const G = CONFIG.gameplay;
       const roll = mode === "roll";
@@ -1651,7 +1669,7 @@ window.BT = window.BT || { Screens: {} };
     // ---------------- Sổ công thức ----------------
     openBook() {
       if (this.over) return;
-      if (this.dayNum <= CONFIG.gameplay.recipeBookPauseUntilDay) this.pauseReasons.add("book");
+      if (this.dayNum <= CONFIG.gameplay.recipeBookPauseUntilDay || BT.assist("bookPause")) this.pauseReasons.add("book");
       const steps = CONFIG.texts.stepNames;
       const name = (s) => (CONFIG.ingredients[s] ? UI.ing(s).emoji + " " + UI.ing(s).name : steps[s] || s);
       const list = UI.el("div", "book");

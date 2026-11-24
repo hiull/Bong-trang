@@ -92,7 +92,8 @@ window.BT = window.BT || { Screens: {} };
       const C = CONFIG.milestones;
       if (passed) return stars >= 3 ? C.unitsThreeStar : C.unitsPass;
       const ratio = target > 0 ? income / target : 0;
-      return round2(Math.max(C.unitsFailMin, C.unitsFailRatio * ratio));
+      const min = BT.assist && BT.assist("softFail") ? CONFIG.assist.softFailMin : C.unitsFailMin;
+      return round2(Math.max(min, C.unitsFailRatio * ratio));
     },
 
     // Cộng tiến độ vào mốc hiện tại; mỗi lần qua tối đa một mốc.

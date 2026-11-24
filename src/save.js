@@ -32,7 +32,9 @@ window.BT = window.BT || { Screens: {} };
       regularCustomers: { chu_tu: 0, chi_lan: 0, be_na: 0, tomortle: 0, co_hanh: 0 },
       checkin: { streak: 0, lastDate: "" },
       dailyQuests: { date: "", list: [] },
-      settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, patienceBoost: 0 },
+      settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, patienceBoost: 0,
+        relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false,
+        fewerRequests: false, bookPause: false, moreHearts: false, softFail: false, threeTrays: false },
       tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false, day16: false },
       endingSeen: false,
       appVersionSeen: CONFIG.version,
@@ -190,6 +192,18 @@ window.BT = window.BT || { Screens: {} };
   };
 
   BT.Save = Save;
+
+  // Trợ giúp đang bật? (bật riêng, hoặc nằm trong gói "Chế độ thư giãn")
+  BT.assist = function (key) {
+    const st = (Save.state && Save.state.settings) || {};
+    if (st[key]) return true;
+    return !!st.relaxMode && CONFIG.relaxMode.includes(key);
+  };
+  // Mức tăng kiên nhẫn đang dùng (thư giãn = ít nhất +50%)
+  BT.patienceBoost = function () {
+    const st = (Save.state && Save.state.settings) || {};
+    return Math.max(st.patienceBoost || 0, st.relaxMode ? 0.5 : 0);
+  };
 
   // ---------------- Tiến trình: cấp độ, nhiệm vụ, điểm danh, đánh giá ----------------
   function pad(n) { return (n < 10 ? "0" : "") + n; }

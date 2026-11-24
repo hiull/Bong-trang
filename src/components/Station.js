@@ -127,6 +127,7 @@ window.BT = window.BT || { Screens: {} };
       if (e.target.closest("[data-quick]")) return;
       const cell = e.target.closest(".station");
       if (!cell || !this.isHold(cell.dataset.ing)) return;
+      if (BT.assist("tapPour")) return; // rót một chạm: để chạm thường xử lý
       const id = cell.dataset.ing;
       if (BT.Save.stock(id) <= 0) return; // để click báo hết hàng
       const msg = this.handlers.canHold(id);

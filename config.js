@@ -523,6 +523,11 @@ window.CONFIG = {
     ]
   },
 
+  // Chế độ thư giãn: một công tắc bật các trợ giúp này (+ kiên nhẫn +50%)
+  relaxMode: ["oneTapDeliver", "oneTapAction", "tapPour", "easyGrill", "slowCustomers", "moreHearts", "easyHints"],
+  // Số liệu các trợ giúp
+  assist: { slowFactor: 1.4, requestFactor: 0.3, hearts: 5, softFailMin: 0.5, trays: 3 },
+
   // Anh Hiếu phụ tiệm (Mùa 2). levelAt = số ca làm chung để lên cấp 1/2/3; *Sec = thời gian theo cấp.
   helper: {
     fromSeason: 1, fromMilestone: 1, levelAt: [0, 8, 20],
@@ -948,6 +953,18 @@ window.CONFIG = {
     setLateAdd: "Thêm nguyên liệu sau khi làm xong",
     setShowRecipe: "Hiện công thức trên order",
     setPatience: "Kiên nhẫn của khách",
+    setRelax: "Chế độ thư giãn (bật hết trợ giúp)",
+    setOneTapDeliver: "Giao một chạm (chạm khay là giao)",
+    setOneTapAction: "Lắc, cuốn một chạm",
+    setTapPour: "Rót một chạm (không cần giữ)",
+    setEasyGrill: "Bếp nướng hiền (vùng xanh rộng, không cháy)",
+    setSlowCustomers: "Khách đến thưa hơn",
+    setFewerRequests: "Ít yêu cầu riêng & đơn 2 món",
+    setBookPause: "Tạm dừng khi xem sổ công thức",
+    setMoreHearts: "5 tim thay vì 3",
+    setSoftFail: "Thua vẫn cộng nửa ca tiến độ",
+    setThreeTrays: "Có sẵn 3 khay",
+    setRelaxNote: "Đang bật trong Chế độ thư giãn",
     patienceLevels: ["Bình thường", "+25%", "+50%"],
     hintHold: "Giữ ô {name} để rót",
     landlordTitle: "Bác Sáu chủ nhà ghé",
