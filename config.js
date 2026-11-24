@@ -540,6 +540,22 @@ window.CONFIG = {
     { id: "date5", name: "Hẹn hò ăn ý", desc: "Thắng 5 lần hẹn hò sau ca", stat: "dates", n: 5, reward: 80 },
     { id: "gold15", name: "Tim vàng trọn vẹn", desc: "Đủ 15 Tim vàng Mùa 1", stat: "gold", n: 15, reward: 150 }
   ],
+  // Tuỳ chọn "Công thức chuẩn ngoài đời" (Cài đặt): ghi đè nguyên liệu cho gần cách bán ở các xe
+  // bánh tráng Sài Gòn. Nguyên liệu thêm vào chỉ bị đòi khi đã mở ở cấp của ca. Giá món giữ nguyên.
+  // Nước và chè giữ nguyên vì đã giống ngoài đời.
+  realRecipes: {
+    bt_tron_co_ban:   { toppings: ["xoai", "rau_ram", "dau_phong", "hanh_phi", "sa_te", "muoi_tom"] },
+    bt_tron_kho_bo:   { toppings: ["kho_bo", "trung_cut", "xoai", "rau_ram", "dau_phong", "hanh_phi", "sa_te"] },
+    bt_tron_hanh_phi: { toppings: ["trung_cut", "hanh_phi", "rau_ram", "dau_phong", "muoi_tom", "sa_te"] },
+    bt_tron_kho_muc:  { toppings: ["kho_muc", "trung_cut", "xoai", "rau_ram", "sa_te", "dau_phong", "hanh_phi"] },
+    bt_bo:            { toppings: ["bo_beo", "muoi_tom", "hanh_phi", "rau_ram"], finish: ["tac", "lac"] },
+    bt_tron_dac_biet: { toppings: ["kho_bo", "kho_muc", "tom_kho", "trung_cut", "xoai", "rau_ram", "dau_phong", "hanh_phi", "sa_te"] },
+    bt_nuong_trung:   { toppings: ["trung_cut", "hanh_la", "hanh_phi"], finish: ["nuong", "gap", "mayo", "tuong_ot"] },
+    bt_nuong_xuc_xich:{ toppings: ["trung_cut", "xuc_xich", "hanh_la", "cha_bong"], finish: ["nuong", "gap", "mayo", "tuong_ot"] },
+    bt_nuong_pho_mai: { toppings: ["trung_cut", "pho_mai", "xuc_xich", "hanh_la", "cha_bong"], finish: ["nuong", "gap", "mayo", "tuong_ot"] },
+    bt_cuon_bo:       { toppings: ["bo_beo", "muoi_tom", "cha_bong", "kho_bo", "rau_ram"], finish: ["cuon"] }
+  },
+
   // Món sáng tạo (Bếp sáng tạo): giá = tổng giá 1 phần nguyên liệu × priceMult + priceAdd
   customDish: {
     max: 3, minIng: 2, maxIng: 5, nameMax: 24, priceMult: 2, priceAdd: 5,
@@ -1013,6 +1029,7 @@ window.CONFIG = {
     setEasyHints: "Gợi ý nguyên liệu (chế độ dễ)",
     setLateAdd: "Thêm nguyên liệu sau khi làm xong",
     setShowRecipe: "Hiện công thức trên order",
+    setRealRecipes: "Công thức chuẩn ngoài đời (thêm hành phi, sa tế, muối tôm…)",
     setPatience: "Kiên nhẫn của khách",
     setRelax: "Chế độ thư giãn (bật hết trợ giúp)",
     setAutoSeasonSkin: "Tự trang trí tiệm theo mùa",

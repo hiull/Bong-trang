@@ -111,7 +111,28 @@ window.BT = window.BT || { Screens: {} };
   };
 
   UI.ing = (id) => CONFIG.ingredients[id];
-  UI.recipe = (id) => CONFIG.recipes.find((r) => r.id === id) || (BT.Fun && BT.Fun.customRecipe ? BT.Fun.customRecipe(id) : undefined);
+  // Công thức: bản gốc, món sáng tạo, hoặc bản "chuẩn ngoài đời" khi bật trong Cài đặt
+  const realCache = {};
+  UI.recipe = function (id) {
+    const r = CONFIG.recipes.find((x) => x.id === id);
+    if (!r) return BT.Fun && BT.Fun.customRecipe ? BT.Fun.customRecipe(id) : undefined;
+    const o = CONFIG.realRecipes && CONFIG.realRecipes[id];
+    const S = BT.Save && BT.Save.state;
+    if (!o || !S || !S.settings.realRecipes) return r;
+    const lv = BT.recipeLevel || (BT.MS ? BT.MS.current().level : 99);
+    const key = id + ":" + lv;
+    if (realCache[key]) return realCache[key];
+    // Nguyên liệu thêm vào chỉ tính khi đã mở ở cấp này
+    const opened = (x) => r.toppings.includes(x) || !CONFIG.ingredients[x] || CONFIG.ingredients[x].openDay <= lv;
+    const fin = (x) => r.finish.includes(x) || !CONFIG.ingredients[x] || CONFIG.ingredients[x].openDay <= lv;
+    const out = Object.assign({}, r, {
+      toppings: (o.toppings || r.toppings).filter(opened),
+      finish: (o.finish || r.finish).filter(fin),
+      real: true
+    });
+    realCache[key] = out;
+    return out;
+  };
   UI.dayCfg = (day) => CONFIG.days.find((d) => d.day === day);
   UI.recipePrice = function (id) {
     const r = UI.recipe(id);

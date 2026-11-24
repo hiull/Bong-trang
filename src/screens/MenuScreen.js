@@ -225,6 +225,7 @@ window.BT = window.BT || { Screens: {} };
         toggle("easyHints", UI.t("setEasyHints"));
         toggle("lateAdd", UI.t("setLateAdd"));
         toggle("showRecipe", UI.t("setShowRecipe"));
+        toggle("realRecipes", UI.t("setRealRecipes"));
         {
           const levels = [0, 0.25, 0.5];
           const row = UI.el("div", "set-row");

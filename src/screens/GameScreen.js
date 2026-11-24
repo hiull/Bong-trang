@@ -17,6 +17,7 @@ window.BT = window.BT || { Screens: {} };
       this.run = run;
       this.dayId = run.key;                    // "ms13" | "secret" | "daily" | "endless"
       this.dayNum = run.level;                 // cấp mốc: so với ngày mở món
+      BT.recipeLevel = run.level;              // công thức chuẩn ngoài đời: đòi nguyên liệu theo cấp của ca
       this.secret = run.mode === "secret";
       this.endless = run.mode === "endless";
       this.helperOn = BT.Helper.working(run);   // anh Hiếu phụ tiệm ca này
@@ -77,6 +78,7 @@ window.BT = window.BT || { Screens: {} };
       this.zone = this.openZones[0].id;
       const zoneIds = this.openZones.map((z) => z.id);
       this.dishPool = this.dishPoolAll = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))))
+        .map((r) => UI.recipe(r.id))
         .concat(BT.Fun.customRecipes().filter((r) => zoneIds.includes(r.zone)));   // món sáng tạo của Bống
       this.typePool = Object.keys(C.customerTypes).filter((id) => {
         const t = C.customerTypes[id];

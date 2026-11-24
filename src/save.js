@@ -32,7 +32,7 @@ window.BT = window.BT || { Screens: {} };
       regularCustomers: { chu_tu: 0, chi_lan: 0, be_na: 0, tomortle: 0, co_hanh: 0 },
       checkin: { streak: 0, lastDate: "" },
       dailyQuests: { date: "", list: [] },
-      settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, patienceBoost: 0,
+      settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0,
         relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false,
         fewerRequests: false, bookPause: false, moreHearts: false, softFail: false, threeTrays: false, autoSeasonSkin: true },
       tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false, day16: false },

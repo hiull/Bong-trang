@@ -12,6 +12,7 @@ window.BT = window.BT || { Screens: {} };
       const day = run.key;
       const dc = run.cfg;
       const lv = run.level;
+      BT.recipeLevel = lv;
 
       // Điểm khôi phục đầu ngày (vào lại màn này thì quay về đúng đầu ngày)
       if (S.dayBackup && S.dayBackup.day === day && !S.dayBackup.finished) BT.Save.restoreDay();
