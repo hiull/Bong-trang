@@ -238,7 +238,18 @@ Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao
   - *Gợi ý nguyên liệu (chế độ dễ):* hàng nút các nguyên liệu cần chạm tiếp cho món của khách đợi lâu nhất.
   - *Thêm nguyên liệu sau khi làm xong:* bịch đã lắc / bánh đã cuốn, gấp / chè đã thêm đá vẫn bỏ thêm được nếu chỉ thiếu 1–2 phần.
   - *Hiện công thức trên order:* mọi món khách gọi đều hiện nguyên liệu (tắt để khó hơn).
+  - *Công thức chuẩn ngoài đời:* món bánh tráng đủ vị như xe ngoài đường (hành phi, sa tế, muối tôm; nướng có cả mayonnaise lẫn tương ớt; cuốn bơ không chấm). Nguyên liệu chưa mở ở cấp hiện tại thì không bị đòi. Sửa trong `realRecipes` ở `config.js`.
   - *Kiên nhẫn của khách:* Bình thường / +25% / +50%.
   - *Chế độ thư giãn:* một công tắc bật giao một chạm, lắc/cuốn một chạm, rót một chạm, bếp nướng hiền, khách đến thưa, 5 tim, gợi ý nguyên liệu và kiên nhẫn +50%.
   - Bật riêng từng cái: *Giao một chạm*, *Lắc, cuốn một chạm*, *Rót một chạm*, *Bếp nướng hiền* (vùng xanh rộng gấp đôi, không cháy), *Khách đến thưa hơn*, *Ít yêu cầu riêng & đơn 2 món*, *Tạm dừng khi xem sổ công thức*, *5 tim*, *Thua vẫn cộng nửa ca tiến độ*, *Có sẵn 3 khay*.
 - **Câu thính** chấp nhận viết tắt (k, ko, a, e, cx, iu…) và gõ sai một chữ cái; câu dài chỉ cần gõ đúng phần chơi chữ. Thêm đáp án: điền vào `answers` trong `personal.js`.
+
+## 15. Ngày đặc biệt, huy hiệu, món sáng tạo & hẹn hò
+- **Ngày đặc biệt** (`specialDays` trong `personal.js`): 28/3 sinh nhật Bống (+500k), ngày kỷ niệm (+300k), 14/2, 8/3, 20/10 (+150k). Lần mở game đầu tiên trong ngày, anh Hiếu tặng quà kèm lời nhắn. Ngày 11 mỗi tháng có lời chúc tháng kỷ niệm.
+- **Thư hằng tuần:** nút *Thư* ở Menu, mỗi 7 ngày mở thêm một lá (`weeklyLetters`).
+- **Trang trí theo mùa tự bật** (Tết, Valentine, Trung Thu, Noel). Tắt trong Cài đặt.
+- **Trong ca:** giờ cao điểm 20 giây (khách đến gấp đôi, tip ×2), khách đặc biệt hiếm, thú cưng có việc làm (Miu giữ chân khách, Cún Bông kéo khách, Hạt Dẻ nhặt tiền), chip kỷ lục trên HUD.
+- **Huy hiệu** (14 cái, `CONFIG.badges`): xem trong Kỷ niệm → Huy hiệu. Mở được là có thưởng.
+- **Nhiệm vụ tuần:** nút *Tuần này* ở Menu, 5 nhiệm vụ/tuần (thứ Hai → Chủ nhật). Xong cả 5 nhận đồ trang trí độc quyền: chuông gió, dây đèn, bảng phấn, gấu bông (không bán trong cửa hàng).
+- **Bếp sáng tạo** (Menu): tự tạo tối đa 3 món ở quầy Trộn / Cuốn / Chè, chọn 2–5 nguyên liệu, đặt tên. Giá = tổng giá một phần nguyên liệu ×2 + 5k. Khách thỉnh thoảng gọi, khách quen thích gọi hơn.
+- **Hẹn hò sau ca:** qua mốc lớn hoặc ngẫu nhiên sau ca thắng sẽ có nút *Hẹn hò sau ca 💕*. Lật thẻ ghép 6 cặp trong 45 giây; thắng +30k và mở một ghi chú trong *Sổ hẹn hò* (`dateNotes` trong `personal.js`, 10 câu nháp, anh sửa thoải mái).
