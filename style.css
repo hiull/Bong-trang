@@ -1423,6 +1423,18 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .decor-den_long.two { left: 64%; animation-delay: -1.5s; }
 @keyframes swing { 50% { transform: rotate(8deg); } }
 .decor-hoa_giay { right: 2%; bottom: 3%; font-size: max(30px, calc(var(--u) * 58)); }
+.decor-chuong_gio { top: 15%; left: 42%; font-size: max(30px, calc(var(--u) * 44)); transform-origin: 50% 0; animation: swing 2.6s ease-in-out infinite; }
+.decor-den_day { top: 12%; left: 8%; right: 8%; text-align: center; letter-spacing: 18px; font-size: max(20px, calc(var(--u) * 24)); animation: twinkle 1.8s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: 0.55; } }
+.decor-bang_chalk { left: 3%; bottom: 4%; font-size: max(26px, calc(var(--u) * 48)); }
+.decor-gau_bong { left: 30%; bottom: 3%; font-size: max(30px, calc(var(--u) * 40)); }
+.badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 60vh; overflow-y: auto; }
+.badge { background: #f4eef0; border-radius: 12px; padding: 8px; text-align: center; opacity: 0.55; }
+.badge.on { background: #FFF1C9; opacity: 1; box-shadow: 0 2px 0 #E8C15A; }
+.badge-icon { font-size: 22px; color: #E0A800; }
+.badge-name { font-weight: 800; font-size: 13px; margin: 2px 0; }
+.badge-desc { font-size: 11px; color: #7a6a70; }
+.badge-get { margin-top: 6px; padding: 6px 10px; border-radius: 10px; background: #FFF1C9; color: #8a6200; font-weight: 800; text-align: center; }
 .decor-meo_than_tai { right: 16%; bottom: 4%; font-size: max(24px, calc(var(--u) * 44)); animation: wave 1.2s ease-in-out infinite; transform-origin: 50% 100%; }
 @keyframes wave { 50% { transform: rotate(-10deg); } }
 .curtain { position: absolute; top: 14%; width: 9%; height: 55%; z-index: 2; pointer-events: none;

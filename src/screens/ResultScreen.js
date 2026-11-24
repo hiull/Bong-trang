@@ -89,6 +89,10 @@ window.BT = window.BT || { Screens: {} };
       body.appendChild(table);
 
       if (s.newRecord) body.appendChild(UI.el("div", "new-record", UI.t("newRecord")));
+      (s.badges || []).forEach((id) => {
+        const b = CONFIG.badges.find((x) => x.id === id);
+        body.appendChild(UI.el("div", "badge-get", "★ " + UI.t("badgeGet", { name: b.name, x: UI.money(b.reward) })));
+      });
       if (s.petCoins) body.appendChild(UI.el("div", "pet-coins", UI.t("petCoins", { x: UI.money(s.petCoins) })));
 
       // Anh Hiếu: chương "Sau giờ đóng cửa"

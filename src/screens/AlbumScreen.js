@@ -23,6 +23,13 @@ window.BT = window.BT || { Screens: {} };
 
       const scroll = UI.el("div", "album-scroll");
       // Sổ thính của anh Hiếu
+      const bdone = CONFIG.badges.filter((b) => S.badges[b.id]).length;
+      const bbook = UI.el("button", "flirt-book-card badges-card");
+      bbook.type = "button";
+      bbook.appendChild(UI.el("span", "fb-icon", "⭐"));
+      bbook.appendChild(UI.el("span", "fb-label", UI.t("badgesCount", { a: bdone, b: CONFIG.badges.length })));
+      bbook.addEventListener("click", () => { BT.Audio.play("pop"); BT.Fun.openBadges(); });
+      scroll.appendChild(bbook);
       const fc = BT.Flirt.count();
       const fbook = UI.el("button", "flirt-book-card");
       fbook.type = "button";

@@ -523,6 +523,31 @@ window.CONFIG = {
     ]
   },
 
+  // Huy hiệu: stat = chỉ số theo dõi, n = mốc cần đạt, reward = thưởng (k)
+  badges: [
+    { id: "served50", name: "Tay mới vào nghề", desc: "Phục vụ 50 khách", stat: "served", n: 50, reward: 30 },
+    { id: "served500", name: "Bà chủ đắt khách", desc: "Phục vụ 500 khách", stat: "served", n: 500, reward: 100 },
+    { id: "perfect5", name: "Không ai phải chờ", desc: "5 ca không khách nào bỏ đi", stat: "perfect", n: 5, reward: 50 },
+    { id: "crispy30", name: "Vua bếp nướng", desc: "Nướng giòn 30 bánh", stat: "crispy", n: 30, reward: 50 },
+    { id: "flirt10", name: "Bắt thính siêu đỉnh", desc: "Giải 10 câu thính", stat: "flirt", n: 10, reward: 80 },
+    { id: "daily7", name: "Một tuần chăm chỉ", desc: "Chuỗi Thử thách 7 ngày", stat: "dailyStreak", n: 7, reward: 80 },
+    { id: "endless100", name: "Không biết mệt", desc: "Ca vô tận phục vụ 100 khách", stat: "endlessBest", n: 100, reward: 100 },
+    { id: "season1", name: "Tiệm nhỏ đầu hẻm", desc: "Đi hết Mùa 1", stat: "season1", n: 1, reward: 150 },
+    { id: "season2", name: "Quầy chè đầu hẻm", desc: "Đi hết Mùa 2", stat: "season2", n: 1, reward: 200 },
+    { id: "vip3", name: "Khách sộp", desc: "Phục vụ 3 khách đặc biệt", stat: "vips", n: 3, reward: 60 },
+    { id: "custom5", name: "Đầu bếp sáng tạo", desc: "Bán 5 phần món sáng tạo", stat: "customs", n: 5, reward: 60 },
+    { id: "rush10", name: "Bình tĩnh giờ cao điểm", desc: "Vượt 10 đợt giờ cao điểm", stat: "rushes", n: 10, reward: 60 },
+    { id: "date5", name: "Hẹn hò ăn ý", desc: "Thắng 5 lần hẹn hò sau ca", stat: "dates", n: 5, reward: 80 },
+    { id: "gold15", name: "Tim vàng trọn vẹn", desc: "Đủ 15 Tim vàng Mùa 1", stat: "gold", n: 15, reward: 150 }
+  ],
+  // Nhiệm vụ tuần: dùng chung chỉ số với nhiệm vụ ngày, mức cao hơn; xong cả 5 → đồ trang trí độc quyền
+  weeklyCount: 5,
+  weeklyRewardCoins: 200,   // nhận hết đồ độc quyền rồi thì thưởng tiền
+  weeklyQuests: [
+    { id: "served", n: 120 }, { id: "days", n: 12 }, { id: "five", n: 40 }, { id: "fav", n: 15 },
+    { id: "comboMax", n: 8 }, { id: "crispy", n: 15, fromDay: 4 }, { id: "req", n: 20, fromDay: 3 }, { id: "flirt", n: 8, fromDay: 3 }
+  ],
+
   // Giờ cao điểm: một đợt mỗi ca (khi tiến độ nằm trong window), khách nhanh gấp đôi, tip ×2
   rush: { fromLevel: 4, window: [0.4, 0.6], sec: 20, spawnFactor: 0.5, tipMult: 2 },
   // Khách đặc biệt hiếm (tối đa 1 người mỗi ca). reward: thưởng (k) khi phục vụ xong.
@@ -635,7 +660,12 @@ window.CONFIG = {
     { id: "hoa_giay", name: "Chậu hoa giấy cổng trường", emoji: "🪴", price: 150 },
     { id: "neon", name: "Biển hiệu đèn neon", emoji: "💡", price: 300 },
     { id: "meo_than_tai", name: "Mèo thần tài vẫy tay", emoji: "😺", price: 200 },
-    { id: "rem_hong", name: "Rèm hồng pastel", emoji: "🎀", price: 120 }
+    { id: "rem_hong", name: "Rèm hồng pastel", emoji: "🎀", price: 120 },
+    // Đồ trang trí độc quyền: chỉ nhận từ nhiệm vụ tuần (không bán trong cửa hàng)
+    { id: "chuong_gio", name: "Chuông gió", emoji: "🎐", price: 0, weekly: true },
+    { id: "den_day", name: "Dây đèn lấp lánh", emoji: "✨", price: 0, weekly: true },
+    { id: "bang_chalk", name: "Bảng phấn thực đơn", emoji: "📝", price: 0, weekly: true },
+    { id: "gau_bong", name: "Gấu bông ngồi quầy", emoji: "🧸", price: 0, weekly: true }
   ],
 
   pets: {
@@ -975,6 +1005,16 @@ window.CONFIG = {
     setRelax: "Chế độ thư giãn (bật hết trợ giúp)",
     setAutoSeasonSkin: "Tự trang trí tiệm theo mùa",
     rushStart: "GIỜ CAO ĐIỂM! Khách ùa vào, tip gấp đôi 🔥",
+    badgesTitle: "Huy hiệu",
+    badgesCount: "Huy hiệu · {a}/{b}",
+    badgeGet: "Huy hiệu mới: {name} (+{x})",
+    weekBtn: "Tuần này",
+    weekTitle: "Nhiệm vụ tuần",
+    weekReward: "Xong cả 5 nhiệm vụ: nhận {name}",
+    weekRewardCoins: "Xong cả 5 nhiệm vụ: nhận {x}",
+    weekClaim: "Nhận quà tuần",
+    weekClaimed: "Đã nhận quà tuần này, tuần sau có nhiệm vụ mới nha",
+    weekGot: "Nhận được {name}!",
     rushBanner: "GIỜ CAO ĐIỂM 🔥 {s}s",
     rushEnd: "Hết giờ cao điểm, thở phào!",
     vipServed: "{name} hài lòng! +{x}",

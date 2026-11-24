@@ -94,7 +94,7 @@ window.BT = window.BT || { Screens: {} };
 
         if (tab === "decor") {
           list.appendChild(UI.el("h3", "section-title", UI.t("shopDecorTitle")));
-          CONFIG.decor.forEach((d) => {
+          CONFIG.decor.filter((d) => !d.weekly).forEach((d) => {
             const own = S.decor.includes(d.id);
             const right = own ? UI.el("div", "shop-tag", UI.t("shopOwned")) : buyButton(d.price, () => {
               if (!pay(d.price, d.name)) return;

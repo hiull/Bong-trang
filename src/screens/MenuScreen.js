@@ -108,6 +108,8 @@ window.BT = window.BT || { Screens: {} };
       small.appendChild(questBtn);
       const mailBtn = UI.button(UI.t("mailBtn"), "btn-white small mail-btn", () => { BT.Fun.openMail(); refreshDots(); });
       small.appendChild(mailBtn);
+      const weekBtn = UI.button(UI.t("weekBtn"), "btn-white small week-btn", () => BT.Fun.openWeekly(refreshDots));
+      small.appendChild(weekBtn);
       el.appendChild(small);
 
       el.appendChild(UI.el("div", "footer", UI.t("footer")));
@@ -118,6 +120,7 @@ window.BT = window.BT || { Screens: {} };
         questBtn.classList.toggle("has-dot", Pr.questsClaimable() > 0);
         dailyBtn.classList.toggle("has-dot", BT.Daily.unlocked() && !BT.Daily.playedToday());
         mailBtn.classList.toggle("has-dot", BT.Fun.unreadLetters() > 0);
+        weekBtn.classList.toggle("has-dot", !BT.Fun.weekly().claimed && BT.Fun.weeklyDone());
       }
       refreshDots();
 

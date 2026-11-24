@@ -1909,8 +1909,10 @@ window.BT = window.BT || { Screens: {} };
       BT.Progress.questAdd("income", Math.round(income));
       if (S.dayBackup) S.dayBackup.finished = true;
       S.today = null;
+      const badges = BT.Fun.checkBadges();
       BT.Save.persist();
       const summary = {
+        badges,
         day: this.dayId, run: this.run, title: UI.runTitle(this.run), endSeason: S.season || 1, endless: true, passed: true, lostHearts: false, stars: 0,
         served, best: S.endless.best, newBest: claim.newBest, coins: claim.coins, rewardMarks: claim.milestones,
         memory: newMemory, ending, minor, card2, memory2: newMemory2, helperChapter, petCoins, units, progress, need: MS.need(progress.before.index), levelUp,
@@ -1997,9 +1999,11 @@ window.BT = window.BT || { Screens: {} };
       BT.Progress.questAdd("days", 1);
       if (this.S.dayBackup) this.S.dayBackup.finished = true;
       this.S.today = null;
+      const badges = BT.Fun.checkBadges();
       BT.Save.persist();
 
       const summary = {
+        badges,
         day: this.dayId, run, title: UI.runTitle(run), endSeason: S.season || 1, passed, lostHearts, stars, secret: this.secret,
         units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter, petCoins, newRecord,
         memory: newMemory, newGold, allGold, ending, levelUp,

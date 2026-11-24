@@ -1265,6 +1265,25 @@ def _(ic):
     ic.circle(26, 28, 4.5, "none", sw=1.6).circle(38, 28, 4.5, "none", sw=1.6).line([(30.5, 28), (33.5, 28)], OUT, 1.4)
 
 
+
+@icon("chuong_gio", "🎐")
+def _(ic):
+    ic.line([(32, 6), (32, 14)], OUT, 2)
+    ic.ellipse(32, 22, 12, 9, C["lblue"])
+    ic.line([(32, 30), (32, 46)], OUT, 1.6)
+    ic.rrect(26, 46, 12, 12, 2, C["lpink"])
+    ic.dot(28, 22, 1.6, C["hot"]).dot(36, 22, 1.6, C["hot"])
+
+@icon("gau_bong", "🧸")
+def _(ic):
+    ic.circle(20, 18, 7, C["tan2"]).circle(44, 18, 7, C["tan2"])
+    ic.circle(32, 28, 14, C["tan2"])
+    ic.ellipse(32, 50, 15, 11, C["tan2"])
+    ic.ellipse(32, 32, 6, 4, C["tan"])
+    ic.dot(26, 25, 1.8, OUT).dot(38, 25, 1.8, OUT).dot(32, 30, 1.6, OUT)
+    ic.heart(32, 50, 5, C["hot"])
+
+
 if __name__ == "__main__":
     import sys
     out = sys.argv[1]
