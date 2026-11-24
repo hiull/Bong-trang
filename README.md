@@ -231,3 +231,12 @@ Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao
 - **Sửa chữ Mùa 2** trong `personal.js`: `season2Intro` (thư mở mùa), `ending2` (thư kết), `bonusMessage2` (lời nhắn đủ 15 tim Mùa 2), `recipeCards2` (15 thẻ công thức), `helperLines` / `helperChapters` (anh Hiếu), `landlordLines`, `rivalLines`.
 - **Thêm kỷ niệm Mùa 2:** điền `memories2` giống `memories` (ảnh để trong `assets/memories/`). Phần tử thứ k mở ở mốc lớn thứ k của Mùa 2; thêm sau khi đã qua mốc thì tự mở lần vào Album kế tiếp.
 - **Chỉnh số liệu** trong `config.js`: `days` 16–30, `helper`, `landlord`, `rival`, `seasons`.
+
+## 14. Trợ giúp & anh Hiếu phụ tiệm từ đầu
+- **Anh Hiếu phụ tiệm từ Mốc 1:** ở màn Chuẩn bị chọn anh Chạy bàn / Pha nước (khi đã có quầy nước) / Phụ chè (khi đã có quầy chè) / Anh nghỉ (anh ghé làm khách như cũ). Làm chung ca đầu tiên là mở chương "Sau giờ đóng cửa" đầu tiên.
+- **⚙️ Cài đặt → Trợ giúp:**
+  - *Gợi ý nguyên liệu (chế độ dễ):* hàng nút các nguyên liệu cần chạm tiếp cho món của khách đợi lâu nhất.
+  - *Thêm nguyên liệu sau khi làm xong:* bịch đã lắc / bánh đã cuốn, gấp / chè đã thêm đá vẫn bỏ thêm được nếu chỉ thiếu 1–2 phần.
+  - *Hiện công thức trên order:* mọi món khách gọi đều hiện nguyên liệu (tắt để khó hơn).
+  - *Kiên nhẫn của khách:* Bình thường / +25% / +50%.
+- **Câu thính** chấp nhận viết tắt (k, ko, a, e, cx, iu…) và gõ sai một chữ cái; câu dài chỉ cần gõ đúng phần chơi chữ. Thêm đáp án: điền vào `answers` trong `personal.js`.
