@@ -1815,3 +1815,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .hud-record { color: #B8860B; }
 .new-record { text-align: center; font-family: var(--font-title); color: #E0A800; margin-top: 6px; }
 .pet-coins { text-align: center; font-weight: 800; margin-top: 4px; }
+
+/* Cài đặt → Sự kiện */
+.set-note { font-size: 12px; color: #7a6a70; margin: -2px 0 6px; }
+.ev-btn { min-width: 72px; }
+.ev-btn.ev-0 { opacity: 0.6; }
+.ev-btn.ev-2 { background: #FFE0EA; }

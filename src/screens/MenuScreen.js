@@ -208,6 +208,28 @@ window.BT = window.BT || { Screens: {} };
         toggle("sfx", UI.t("setSfx"));
         if (navigator.vibrate) toggle("vibrate", UI.t("setVibrate"));
         if (BT.Fullscreen.supported()) toggle("fullscreen", UI.t("setFullscreen"));
+        // Sự kiện: mỗi dòng một nút xoay vòng Vừa → Nhiều → Tắt → Ít
+        body.appendChild(UI.el("div", "set-section", UI.t("setEventsTitle")));
+        body.appendChild(UI.el("div", "set-note", UI.t("setEventsNote")));
+        if (!S.settings.events) S.settings.events = {};
+        const evCycle = [1, 2, 0, 0.5];
+        ["shiftEvent", "rush", "vip", "rival", "spill", "cat", "flirt", "helperMishap", "rent", "date"].forEach((key) => {
+          const row = UI.el("div", "set-row");
+          row.appendChild(UI.el("span", "set-label", UI.t("ev_" + key)));
+          const label = () => CONFIG.texts.evLevels[String(BT.ev(key))];
+          const btn = UI.button(label(), "btn-white small ev-btn ev-" + String(BT.ev(key)).replace(".", "_"), () => {
+            const i = evCycle.indexOf(BT.ev(key));
+            const v = evCycle[(i + 1) % evCycle.length];
+            S.settings.events[key] = v;
+            UI.setText(btn, label());
+            btn.className = btn.className.replace(/ev-[0-9_]+/, "ev-" + String(v).replace(".", "_"));
+            BT.Save.persist();
+            BT.Audio.play("tap");
+          });
+          btn.dataset.ev = key;
+          row.appendChild(btn);
+          body.appendChild(row);
+        });
         // Trợ giúp
         body.appendChild(UI.el("div", "set-section", UI.t("setAssistTitle")));
         toggle("autoSeasonSkin", UI.t("setAutoSeasonSkin"));

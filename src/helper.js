@@ -39,7 +39,7 @@ window.BT = window.BT || { Screens: {} };
       g.helper.el = el;
       if (g.front) g.front.appendChild(el);
       // Sự kiện nhỏ (tối đa 1 lần/ca)
-      if (Math.random() < C.eventRate) {
+      if (Math.random() < C.eventRate * BT.ev("helperMishap")) {
         if (Math.random() < 0.5) {
           g.helper.late = true;
           g.scope.timeout(() => UI.toast(UI.fmt(window.PERSONAL.helperLate), 2600), 1500);

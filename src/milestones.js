@@ -126,11 +126,15 @@ window.BT = window.BT || { Screens: {} };
     pickEvent(level, prev, rnd) {
       rnd = rnd || Math.random;
       const E = CONFIG.shiftEvents;
+      // Cài đặt → Sự kiện: tắt thì luôn trời nắng bình thường; Ít/Nhiều nhân trọng số các sự kiện khác
+      const m = BT.ev("shiftEvent");
+      if (m <= 0) return "sunny";
+      const w = (id) => (id === "sunny" ? E[id].w : E[id].w * m);
       let ids = Object.keys(E).filter((id) => E[id].fromLevel <= level);
       if (ids.length > 1 && prev) ids = ids.filter((id) => id !== prev);
-      const total = ids.reduce((s, id) => s + E[id].w, 0);
+      const total = ids.reduce((s, id) => s + w(id), 0);
       let r = rnd() * total;
-      for (const id of ids) { r -= E[id].w; if (r < 0) return id; }
+      for (const id of ids) { r -= w(id); if (r < 0) return id; }
       return ids[ids.length - 1];
     },
 
@@ -358,6 +362,9 @@ window.BT = window.BT || { Screens: {} };
       if (day < L.fromDay || day % 2 !== 0 || S.rent.lastDay >= day) return null;
       let rent = 0;
       Object.keys(L.rent).map(Number).sort((a, b) => a - b).forEach((k) => { if (day >= k) rent = L.rent[k]; });
+      const m = BT.ev("rent");
+      if (m <= 0) return null;   // Cài đặt → Sự kiện: tắt tiền thuê nhà
+      rent = Math.round(rent * m);
       return { day, rent, owed: S.rent.owed, total: rent + S.rent.owed };
     },
     pay(choice, due) {

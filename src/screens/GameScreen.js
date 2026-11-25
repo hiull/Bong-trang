@@ -22,7 +22,8 @@ window.BT = window.BT || { Screens: {} };
       this.endless = run.mode === "endless";
       this.helperOn = BT.Helper.working(run);   // anh Hiếu phụ tiệm ca này
       // Giờ cao điểm, khách đặc biệt, thú cưng, kỷ lục
-      this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel;
+      this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel
+        && BT.ev("rush") > 0 && (BT.ev("rush") >= 1 || Math.random() < BT.ev("rush"));
       this.rush = null;
       this.rushDone = false;
       this.vipCame = false;
@@ -32,7 +33,7 @@ window.BT = window.BT || { Screens: {} };
       this.recordIncome = recBest && recBest.income > 0 ? recBest.income : 0;
       this.recordBroken = false;
       const RV = CONFIG.rival;
-      this.rivalPlan = run.mode === "story" && !run.scripted && (run.season || 1) >= 2 && run.cfg.day >= RV.fromDay && Math.random() < RV.rate;
+      this.rivalPlan = run.mode === "story" && !run.scripted && (run.season || 1) >= 2 && run.cfg.day >= RV.fromDay && Math.random() < RV.rate * BT.ev("rival");
       this.rival = null;
       this.rivalDone = false;
       this.dayCfg = run.cfg;
@@ -91,7 +92,7 @@ window.BT = window.BT || { Screens: {} };
       const I = CONFIG.incidents;
       this.spillAt = -1;
       this.spillLeft = 0;
-      if (!this.secret && !this.endless && this.dayNum >= I.fromDay && Math.random() < I.spillRate) {
+      if (!this.secret && !this.endless && this.dayNum >= I.fromDay && Math.random() < I.spillRate * BT.ev("spill")) {
         this.spillAt = Math.max(1, Math.round(this.total * UI.rand(I.spillAtProgress[0], I.spillAtProgress[1])));
         this.catsToday = G.catMaxPerDay;
       }
@@ -107,7 +108,7 @@ window.BT = window.BT || { Screens: {} };
       const G = CONFIG.gameplay;
       // Lượt anh Hiếu ghé chỉ để thả thính: các mốc tiến độ ca (0–1)
       const [w0, w1] = G.tomoFlirtWindow;
-      const nFlirt = this.secret ? G.tomoFlirtSecret : (this.dayNum >= G.tomoFlirtFromDay ? G.tomoFlirtPerDay : 0);
+      const nFlirt = this.secret ? G.tomoFlirtSecret : (this.dayNum >= G.tomoFlirtFromDay ? Math.min(G.tomoFlirtPerDay * 2, Math.round(G.tomoFlirtPerDay * BT.ev("flirt") - 0.01)) : 0);
       this.flirtAt = [];
       for (let k = 0; k < nFlirt; k++) this.flirtAt.push(this.secret ? w0 + (k + 0.5) * (w1 - w0) / nFlirt : UI.rand(w0, w1));
       this.flirtAt.sort((a, b) => a - b);
@@ -482,7 +483,7 @@ window.BT = window.BT || { Screens: {} };
       }
       // Mèo hoang hiếm (không tính vào số khách của ngày)
       const cat = CONFIG.customerTypes.meo_hoang;
-      if (!this.secret && this.groupPending === 0 && this.dayNum >= cat.openDay && this.catsToday < G.catMaxPerDay && Math.random() < cat.rareRate) {
+      if (!this.secret && this.groupPending === 0 && this.dayNum >= cat.openDay && this.catsToday < G.catMaxPerDay && Math.random() < cat.rareRate * BT.ev("cat")) {
         this.catsToday++;
         this.spawn(seat, "meo_hoang", { items: [] });
         this.spawnTimer = this.nextGap();
@@ -502,7 +503,7 @@ window.BT = window.BT || { Screens: {} };
       if (special && special.kind === "tomortle" && this.tomoCame >= this.tomoWanted) special = null;
       // Khách đặc biệt hiếm
       const V = CONFIG.vipGuests;
-      if (!special && !this.vipCame && !this.secret && !this.endless && this.groupPending === 0 && this.dayNum >= V.fromLevel && Math.random() < V.rate) {
+      if (!special && !this.vipCame && !this.secret && !this.endless && this.groupPending === 0 && this.dayNum >= V.fromLevel && Math.random() < V.rate * BT.ev("vip")) {
         const month = new Date().getMonth() + 1;
         const pool = V.list.filter((v) => !v.months || v.months.includes(month));
         if (pool.length) {
@@ -621,7 +622,7 @@ window.BT = window.BT || { Screens: {} };
     // ---------------- Giờ cao điểm ----------------
     rushOn() {
       if (this.rush || this.over) return;
-      this.rush = { left: CONFIG.rush.sec };
+      this.rush = { left: CONFIG.rush.sec * Math.max(1, BT.ev("rush")) };
       this.rush.el = UI.el("div", "rush");
       this.el.appendChild(this.rush.el);
       UI.setText(this.rush.el, UI.t("rushBanner", { s: Math.ceil(this.rush.left) }));
@@ -2012,7 +2013,7 @@ window.BT = window.BT || { Screens: {} };
 
       // Hẹn hò sau ca: qua mốc lớn, hoặc ngẫu nhiên sau ca thắng
       const majorCleared = !!(progress && progress.cleared && (MS.get(progress.cleared) || {}).major);
-      const dateOffer = passed && !this.secret && (majorCleared || Math.random() < CONFIG.dateGame.rate);
+      const dateOffer = passed && !this.secret && BT.ev("date") > 0 && (majorCleared || Math.random() < CONFIG.dateGame.rate * BT.ev("date"));
       const summary = {
         badges, dateOffer,
         day: this.dayId, run, title: UI.runTitle(run), endSeason: S.season || 1, passed, lostHearts, stars, secret: this.secret,

@@ -253,3 +253,18 @@ Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao
 - **Nhiệm vụ tuần:** nút *Tuần này* ở Menu, 5 nhiệm vụ/tuần (thứ Hai → Chủ nhật). Xong cả 5 nhận đồ trang trí độc quyền: chuông gió, dây đèn, bảng phấn, gấu bông (không bán trong cửa hàng).
 - **Bếp sáng tạo** (Menu): tự tạo tối đa 3 món ở quầy Trộn / Cuốn / Chè, chọn 2–5 nguyên liệu, đặt tên. Giá = tổng giá một phần nguyên liệu ×2 + 5k. Khách thỉnh thoảng gọi, khách quen thích gọi hơn.
 - **Hẹn hò sau ca:** qua mốc lớn hoặc ngẫu nhiên sau ca thắng sẽ có nút *Hẹn hò sau ca 💕*. Lật thẻ ghép 6 cặp trong 45 giây; thắng +30k và mở một ghi chú trong *Sổ hẹn hò* (`dateNotes` trong `personal.js`, 10 câu nháp, anh sửa thoải mái).
+
+## 16. Chỉnh sự kiện trong game
+**⚙️ Cài đặt → Sự kiện**: mỗi sự kiện một nút, chạm để đổi mức *Vừa* (như mặc định) → *Nhiều* → *Tắt* → *Ít*.
+
+| Sự kiện | Ít | Nhiều |
+|---|---|---|
+| Sự kiện đầu ca (gió, mưa, lễ hội…) | ít gặp hơn, hay trời nắng thường | gặp gấp đôi |
+| Giờ cao điểm | nửa số ca có | đợt dài gấp đôi |
+| Khách đặc biệt, quán đối thủ, vũng nước đổ, mèo hoang, anh Hiếu đến trễ/làm đổ | xác suất một nửa | xác suất gấp đôi |
+| Anh Hiếu ghé thả thính | 1 lần mỗi ca | 6 lần mỗi ca |
+| Tiền thuê nhà | thu một nửa | thu gấp đôi |
+| Hẹn hò sau ca | ngẫu nhiên ít hơn (qua mốc lớn vẫn có) | ngẫu nhiên gấp đôi |
+
+*Tắt* là không xảy ra. Các mốc cốt truyện có thời tiết cố định vẫn giữ nguyên. Ca bí mật vẫn đủ lượt thả thính.
+
