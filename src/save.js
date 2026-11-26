@@ -261,6 +261,7 @@ window.BT = window.BT || { Screens: {} };
   };
   // Cỡ chữ: lớp ts-1/2/3 trên #app
   BT.applyTextScale = function () {
+    if (typeof document === "undefined") return;
     const app = document.getElementById("app");
     if (!app) return;
     const v = (BT.Save.state && BT.Save.state.settings.textScale) || 1;
