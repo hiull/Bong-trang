@@ -1,0 +1,2 @@
+Thư mục hình nguyên liệu, khách, thú cưng, skin.
+Giai đoạn 1 chưa cần file nào: game đang dùng emoji và hình vẽ bằng CSS.

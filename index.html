@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+  <script>/* Máy cảm ứng (điện thoại, iPad, kể cả iPad tự báo là "Macintosh"): luôn tràn màn hình */(function(){try{var m=window.matchMedia,ipad=navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent);if(ipad||m("(hover: none) and (pointer: coarse)").matches)document.documentElement.className+=" touch";}catch(e){}})();</script>
+  <meta name="theme-color" content="#FF5C8A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>Bống tráng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Font tải song song, không chặn màn hình (mạng chậm vẫn vào game ngay bằng font máy) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Dancing+Script:wght@600;700&family=Nunito:wght@600;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Dancing+Script:wght@600;700&family=Nunito:wght@600;700;800&display=swap"></noscript>
+  <link rel="icon" type="image/png" href="assets/img/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/img/icon-180.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage">
+    <div id="app"></div>
+  </div>
+
+  <div id="rotate-overlay" aria-hidden="true">
+    <div class="rotate-icon">📱</div>
+    <p id="rotate-text">Xoay dọc điện thoại để chơi nhé 📱</p>
+  </div>
+
+  <noscript>
+    <p class="noscript">Trình duyệt đang tắt JavaScript nên chưa mở được tiệm. Bật JavaScript lên rồi tải lại trang nha!</p>
+  </noscript>
+
+  <!-- Thứ tự nạp: thông tin cá nhân → cấu hình → lõi → thành phần → màn hình → khởi động -->
+  <script src="personal.js"></script>
+  <script src="config.js"></script>
+  <script src="assets/img/doodles.js"></script>
+  <script src="src/save.js"></script>
+  <script src="src/milestones.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/components/UI.js"></script>
+  <script src="src/components/Tray.js"></script>
+  <script src="src/components/Station.js"></script>
+  <script src="src/components/Customer.js"></script>
+  <script src="src/helper.js"></script>
+  <script src="src/fun.js"></script>
+  <script src="src/safety.js"></script>
+  <script src="src/screens/BootScreen.js"></script>
+  <script src="src/screens/MenuScreen.js"></script>
+  <script src="src/screens/MapScreen.js"></script>
+  <script src="src/screens/PrepScreen.js"></script>
+  <script src="src/screens/GameScreen.js"></script>
+  <script src="src/screens/ResultScreen.js"></script>
+  <script src="src/screens/ShopScreen.js"></script>
+  <script src="src/screens/AlbumScreen.js"></script>
+  <script src="src/screens/ReviewScreen.js"></script>
+  <script src="src/screens/EndingScreen.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>

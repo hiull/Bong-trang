@@ -1,0 +1,4 @@
+# Khoá bí mật / biến môi trường: không bao giờ đưa lên git
+.env
+.env.*
+!.env.example

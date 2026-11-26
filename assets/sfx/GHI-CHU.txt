@@ -1,0 +1,2 @@
+Thư mục hiệu ứng âm thanh.
+Game hiện tạo toàn bộ âm thanh bằng code (src/audio.js) nên thư mục này để trống.

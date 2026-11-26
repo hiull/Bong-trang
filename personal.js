@@ -1,0 +1,453 @@
+// personal.js — CHỈ SỬA FILE NÀY ĐỂ CÁ NHÂN HOÁ
+// ------------------------------------------------------------------
+// Cách sửa: mở file này bằng Notepad (Windows) hoặc TextEdit (Mac),
+// chỉ sửa chữ nằm GIỮA hai dấu ngoặc kép "..." rồi lưu lại.
+// Đừng xoá dấu phẩy , ở cuối dòng và dấu ngoặc { } [ ].
+// ------------------------------------------------------------------
+window.PERSONAL = {
+  herName: "Bống",
+  herNicknames: ["Bống", "Ba", "Ba dưa", "Sarose", "Molly", "Sa"],
+  myName: "Hiếu",
+  myNickname: "Tomortle",
+  shopName: "Bống tráng",
+  anniversary: "2026-01-11",
+  favoriteDish: "bt_tron_kho_bo", // Bánh tráng trộn khô bò (giá x2, viền hồng lấp lánh)
+  petName: "Miu", // MẶC ĐỊNH: Miu (tên chú mèo cam trước quầy)
+
+  welcomeMessage: "Chào mừng Sarose của Tomortle đến với Bống tráng! Hôm nay tụi mình cùng mở tiệm nhé 💕",
+  finalMessage: "Cảm ơn em vì đã luôn ở bên anh. Dù ngoài đời hay trong game, chỉ cần bé thích, anh sẽ luôn ở đây chiều em. Yêu em lắm! ❤️",
+  bonusMessage: "Bà chủ đỉnh quá, đạt 3 sao hết tất cả các ngày luôn! Chụp màn hình này gửi anh để đổi một chầu bánh tráng ngoài đời thật + 1 điều ước bất kỳ từ anh nhé 💛✨",
+
+  // 15 kỷ niệm & phiếu hẹn tương lai, mỗi ngày qua lần đầu mở 1 thẻ
+  memories: [
+    {
+      title: "Ngày đầu tiên trò chuyện",
+      date: "2026-01-01", // MẶC ĐỊNH: 2026-01-01
+      photo: "assets/memories/01.jpg",
+      text: "Tin nhắn đầu tiên mở ra câu chuyện của Tomortle và Sarose — từ những cuộc trò chuyện nhỏ xíu mà thương nhau lúc nào không hay."
+    },
+    {
+      title: "Chính thức thành một đôi",
+      date: "2026-01-11",
+      photo: "assets/memories/02.jpg",
+      text: "Ngày 11/01/2026 — ngày Bống gật đầu đồng ý, chính thức mở ra hành trình yêu thương của tụi mình."
+    },
+    {
+      title: "Bộ sưu tập biệt danh",
+      date: "2026-01-20", // MẶC ĐỊNH: 2026-01-20
+      photo: "assets/memories/03.jpg",
+      text: "Từ Bống, Ba, Ba dưa đến Sarose, Molly, Sa — tên nào của bé gọi lên anh cũng thấy đáng yêu hết."
+    },
+    {
+      title: "Những đêm thức khuya tâm sự",
+      date: "2026-02-14", // MẶC ĐỊNH: 2026-02-14
+      photo: "assets/memories/04.jpg",
+      text: "Valentine đầu tiên tuy chưa ở cạnh nhau ngoài đời, nhưng chỉ cần nghe giọng em là bao nhiêu mệt mỏi đều tan biến."
+    },
+    {
+      title: "Kỷ niệm 100 ngày bên nhau",
+      date: "2026-04-21",
+      photo: "assets/memories/05.jpg",
+      text: "100 ngày yêu thương — từng ngày trôi qua anh lại càng mong sớm đến lúc được gặp bé ngoài đời thật."
+    },
+    {
+      title: "Những trận game cùng nhau",
+      date: "2026-05-15", // MẶC ĐỊNH: 2026-05-15
+      photo: "assets/memories/06.jpg",
+      text: "Cùng nhau chơi game, cùng cười nghiêng ngả qua màn hình — ở đâu có em ở đó đều vui."
+    },
+    {
+      title: "Kỷ niệm 200 ngày bên nhau",
+      date: "2026-07-30",
+      photo: "assets/memories/07.jpg",
+      text: "200 ngày đồng hành cùng nhau, cảm ơn Ba dưa vì đã luôn kiên nhẫn, dịu dàng và ở bên anh."
+    },
+    {
+      title: "Chuyện của tiệm \"Bống tráng\"",
+      date: "2026-09-10", // MẶC ĐỊNH: 2026-09-10
+      photo: "assets/memories/08.jpg",
+      text: "Vì biết bé mê bánh tráng nên Tomortle mở hẳn một tiệm bánh tráng riêng dành tặng bà chủ Bống."
+    },
+    {
+      title: "Kỷ niệm 300 ngày bên nhau",
+      date: "2026-11-07",
+      photo: "assets/memories/09.jpg",
+      text: "Hơn 300 ngày yêu nhau — tình cảm dành cho Sarose chỉ có tăng lên chứ không bao giờ giảm."
+    },
+    {
+      title: "Tấm vé hẹn hò #1: Lần đầu gặp mặt",
+      date: "Sắp tới",
+      photo: "assets/memories/10.jpg",
+      text: "Phiếu hẹn ngày đầu tiên anh được đứng trước mặt Bống ngoài đời thật, nhìn thấy em cười không còn qua màn hình nữa."
+    },
+    {
+      title: "Tấm vé hẹn hò #2: Cái ôm đầu tiên",
+      date: "Sắp tới",
+      photo: "assets/memories/11.jpg",
+      text: "Một cái ôm thật chặt để bù lại cho tất cả những ngày tháng tụi mình chỉ gặp nhau qua tin nhắn và cuộc gọi."
+    },
+    {
+      title: "Tấm vé hẹn hò #3: Chầu bánh tráng ngoài đời",
+      date: "Sắp tới",
+      photo: "assets/memories/12.jpg",
+      text: "Dẫn bà chủ đi ăn sập quán bánh tráng ngon nhất — ngoài đời bé chỉ việc ngồi ăn thôi, mọi thứ để anh lo!"
+    },
+    {
+      title: "Tấm vé hẹn hò #4: Buổi đi chơi đầu tiên",
+      date: "Sắp tới",
+      photo: "assets/memories/13.jpg",
+      text: "Cùng nhau dạo phố, ăn vặt và chụp thật nhiều tấm hình chung để lấp đầy cuốn album này."
+    },
+    {
+      title: "Tấm vé hẹn hò #5: Xem phim & nắm tay",
+      date: "Sắp tới",
+      photo: "assets/memories/14.jpg",
+      text: "Một buổi tối bình yên đúng nghĩa chỉ có hai đứa, nắm tay nhau và kể cho nhau nghe đủ thứ chuyện trên đời."
+    },
+    {
+      title: "Lời hứa của Tomortle",
+      date: "Mãi về sau",
+      photo: "assets/memories/15.jpg",
+      text: "Dù hôm nay mới là tiệm bánh tráng trong game, ngày tụi mình gặp nhau ngoài đời nhất định sẽ sớm tới. Yêu Bống! ❤️"
+    }
+  ],
+
+  // 7 người bạn chung ghé tiệm ủng hộ (ĐÃ ĐỔI: tối đa 6 tên -> 7 tên theo danh sách người dùng cung cấp)
+  friends: ["Kiều", "Mai", "Thảo", "Huân", "Như", "Quyên", "Băng"],
+
+  // Mẫu gọi món đặc trưng của khách "Hiếu / Tomortle"
+  anhOrderTemplate: "Bé ơi cho anh một xuất {dish} với {drink} đi, ăn xong mình lnlk😈😈😈",
+
+  // Câu thoại ngẫu nhiên của khách "Hiếu / Tomortle" khi ghé tiệm và nhận món
+  anhLines: [
+    "Bé ơi cho anh một xuất {dish} với {drink} đi, ăn xong mình lnlk😈😈😈",
+    "Tomortle đói bụng rồi, bà chủ Bống làm cho anh một phần đặc biệt nha 💕",
+    "Ba dưa trộn bánh tráng là ngon nhất quả đất!",
+    "Anh Hiếu ghé chỉ để ngắm Sarose thôi 😳",
+    "Molly ơi bán cho anh một bịch bánh tráng kèm nụ cười của Sa nhé!",
+    "Món nào em làm cũng ngon nhất, anh ăn hết sạch luôn!",
+    "Bà chủ đáng yêu quá, cho anh xin thêm một phần trái tim em nữa nha ❤️"
+  ],
+
+  // 7 câu nhắn ngắn từ "Hiếu (Tomortle)" cho quà điểm danh 7 ngày
+  dailyCheckinMessages: [
+    "Ngày 1: Chào buổi sáng Sarose! Hôm nay Bống nhớ ăn uống đầy đủ và đừng thức khuya quá nha 💕",
+    "Ngày 2: Chúc bà chủ tiệm Bống tráng một ngày thật vui vẻ, bán đắt hàng như tôm tươi nè!",
+    "Ngày 3: Dù bận gì thì Tomortle vẫn luôn nhớ tới Ba dưa đầu tiên. Cố lên bé yêu ❤️",
+    "Ngày 4: Hôm nay Sa của anh đã cười chưa? Nhớ giữ gìn sức khoẻ để còn đi ăn bánh tráng với anh nhé!",
+    "Ngày 5: Nửa tuần rồi! Tặng Molly thêm vốn nhập hàng để mở rộng tiệm Bống tráng thật to nha ✨",
+    "Ngày 6: Cảm ơn Bống vì mỗi ngày đều mang lại niềm vui cho anh. Thương em nhiều lắm!",
+    "Ngày 7: Quà đặc biệt cuối tuần dành cho bà chủ nhỏ của anh Hiếu! Yêu em nhất trên đời 💖"
+  ],
+
+  // ---------------- Mùa 2 ----------------
+  // Thư mở Mùa 2 (hiện khi bấm "Mùa 2 mở rồi!" ở Menu)
+  season2Intro: "Bà chủ ơi, tiệm mình đông khách quá rồi. Anh nghĩ mình mở thêm quầy chè với sữa chua đi, trời nóng ai cũng thèm. Anh sẽ phụ em một tay. Mình bắt đầu Mùa 2 nha 🍧",
+  // Thư kết Mùa 2 (màn kết sau mốc 30 Mùa 2)
+  ending2: "Vậy là quầy chè cũng chạy ngon lành rồi. Cảm ơn em đã cùng anh đi thêm một mùa nữa. Mỗi ly chè em xếp, anh đều đứng bên cạnh nhìn, và lần nào cũng thấy mình may mắn. Mùa sau mình làm gì tiếp nhỉ? Em chọn đi, anh theo 💕",
+  // Lời nhắn khi đủ 15 Trái tim vàng Mùa 2
+  bonusMessage2: "15 Trái tim vàng Mùa 2! Bà chủ đỉnh thật sự. Chụp màn hình này gửi anh để đổi một buổi đi ăn chè ngoài đời nha, anh bao 🍧💛",
+  // 15 thẻ công thức Mùa 2, mở lần lượt ở 15 mốc lớn
+  recipeCards2: [
+    { title: "Chè đậu xanh", text: "Món đầu tiên của quầy chè. Đậu xanh nấu nhừ, rưới nước cốt dừa béo béo. Đơn giản mà ai ăn cũng nhớ." },
+    { title: "Sữa chua đá", text: "Sữa chua đánh đá lạnh buốt, chua chua ngọt ngọt. Trưa hè ăn một ly là hết mệt." },
+    { title: "Chè đậu đỏ", text: "Đậu đỏ ninh mềm, ngọt thanh. Nghe nói ăn đậu đỏ là gặp may, nên ly đầu tiên dành cho bà chủ." },
+    { title: "Chè sương sáo", text: "Sương sáo đen mát lạnh, giòn giòn trong miệng. Món giải nhiệt của mấy chú xe ôm đầu hẻm." },
+    { title: "Sữa chua mít", text: "Mít vàng thơm lừng dưới đáy, sữa chua phủ lên trên. Xếp ngược là mất ngon liền." },
+    { title: "Chè thập cẩm", text: "Đậu xanh, đậu đỏ, thạch, nước cốt dừa. Bốn lớp, bốn màu, ăn một muỗng có đủ cả." },
+    { title: "Sữa chua nếp cẩm", text: "Nếp cẩm tím dẻo thơm, ăn cùng sữa chua là hết sẩy. Món ruột của mấy bạn văn phòng." },
+    { title: "Chè Thái", text: "Mít, thạch, trân châu, nước cốt dừa. Ly nào cũng đầy ụ, cầm lên thấy nặng tay." },
+    { title: "Sữa chua trân châu", text: "Trân châu dai dai nằm dưới, sữa chua mát lạnh ở trên. Học sinh tan trường xếp hàng mua." },
+    { title: "Chè dừa non", text: "Thạch dừa non trong veo, rắc thêm dừa nạo. Ăn chậm thôi kẻo hết." },
+    { title: "Chè ba màu", text: "Đỏ, vàng, xanh như đèn giao thông. Cô Hạnh nói ly này nhìn là thấy vui." },
+    { title: "Sữa chua dừa", text: "Sữa chua hoà nước cốt dừa, rắc dừa nạo. Béo ngậy mà không ngán." },
+    { title: "Combo Mùa Hè", text: "Một ly chè Thái, một ly trà tắc. Mùa hè chỉ cần vậy là đủ." },
+    { title: "Chè đặc biệt", text: "Sáu lớp, xếp lâu nhất tiệm. Bà chủ làm ly này là cả hẻm đứng xem." },
+    { title: "Ly Chè Hẹn Hò", text: "Món cuối của Mùa 2, chỉ làm cho người đặc biệt. Ăn chung một ly, hai cái muỗng." }
+  ],
+  // Kỷ niệm Mùa 2 (tuỳ chọn). Thêm như memories ở trên, phần tử thứ k mở ở mốc lớn thứ k của Mùa 2.
+  memories2: [],
+
+  // ---------------- Anh Hiếu phụ tiệm (Mùa 2) ----------------
+  // Câu anh nói khi đang phụ tiệm (bong bóng thoại)
+  helperLines: [
+    "Bà chủ ơi, khách bàn hai khen chè ngon kìa!",
+    "Anh rửa ly xong rồi nè, khen anh đi 😌",
+    "Em làm nhanh quá, anh theo không kịp luôn.",
+    "Nghỉ tay uống miếng nước đi em.",
+    "Ai cho em dễ thương dữ vậy, tập trung bán hàng đi chứ!",
+    "Anh mới học được cách xếp chè ba màu, giỏi chưa?",
+    "Hôm nay đông ghê, tối anh đấm lưng cho nha.",
+    "Khách hỏi anh có phải chủ tiệm không, anh nói anh là chồng... à nhầm, là nhân viên.",
+    "Trân châu hết thì kêu anh nha.",
+    "Em cười cái là khách quay lại liền á.",
+    "Anh xin nghỉ trưa 5 phút để ngắm bà chủ.",
+    "Ly này anh bưng, em cứ làm ly kế đi.",
+    "Mệt hông? Mệt thì để anh lo.",
+    "Anh làm đổ có xíu nước thôi, em đừng nhìn anh vậy 😅",
+    "Hôm nay mình bán được nhiều ghê, tối ăn gì ăn đi!",
+    "Sương sáo này đen như... à thôi, anh không dám so.",
+    "Anh phụ tiệm không lương mà vui nhất thế giới.",
+    "Em có thấy anh chạy bàn chuyên nghiệp chưa?",
+    "Khách đi rồi, giờ tới lượt anh được em phục vụ hông?",
+    "Mai mình mở sớm hơn chút nha, anh dậy sớm được."
+  ],
+  // Chương "Sau giờ đóng cửa": chương 1 khi anh vào phụ, chương 2/3 khi lên cấp ăn ý
+  helperChapters: [
+    {"text": "Đóng cửa xong, anh ngồi lau từng cái ly, còn em đếm tiền trong hộp. Anh hỏi: \"Hôm nay em có vui không?\"", "choices": [{"label": "Vui chứ, có anh phụ mà", "reply": "Anh cười tít mắt, lau ly nhanh gấp đôi.", "effect": {"wallet": 20}}, {"label": "Mệt nhưng vui", "reply": "Anh lấy ghế cho em ngồi, tự đếm tiền giùm.", "effect": {"wallet": 10}}]},
+    {"text": "Trời đổ mưa lúc dọn tiệm. Anh lấy cái áo mưa duy nhất trùm cho em, còn mình thì ướt nhẹp. \"Không sao, anh khoẻ mà.\"", "choices": [{"label": "Che chung đi, ngốc", "reply": "Hai người chen chúc dưới một cái áo mưa, đi về chậm hơn mọi hôm.", "effect": {"wallet": 30}}, {"label": "Lau đầu cho anh", "reply": "Anh đứng im ngoan ngoãn, mặt đỏ hơn ly chè đậu đỏ.", "effect": {"wallet": 30}}]},
+    {"text": "Tối nay anh khoá cửa tiệm rồi kéo em ra đầu hẻm ăn khuya. \"Cả mùa em làm giỏi quá, hôm nay để anh bao.\"", "choices": [{"label": "Ăn bánh tráng nướng tiệm khác thử", "reply": "Ăn xong hai người kết luận: tiệm mình vẫn ngon nhất.", "effect": {"wallet": 50}}, {"label": "Về tiệm ăn chè anh làm", "reply": "Anh làm ly chè hơi sai thứ tự, nhưng em vẫn ăn hết.", "effect": {"wallet": 50}}]}
+  ],
+  helperIntro: "Anh xin vào phụ tiệm nha bà chủ. Lương anh là được đứng gần em là đủ rồi 😌",
+  helperLate: "Anh tới trễ xíu, kẹt xe quá trời, em thông cảm nha 🙏",
+  helperSpill: "Ui da... anh lỡ làm đổ một chút {ing}, để anh dọn liền!",
+
+  // Bác Sáu chủ nhà & xe chè đối thủ (Mùa 2)
+  landlordLines: [
+    "Bác Sáu đây, ghé lấy tiền mặt bằng nè con. Thấy tiệm đông bác cũng mừng.",
+    "Con bán chè ngon ghê, cháu bác ở quê lên khen hoài. Tiền nhà tháng này nha con.",
+    "Bác đi ngang tiện ghé, con gửi bác tiền mặt bằng nha. Ly chè đậu đỏ hôm bữa bác ăn còn nhớ.",
+    "Tiệm con sơn lại đẹp quá, bác giữ giá cũ cho đó. Gửi bác tiền nhà nha.",
+    "Mưa gió vậy mà tiệm vẫn mở, bác nể con. Tiền mặt bằng tuần này nha con.",
+    "Bác Sáu ghé nè. Thằng nhỏ phụ tiệm của con siêng ghê ha, bác thấy nó lau bàn hoài."
+  ],
+  rivalLines: [
+    "Ê bà chủ, chè bên này rẻ hơn nè, khách qua đây đi!",
+    "Xe chè Cô Tư tới rồi đây, chè ba màu siêu khổng lồ!",
+    "Bên kia làm chậm quá, qua đây ăn liền nè các bạn!",
+    "Hôm nay Cô Tư khuyến mãi, mua một tặng... một nụ cười!"
+  ],
+
+  // ---------------- Ngày đặc biệt (theo ngày thật) ----------------
+  // date: "MM-DD", hoặc "anniversary" (lấy theo anniversary ở trên). gift: tiền anh tặng (k), mỗi năm một lần.
+  specialDays: [
+    {"date": "03-28", "kind": "birthday", "title": "Sinh nhật Bống 🎁", "message": "Chúc mừng sinh nhật bà chủ nhỏ của anh! Tuổi mới vẫn cứ vui, cứ xinh, cứ thương anh như vầy nha. Hôm nay tiệm đóng cửa sớm, anh dắt em đi ăn.", "gift": 500},
+    {"date": "anniversary", "kind": "anniversary", "title": "Kỷ niệm ngày mình bên nhau 💞", "message": "Thêm một năm bên nhau rồi đó. Cảm ơn em vì mọi ngày đã qua, và cả những ngày sắp tới nữa. Anh vẫn thương em như lần đầu.", "gift": 300},
+    {"date": "02-14", "kind": "holiday", "title": "Valentine 💝", "message": "Valentine này anh không cần socola đâu, chỉ cần một ly trà tắc em pha là đủ ngọt rồi.", "gift": 150},
+    {"date": "03-08", "kind": "holiday", "title": "Ngày Quốc tế Phụ nữ 💐", "message": "Chúc người phụ nữ anh thương nhất luôn được cưng chiều. Hôm nay em không cần làm gì hết, để anh lo.", "gift": 150},
+    {"date": "10-20", "kind": "holiday", "title": "Ngày Phụ nữ Việt Nam 💐", "message": "20/10 vui vẻ nha em! Cảm ơn em đã là bà chủ dễ thương nhất con hẻm này.", "gift": 150}
+  ],
+  // Lời nhắn ngày kỷ niệm hằng tháng (cùng ngày với anniversary)
+  monthiversaryMessage: "Hôm nay là ngày kỷ niệm tháng của tụi mình đó. Thương em thêm một tháng nữa nè 💕",
+  // Thư hằng tuần: mở thêm một lá mỗi 7 ngày kể từ lần chơi đầu
+  weeklyLetters: [
+    "Tuần đầu mở tiệm, em làm giỏi hơn anh tưởng nhiều đó. Cứ từ từ thôi, không cần vội.",
+    "Hôm qua anh đi ngang một xe bánh tráng trộn, lại nhớ tiệm của em. Ngoài đời chắc em trộn ngon hơn nhiều.",
+    "Có tuần nào mệt quá thì cứ đóng tiệm nghỉ một hôm. Khách quen vẫn chờ, anh cũng vậy.",
+    "Anh để ý em hay cười khi qua mốc mới. Anh thích nụ cười đó lắm.",
+    "Tuần này nhớ ăn uống đầy đủ nha. Bà chủ mà gầy là khách lo đó.",
+    "Cảm ơn em đã chơi tới giờ. Mỗi lần thấy em mở game là anh vui cả ngày.",
+    "Nếu có chuyện gì buồn, kể anh nghe nha. Anh không giỏi an ủi nhưng anh giỏi nghe.",
+    "Tuần này anh đố em: món nào trong tiệm em thích nhất? Trả lời anh ngoài đời nha.",
+    "Anh nghĩ mình nên đi ăn bánh tráng thật một bữa. Em chọn chỗ, anh chở.",
+    "Mỗi lá thư này anh viết lúc nghĩ tới em. Đọc chậm thôi nha.",
+    "Đã gần ba tháng rồi đó. Em kiên nhẫn ghê, giống y như lúc em chờ anh trễ hẹn.",
+    "Lá thư cuối trong hộp thư rồi. Mấy lá tiếp theo, anh muốn nói trực tiếp với em."
+  ],
+  // Lá bài hôm nay: lời giải cho 22 lá Ẩn chính (đúng thứ tự 0 → XXI). up = lá xuôi, rev = lá ngược.
+  // Nháp theo chủ đề tiệm; người đọc Tarot sửa theo cách giải của mình nha.
+  tarotReadings: [
+    { up: "Chàng Khờ: một ngày mới, tâm thế mới. Cứ thử món lạ, nói chuyện với khách lạ, đừng sợ vụng.", rev: "Chàng Khờ ngược: hăng quá dễ quên đồ. Trước khi mở tiệm, kiểm lại kho một vòng nha." },
+    { up: "Pháp Sư: mọi thứ em cần đều đã ở trên quầy. Tay khéo, đầu tỉnh, hôm nay làm gì cũng ra món.", rev: "Pháp Sư ngược: làm nhiều thứ một lúc dễ rối tay. Từng khay một thôi." },
+    { up: "Nữ Tư Tế: tin vào trực giác. Khách chưa nói, em đã đoán được họ thích gì.", rev: "Nữ Tư Tế ngược: đừng nghe ồn ào xung quanh quá, nghe chính mình trước." },
+    { up: "Hoàng Hậu: dồi dào và dịu dàng. Món ngon, người thương, tiệm ấm áp.", rev: "Hoàng Hậu ngược: chăm khách nhớ chăm cả bản thân. Uống miếng nước đi." },
+    { up: "Hoàng Đế: có kế hoạch thì ca nào cũng vững. Sắp quầy gọn, giữ nhịp đều.", rev: "Hoàng Đế ngược: cứng nhắc quá thì mệt. Thả lỏng vai một chút." },
+    { up: "Giáo Hoàng: công thức truyền thống vẫn là ngon nhất. Làm chuẩn từng bước.", rev: "Giáo Hoàng ngược: hôm nay thử phá lệ một món sáng tạo xem sao." },
+    { up: "Tình Nhân: một lựa chọn từ trái tim. Có người luôn đứng bên quầy cùng em.", rev: "Tình Nhân ngược: hai lựa chọn đều hay, chọn cái làm em thấy nhẹ lòng." },
+    { up: "Cỗ Xe: quyết tâm và tốc độ. Hôm nay em lái cả ca về đích.", rev: "Cỗ Xe ngược: chạy nhanh quá dễ trật bánh. Chậm mà chắc." },
+    { up: "Sức Mạnh: dịu dàng mà vững vàng. Khách khó tính mấy cũng mềm lòng.", rev: "Sức Mạnh ngược: mệt thì nghỉ, mạnh mẽ không có nghĩa là gồng." },
+    { up: "Ẩn Sĩ: một chút tĩnh lặng giữa ngày đông. Ngọn đèn nhỏ của tiệm vẫn sáng.", rev: "Ẩn Sĩ ngược: đừng ôm hết một mình, gọi anh Hiếu phụ một tay." },
+    { up: "Bánh Xe Số Phận: vận may đang xoay tới. Ca đông, tip nhiều.", rev: "Bánh Xe ngược: hôm nay hơi lận đận cũng không sao, bánh xe sẽ quay lại." },
+    { up: "Công Lý: công bằng và rõ ràng. Làm đúng thì nhận đúng.", rev: "Công Lý ngược: kiểm lại công thức một lần trước khi giao." },
+    { up: "Người Treo Ngược: nhìn từ góc khác, mọi chuyện nhẹ đi. Chậm một nhịp cũng được.", rev: "Người Treo Ngược ngược: đừng chờ mãi, việc nào làm được thì làm luôn." },
+    { up: "Sự Chuyển Hoá: khép lại cái cũ để bắt đầu cái mới. Hôm nay là trang mới của tiệm.", rev: "Sự Chuyển Hoá ngược: buông thứ không còn hợp, dù hơi tiếc." },
+    { up: "Tiết Chế: pha trộn vừa đủ. Nước ngọt vừa, đá vừa, lòng cũng vừa.", rev: "Tiết Chế ngược: đừng nêm quá tay, cả món ăn lẫn cảm xúc." },
+    { up: "Ác Quỷ: cám dỗ của đồ ăn vặt! Hôm nay khách khó cưỡng lại món của em.", rev: "Ác Quỷ ngược: thoát được một thói quen cũ, nhẹ cả người." },
+    { up: "Toà Tháp: một bất ngờ làm đảo lộn mọi thứ, nhưng sau đó là khoảng trời mới.", rev: "Toà Tháp ngược: chuyện lớn hoá nhỏ, chuyện nhỏ hoá không." },
+    { up: "Ngôi Sao: hy vọng và chữa lành. Một ngày nhẹ nhàng, khách hiền như ngôi sao.", rev: "Ngôi Sao ngược: thấy hơi mất phương hướng thì nhìn lại vì sao mình mở tiệm." },
+    { up: "Mặt Trăng: trực giác dẫn đường qua những điều chưa rõ. Tin cảm nhận của mình.", rev: "Mặt Trăng ngược: sương tan dần, mọi chuyện rõ hơn rồi." },
+    { up: "Mặt Trời: rực rỡ, vui vẻ, thành công. Ca hôm nay sáng bừng.", rev: "Mặt Trời ngược: mây che một chút thôi, nắng vẫn ở đó." },
+    { up: "Phán Xét: được ghi nhận. Những cố gắng của em ai cũng thấy.", rev: "Phán Xét ngược: đừng tự chấm điểm mình khắt khe quá." },
+    { up: "Thế Giới: một vòng trọn vẹn. Tiệm nhỏ mà đủ đầy.", rev: "Thế Giới ngược: còn một bước nữa thôi là trọn, cứ từ từ." }
+  ],
+  // Góc bói bài: câu hỏi của khách. tone = cách giải khách mong (cheer: khích lệ, honest: thẳng thắn, fun: vui vẻ);
+  // câu hỏi đã gợi ý tâm trạng. Nháp, Bống sửa theo kinh nghiệm đọc bài của mình nha.
+  readingQuestions: [
+    { q: "Dạo này em hơi buồn, công việc mãi chưa ổn… chị bói giùm em một lá được không?", tone: "cheer" },
+    { q: "Em sắp thi rồi mà lo quá, chị xem giùm em có qua không?", tone: "cheer" },
+    { q: "Em vừa chia tay, chị bói xem em có nên buồn tiếp không…", tone: "cheer" },
+    { q: "Em mới chuyển nhà, lạ nước lạ cái, chị xem giùm em tháng này sao?", tone: "cheer" },
+    { q: "Chị nói thẳng giùm em nha: em có nên nghỉ việc không?", tone: "honest" },
+    { q: "Em muốn nghe sự thật thôi: người ta có thật lòng với em không?", tone: "honest" },
+    { q: "Đừng nói vòng vo nha chị, dự định kinh doanh của em có ổn không?", tone: "honest" },
+    { q: "Em hay trì hoãn lắm, chị cứ nói thật xem em nên sửa gì?", tone: "honest" },
+    { q: "Bói vui thôi chị ơi: tuần này em có được ai bao ăn không?", tone: "fun" },
+    { q: "Chị xem giùm con mèo nhà em có thương em không, hihi.", tone: "fun" },
+    { q: "Hỏi chơi thôi: em có trúng số không chị?", tone: "fun" },
+    { q: "Chị bói xem tối nay em nên ăn bánh tráng trộn hay bánh tráng nướng?", tone: "fun" }
+  ],
+  // Anh Hiếu tự sửa món khi Bống làm sai (chọn ngẫu nhiên). Nháp, anh sửa thoải mái.
+  heroFixLines: [
+    "Để anh làm lại cho, em chăm khách tiếp đi!",
+    "Không sao, anh lo món này. Em làm tiếp nha.",
+    "Sai tí thôi mà, có anh đây rồi.",
+    "Anh trộn lại liền, khách chưa kịp thấy đâu.",
+    "Ca đông quá ha, món này để anh.",
+    "Đưa anh khay đó, em làm món khác đi."
+  ],
+  // Anh Hiếu bỏ thêm phần còn thiếu / Bống nhờ làm giùm / cứu khách sắp bỏ đi
+  heroTopUpLines: [
+    "Thiếu xíu thôi, anh bỏ thêm cho.",
+    "Để anh rắc thêm, xong liền!",
+    "Gần đủ rồi nè, anh thêm nốt."
+  ],
+  heroMakeLines: [
+    "Có anh! Món này để anh.",
+    "Em cứ lo khách khác, anh làm cái này.",
+    "Nhận đơn! Anh làm liền.",
+    "Bà chủ ra lệnh, anh làm ngay."
+  ],
+  heroRescueLines: [
+    "Khách sắp đi kìa, để anh làm nhanh!",
+    "Khoan về đã, có liền nè!",
+    "Anh lo khách này, em cứ làm tiếp."
+  ],
+  // Hẹn hò sau ca: mỗi lần thắng trò lật thẻ mở một ghi chú (theo thứ tự). Nháp, anh sửa thoải mái.
+  dateNotes: [
+    "Buổi hẹn đầu tiên sau ca: hai đứa ngồi ăn ké phần bánh tráng còn dư, ngon hơn mọi nhà hàng.",
+    "Đi bộ một vòng hồ cho tiêu bớt. Em kể chuyện khách hôm nay, anh nghe mà cười suốt.",
+    "Tạt vào tiệm trà sữa quen. Em gọi ít đường, anh gọi giống em cho đỡ phải nghĩ.",
+    "Trời mưa nên ngồi dưới mái hiên chờ tạnh. Không đi đâu cả mà vẫn tính là một buổi hẹn.",
+    "Ra chợ đêm, em chấm điểm từng xe bánh tráng. Xe nào cũng thua tiệm mình.",
+    "Ngồi đếm tiền lẻ trong hộp, em tính sổ còn anh làm bộ là kế toán.",
+    "Xem một bộ phim dở tệ, cười suốt vì nó dở. Lần sau vẫn để em chọn phim.",
+    "Chạy xe vòng vòng không có điểm đến, gió mát, em ngồi sau hát lạc tông.",
+    "Ăn ốc ở quán vỉa hè, em gắp cho anh con to nhất rồi nói là con nhỏ nhất.",
+    "Hôm nay chỉ ngồi im cạnh nhau ở bậc thềm tiệm. Vậy thôi mà thấy đủ."
+  ],
+  dateLose: [
+    "Hết giờ mất rồi, nhưng anh vẫn chờ ở đầu hẻm. Hẹn bù lần sau nha.",
+    "Lật nhầm một tí thôi. Buổi hẹn dời qua mai, chỗ cũ, giờ cũ.",
+    "Thua trò chơi chứ không thua buổi tối. Về nghỉ sớm cho khoẻ nha em."
+  ],
+
+  // Lời nhắn mỗi ngày: mở một câu khi chơi Thử thách hôm nay lần đầu trong ngày (lần lượt, hết thì quay lại).
+  // Sửa thoải mái; thêm câu mới thì thêm vào cuối.
+  dailyNotes: [
+    "Hôm nay có mệt thì nghỉ chút cũng được, tiệm vẫn ở đây chờ.",
+    "Uống một ly nước trước khi làm gì tiếp nha.",
+    "Không cần làm mọi thứ hoàn hảo, làm xong là giỏi rồi.",
+    "Có chuyện gì vui hôm nay thì kể anh nghe với.",
+    "Ăn sáng chưa đó? Bánh tráng không tính là bữa chính đâu nha.",
+    "Một ngày bình thường cũng là một ngày đáng nhớ.",
+    "Nếu hôm nay hơi tệ thì mai mình làm lại, không sao hết.",
+    "Nhớ đứng dậy vươn vai một cái, ngồi lâu mỏi lưng đó.",
+    "Cảm ơn vì hôm nay vẫn mở game ghé tiệm.",
+    "Đi ngủ sớm một bữa đi, mai dậy sẽ thấy khác liền.",
+    "Việc khó nhất thường là bắt đầu. Bắt đầu rồi thì nhẹ hơn nhiều.",
+    "Hôm nay thử khen bản thân một câu xem.",
+    "Trời có nắng thì nhớ đội nón, có mưa thì nhớ mang áo mưa.",
+    "Không ai giỏi ngay từ đầu, bà chủ cũng từng làm cháy bánh mà.",
+    "Chậm một chút cũng được, miễn là vẫn đi tiếp.",
+    "Ra ngoài hít thở năm phút, đầu óc sẽ nhẹ hơn.",
+    "Có ai làm phiền thì cứ kệ, giữ năng lượng cho việc mình thích.",
+    "Một bữa ăn ngon cũng đáng để vui cả buổi chiều.",
+    "Mệt thì nói mệt, không cần lúc nào cũng phải ổn.",
+    "Hôm nay nghe một bài nhạc cũ mình từng thích đi.",
+    "Nhớ nhắn hỏi thăm ba mẹ một câu nha.",
+    "Làm được một việc nhỏ thôi cũng tính là tiến bộ.",
+    "Đừng so mình với người khác, mỗi người một con đường.",
+    "Dọn bàn gọn gọn chút, tự nhiên thấy dễ làm việc hơn.",
+    "Ngủ đủ giấc là bí quyết làm đẹp rẻ nhất.",
+    "Có kế hoạch gì cho cuối tuần chưa?",
+    "Hôm nay thử làm một việc chưa từng làm, nhỏ thôi cũng được.",
+    "Chuyện buồn rồi cũng qua, chuyện vui thì nhớ giữ lại.",
+    "Đừng quên bôi kem chống nắng nha.",
+    "Đôi khi không làm gì cũng là một cách nghỉ ngơi.",
+    "Ăn rau đi, khô bò không thay được rau đâu.",
+    "Có ai đó đang tự hào về em mà em không biết đó.",
+    "Viết ra ba điều em biết ơn hôm nay xem.",
+    "Sai thì sửa, không cần tự trách lâu.",
+    "Hôm nay nhớ cười ít nhất một lần thật to.",
+    "Cái gì quan trọng thì làm trước, cái gì vui thì để làm phần thưởng.",
+    "Điện thoại hết pin thì sạc, người hết pin thì ngủ.",
+    "Tiệm đông hay vắng thì bà chủ vẫn là bà chủ giỏi nhất.",
+    "Đi bộ một vòng sau bữa tối, tốt cho bụng lắm.",
+    "Đừng ôm hết việc một mình, nhờ người khác cũng được mà.",
+    "Hôm nay trời đẹp không? Nhìn ra cửa sổ một chút đi.",
+    "Học thêm một điều mới, dù chỉ là một từ tiếng Anh.",
+    "Ước mơ lớn hay nhỏ cũng đáng để theo đuổi.",
+    "Nhớ mang theo đồ ăn vặt phòng khi đói giữa buổi.",
+    "Thất bại một lần không nói lên điều gì hết.",
+    "Nghỉ tay pha một ly trà ấm đi.",
+    "Những ngày bình yên là những ngày đáng quý nhất.",
+    "Đừng thức khuya xem phim nữa nha, mai còn đi làm.",
+    "Hôm nay em đã cố gắng rồi, vậy là đủ.",
+    "Có gì lo lắng thì viết ra giấy, đỡ nghĩ hơn nhiều.",
+    "Thử nấu một món mới cuối tuần này xem.",
+    "Người tử tế thì luôn có người tử tế lại với mình.",
+    "Đừng bỏ bữa trưa vì bận, bận mấy cũng phải ăn.",
+    "Nhìn lại một tháng trước, em đã đi được xa lắm rồi.",
+    "Hôm nay nhắn cho một người bạn lâu rồi chưa nói chuyện đi.",
+    "Giữ ấm cổ khi trời trở gió nha.",
+    "Nếu thấy rối thì dừng lại, hít sâu ba lần.",
+    "Mỗi ngày một chút, rồi sẽ thành nhiều.",
+    "Không phải ngày nào cũng vui, nhưng ngày nào cũng có điều đáng nhớ.",
+    "Hẹn gặp lại ở tiệm ngày mai nha."
+  ],
+
+  // Chuyện vặt: hiện khi qua một mốc nhỏ (lần lượt, hết thì quay lại). Thêm câu mới thì thêm vào cuối.
+  minorTales: [
+    { who: "Chị Lan Kế Toán", text: "Chị vừa cân đối sổ sách xong, lệch đúng 5 nghìn. Hoá ra là tiền chị ăn bánh tráng hôm qua chưa ghi 😅" },
+    { who: "Chú Tư Xe Ôm", text: "Hôm nay chú chở một ông khách, ổng hỏi đường tới tiệm {shop}. Chú nói: lên xe, chú chở miễn phí!" },
+    { who: "Bé Na Lớp 10", text: "Chị ơi, em được 9 điểm Văn! Cô khen em tả món bánh tráng cuốn hay quá trời 📝" },
+    { who: "Anh shipper", text: "Anh giao 40 đơn hôm nay, đơn nào khách cũng hỏi: tiệm bánh tráng đầu hẻm còn mở không anh?" },
+    { who: "Bà cụ", text: "Hồi bà còn con gái, bà cũng bán bánh tráng nè. Nhìn con là bà nhớ thời đó ghê." },
+    { who: "Học sinh", text: "Tụi em lập nhóm chat tên 'Hội ăn bánh tráng chị chủ' rồi đó chị, 37 thành viên!" },
+    { who: "Chị Lan Kế Toán", text: "Sếp chị mới hỏi sao dạo này chị vui vậy. Chị nói: tại tan làm có chỗ ghé ăn đó anh." },
+    { who: "Chú Tư Xe Ôm", text: "Bé Út cháu chú vẽ cái tiệm của con lên bài tập mỹ thuật, được điểm 10 luôn!" },
+    { who: "Bé Na Lớp 10", text: "Em tập làm bánh tráng trộn ở nhà, mẹ ăn xong nói: thôi mai ra tiệm chị chủ mua cho rồi 😂" },
+    { who: "Anh shipper", text: "Mưa quá trời mà nhìn đèn tiệm còn sáng là anh thấy ấm bụng liền." },
+    { who: "Bà cụ", text: "Bà kể chuyện con cho mấy bà hàng xóm nghe, giờ cả xóm đòi ghé thử." },
+    { who: "Học sinh", text: "Thầy chủ nhiệm bắt gặp tụi em ăn bánh tráng, thầy… xin một miếng rồi đi luôn." },
+    { who: "Chị Lan Kế Toán", text: "Hôm nay chị được tăng lương nè! Mai chị bao cả phòng ăn bánh tráng của em." },
+    { who: "Chú Tư Xe Ôm", text: "Chú mới thay cái yên xe mới, khách khen êm. Chú nói: êm như bánh tráng phơi sương tiệm con đó!" },
+    { who: "Bé Na Lớp 10", text: "Chị ơi, sau này lớn em muốn mở tiệm giống chị. Chị nhận em làm học trò nha!" },
+    { who: "Anh shipper", text: "Có khách đặt 'bánh tráng như hôm qua', anh hỏi hôm qua là món gì, khách nói: món làm em vui á anh." },
+    { who: "Bà cụ", text: "Bà mang cho con mấy trái tắc nhà bà trồng nè, vắt vô ly trà là thơm phức." },
+    { who: "Học sinh", text: "Tụi em thi xong rồi chị ơi! Ăn mừng bằng bánh tráng là chuẩn bài." },
+    { who: "Chị Lan Kế Toán", text: "Chị tính rồi: một tuần chị ghé tiệm em 5 lần. Thôi coi như đây là… chi phí hạnh phúc." },
+    { who: "Bé Na Lớp 10", text: "Hôm nay em không đói đâu, em ghé chỉ để chào chị thôi đó 👋" },
+    { who: "Anh Hiếu", text: "Anh Hiếu lén nếm thử một muỗng chè rồi bảo: chè ngọt, mà không ngọt bằng bà chủ." },
+    { who: "Chị Lan Kế Toán", text: "Cả phòng chị giờ chiều nào cũng hỏi: hôm nay tiệm có chè gì mới không?" },
+    { who: "Chú Tư Xe Ôm", text: "Chú chở khách mà khách đòi ghé mua chè trước, chú chịu thua luôn." },
+    { who: "Bé Na Lớp 10", text: "Em đăng ảnh ly chè ba màu lên mạng, được cả trăm lượt thích đó chị!" },
+    { who: "Cô giáo Hạnh", text: "Cô cho cả lớp viết văn tả món ăn yêu thích, nửa lớp tả chè tiệm em." },
+    { who: "Bác Sáu chủ nhà", text: "Bác đi ngang thấy tiệm đông, bác đứng ngoài cười một mình." },
+    { who: "Anh shipper", text: "Trời mưa mà đơn chè vẫn đổ về, anh chạy muốn rớt dép luôn." },
+    { who: "Bà cụ", text: "Hồi xưa bà nấu chè đậu xanh cho cả xóm, giờ tới lượt con nấu cho bà." },
+    { who: "Học sinh", text: "Tụi em góp tiền mua một ly chè đặc biệt rồi chia năm muỗng." },
+    { who: "Anh Hiếu", text: "Anh Hiếu tập xếp chè cả buổi, ly nào cũng ngược thứ tự, rồi tự ăn hết." },
+    { who: "Út Mai", text: "Con thích sữa chua mít nhất! Mai con kêu ba con ghé mua nữa." },
+    { who: "Chị Lan Kế Toán", text: "Chị lập bảng tính so sánh các tiệm chè, tiệm em đứng đầu mọi cột." },
+    { who: "Cô giáo Hạnh", text: "Cô chấm bài mà nghĩ tới chè, cho điểm ai cũng cao hơn xíu." },
+    { who: "Bé Na Lớp 10", text: "Em mang chè vào phòng thi... à không, em ăn trước rồi mới thi." },
+    { who: "Anh Hiếu", text: "Đóng cửa xong anh Hiếu ngồi đếm ly, đếm tới đâu cười tới đó." }
+  ],
+
+  // Câu thả thính dễ thương (nói lái / chơi chữ) — anh Hiếu ghé tiệm buông câu, Bống gõ "ý thật".
+  // lines: các dòng của câu · answers: các đáp án được tính đúng (đáp án đầu là cả câu). Gõ không dấu, viết hoa, viết tắt (k, a, e, cx, iu…) hay sai một chữ cái đều được.
+  // Thêm câu mới thì chép một dòng { lines: [...], answers: [...] }, và luôn THÊM VÀO CUỐI danh sách.
+  flirtLines: [
+    { lines: ["dùng câu từ đùa vì anh đã muốn của từ đầu"], answers: ["dùng câu từ đùa vì anh đã muốn cua từ đầu", "anh đã muốn cua từ đầu", "muốn cua từ đầu"] },
+    { lines: ["xa không thể tỉnh"], answers: ["xinh không thể tả"] },
+    { lines: ["thiếu vàng là nợ"], answers: ["thiếu vợ là nàng"] },
+    { lines: ["đinh trên đường tàu"], answers: ["đau trên đường tình"] },
+    { lines: ["Hoàng hôn nắng vàng"], answers: ["Hoàng hôn vắng nàng"] },
+    { lines: ["bố bận vì nhiều em in"], answers: ["bố bận vì nhìn em yêu"] },
+    { lines: ["Anh với em thi làm bánh đi, anh làm vị anh đào còn em làm vị anh đơ."], answers: ["Anh với em thi làm bánh đi, anh làm vị anh đào còn em làm vợ anh đi", "còn em làm vợ anh đi", "em làm vợ anh đi", "làm vợ anh đi"] },
+    { lines: ["em giảm cân à, anh thấy em toàn xương. xương nhất trình"], answers: ["em giảm cân à, anh thấy em toàn xương. xinh nhất trường", "toàn xương xinh nhất trường", "xinh nhất trường"] },
+    { lines: ["phải cùng nangf ăn tối", "anh mới thấy được quá trình xơi"], answers: ["phải cùng nàng ăn tối anh mới thấy được quá trời xinh", "phải cùng nàng ăn tối", "anh mới thấy được quá trời xinh", "quá trời xinh"] },
+    { lines: ["lúc xào anh cũng thấy em ninh"], answers: ["lúc nào anh cũng thấy em xinh"] }
+  ]
+};

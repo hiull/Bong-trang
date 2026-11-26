@@ -1,0 +1,2 @@
+Thư mục nhạc nền.
+Game hiện tạo 4 bản nhạc nền bằng code (src/audio.js) nên thư mục này để trống.
