@@ -1971,3 +1971,4 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .hero-btn { padding: 2px; }
 .hero-btn .dd, .hero-btn svg { width: 30px; height: 30px; }
 .hero-btn.on { background: #FFD6E2; box-shadow: 0 0 0 3px #FF5C8A; animation: wobble 0.8s ease-in-out infinite; }
+.beat-hint { text-align: center; font-weight: 800; color: #FF5C8A; font-size: 14px; margin: 4px 12px 0; }

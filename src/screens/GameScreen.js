@@ -28,6 +28,7 @@ window.BT = window.BT || { Screens: {} };
       this.heroOn = !this.practice && !this.secret && this.S.settings.heroFix !== false;
       this.heroLeft = !this.heroOn ? 0 : (CONFIG.heroFix.perShift > 0 ? CONFIG.heroFix.perShift : Infinity);
       this.heroQueue = [];
+      this.tipQueue = [];   // gợi ý lần đầu gặp cơ chế
       this.heroBusy = false;
       this.heroPick = false;
       this.comboKept = false;   // bùa Bền bỉ
@@ -397,6 +398,7 @@ window.BT = window.BT || { Screens: {} };
       }
 
       if (this.holdOn) this.syncHeld();
+      this.tickTips();
       // Anh Hiếu: giữ chân khách đang chờ anh; cứu khách sắp bỏ đi
       if (this.heroOn) this.customers.forEach((c) => {
         if (c.state !== "waiting" || c.isCat) return;
@@ -489,6 +491,8 @@ window.BT = window.BT || { Screens: {} };
         layer.remove();
         this.started = true;
         if (this.practice) this.practiceSpawn();
+        if (this.heroOn) this.firstTip("hero");
+        if (this.holdOn) this.firstTip("hold");
         if (this.helped) UI.toast(UI.t("retryHelp"), 2600);
       }, steps.length * ms);
     }
@@ -702,6 +706,22 @@ window.BT = window.BT || { Screens: {} };
             const miss = Object.keys(req.need).reduce((s, id) => s + Math.max(0, req.need[id] - (t.items[id] || 0)), 0);
             if (miss >= 1 && miss <= 2 && (req.need[ingId] || 0) > (t.items[ingId] || 0)) return true;
           }
+        }
+      }
+      return false;
+    }
+
+    // Món của khách đang chờ (khớp khay này) có cần thêm nguyên liệu này nữa không?
+    wantsMore(t, ingId) {
+      for (const c of this.customers) {
+        if (c.state !== "waiting" || c.isCat) continue;
+        for (const it of c.pending()) {
+          const req = BT.Tray.requirements(it);
+          if (req.r.base !== t.base) continue;
+          if (t.zone === "che") { if (req.layers[t.layers.length] === ingId && t.layers.every((x, i) => req.layers[i] === x)) return true; continue; }
+          if (!this.fitsDish(t, it)) continue;
+          if ((req.need[ingId] || 0) > (t.items[ingId] || 0)) return true;
+          if ((req.sauces[ingId] || 0) > (t.sauces[ingId] || 0)) return true;
         }
       }
       return false;
@@ -1181,6 +1201,34 @@ window.BT = window.BT || { Screens: {} };
       this.router.backTo("Menu");
     }
 
+    // ---------------- Gợi ý lần đầu gặp cơ chế ----------------
+    firstTip(key) {
+      if (this.practice || this.secret || this.S.tutorialDone["tip_" + key] || this.tipQueue.includes(key)) return;
+      this.tipQueue.push(key);
+    }
+    tickTips() {
+      if (!this.tipQueue.length || this.tut || UI.coach.layer || UI.modals.length || this.over) return;
+      const key = this.tipQueue.shift();
+      const targets = {
+        hero: () => this.heroBtn,
+        hold: () => this.el.querySelector(".hold-box"),
+        takeout: () => this.el.querySelector(".takeout-card"),
+        bulk: () => this.lastBulk && this.lastBulk.el
+      };
+      this.pauseReasons.add("tip");
+      UI.coach.show({
+        text: UI.t("tip_" + key),
+        target: targets[key],
+        hand: "tap",
+        onNext: () => {
+          UI.coach.hide();
+          this.S.tutorialDone["tip_" + key] = true;
+          BT.Save.persist();
+          this.pauseReasons.delete("tip");
+        }
+      });
+    }
+
     // ---------------- Đơn mang về ----------------
     spawnTakeout(ids) {
       const TK = CONFIG.takeout;
@@ -1206,6 +1254,7 @@ window.BT = window.BT || { Screens: {} };
       this.drawTakeout(o);
       BT.Audio.play("pop");
       UI.toast(UI.t("takeoutNew", { n: sec }), 2400);
+      this.firstTip("takeout");
       return o;
     }
     drawTakeout(o) {
@@ -1272,6 +1321,8 @@ window.BT = window.BT || { Screens: {} };
       c.bulk = n;
       c.max *= BK.patienceMult;
       c.patience = c.max;
+      this.lastBulk = c;
+      this.firstTip("bulk");
       return c;
     }
     bulkIngs(id) {
@@ -1890,6 +1941,19 @@ window.BT = window.BT || { Screens: {} };
         if (BT.assist("tapPour")) fromHold = true;   // rót một chạm
         else { UI.toast(UI.t("holdToPour")); return; }
       }
+      // Chạm lại nguyên liệu vừa thêm → bỏ ra (trừ khi món đang chờ còn cần thêm, vd yêu cầu gấp đôi)
+      {
+        const t = this.selected;
+        if (t && !t.isEmpty() && !fromHold && CONFIG.gameplay.holdSec[ingId] === undefined && t.lastAdded() === ingId && !this.wantsMore(t, ingId) && t.removeLast(ingId)) {
+          this.S.inventory[ingId] = BT.Save.stock(ingId) + 1;
+          this.grid.refresh();
+          t.render();
+          UI.toast(UI.t("ingRemoved", { ing: UI.ing(ingId).short }));
+          BT.Audio.play("pop");
+          this.updateHint();
+          return;
+        }
+      }
       const { tray, auto } = this.targetFor(ingId);
       // Mèo hoang đang chờ: cầm trứng cút lên tay
       const catWaiting = this.customers.some((c) => c.isCat && c.state === "waiting");
@@ -1905,7 +1969,7 @@ window.BT = window.BT || { Screens: {} };
       if (auto) this.select(tray);
       // Thêm nguyên liệu sau khi đã làm xong (chỉ khi còn thiếu 1–2 phần)
       const late = this.lateAddOk(tray, ingId);
-      if (late) { if (tray.zone === "che") tray.layers.push(ingId); else tray.items[ingId] = (tray.items[ingId] || 0) + 1; }
+      if (late) { if (tray.zone === "che") tray.layers.push(ingId); else tray.items[ingId] = (tray.items[ingId] || 0) + 1; tray.history.push(ingId); }
       const r = late ? { ok: true } : tray.add(ingId, this.zone);
       if (!r.ok) {
         UI.shake(tray.el);
@@ -1916,6 +1980,12 @@ window.BT = window.BT || { Screens: {} };
       this.select(tray);
       this.S.inventory[ingId] = BT.Save.stock(ingId) - 1;
       this.grid.refresh();
+      // Lần đầu: nhắc chạm lại để bỏ cái vừa thêm
+      if (!this.S.tutorialDone.tip_retap && !this.practice) {
+        this.S.tutorialDone.tip_retap = true;
+        BT.Save.persist();
+        this.scope.timeout(() => UI.toast(UI.t("tip_retap"), 3200), 500);
+      }
       const done = () => {
         tray.render();
         tray.el.classList.remove("bounce"); void tray.el.offsetWidth; tray.el.classList.add("bounce");
@@ -1976,6 +2046,12 @@ window.BT = window.BT || { Screens: {} };
         const ring = UI.el("div", "beat-ring");
         ring.style.animationDuration = RH.period + "s";
         zone.appendChild(ring);
+        // Lần đầu: một dòng nhắc cách lắc theo nhịp
+        if (!this.S.tutorialDone.tip_rhythm) {
+          layer.appendChild(UI.el("div", "beat-hint", UI.t("tip_rhythm")));
+          this.S.tutorialDone.tip_rhythm = true;
+          BT.Save.persist();
+        }
       }
       const onBeat = () => {
         const ph = (((performance.now() - layer.beatT0) / 1000) % RH.period) / RH.period;

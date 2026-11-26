@@ -83,6 +83,7 @@ window.BT = window.BT || { Screens: {} };
       this.sauces = {};
       this.layers = [];    // quầy chè: các lớp theo đúng thứ tự chạm
       this.perfect = false; // lắc/cuốn trúng nhịp (Ngon tuyệt!)
+      this.history = [];    // thứ tự nguyên liệu đã thêm (chạm lại để bỏ cái vừa thêm)
     }
 
     isEmpty() { return !this.base; }
@@ -99,6 +100,26 @@ window.BT = window.BT || { Screens: {} };
 
     // Thêm nguyên liệu. Trả về { ok } hoặc { ok:false, msg }.
     add(ingId, currentZone) {
+      const r = this.addRaw(ingId, currentZone);
+      if (r.ok) this.history.push(ingId);
+      return r;
+    }
+    // Khay đã xong bước cuối (lắc/cuốn/gấp/đang nướng/đã rót) thì không bỏ nguyên liệu ra nữa
+    isDone() { return !!(this.tied || this.rolled || this.folded || this.cooking || this.burnt || this.poured); }
+    lastAdded() { return this.history.length ? this.history[this.history.length - 1] : null; }
+    // Bỏ nguyên liệu vừa thêm (phải đúng là cái vừa thêm). Trả true nếu bỏ được.
+    removeLast(ingId) {
+      if (this.isDone() || this.lastAdded() !== ingId) return false;
+      if (this.base === ingId && this.history.length === 1) { this.clear(); return true; }
+      if (this.layers.length && this.layers[this.layers.length - 1] === ingId) this.layers.pop();
+      else if (this.finish.length && this.finish[this.finish.length - 1] === ingId) this.finish.pop();
+      else if (this.sauces[ingId]) { this.sauces[ingId]--; if (!this.sauces[ingId]) delete this.sauces[ingId]; }
+      else if (this.items[ingId]) { this.items[ingId]--; if (!this.items[ingId]) delete this.items[ingId]; }
+      else return false;
+      this.history.pop();
+      return true;
+    }
+    addRaw(ingId, currentZone) {
       const G = CONFIG.gameplay;
       const ing = UI.ing(ingId);
       const fail = (key, vars) => ({ ok: false, msg: UI.t(key, vars) });
