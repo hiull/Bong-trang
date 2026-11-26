@@ -84,6 +84,8 @@ window.BT = window.BT || { Screens: {} };
       const up = this.S.upgrades;
       this.patienceMult = this.dayCfg.patienceMult;
       this.patienceMult *= 1 + BT.patienceBoost();   // Cài đặt → Kiên nhẫn của khách (thư giãn ≥ +50%)
+      this.tarot = this.practice ? { tip: 1, patience: 1, love: 1 } : BT.Fun.tarotEffect();   // Lá bài hôm nay
+      this.patienceMult *= this.tarot.patience;
       if (up.quat > 0) this.patienceMult *= 1 + C.upgrades.quat.patienceBonus[up.quat - 1];
       const streak = this.S.loseStreak;
       this.helped = !!(streak && streak.day === this.dayId && streak.n >= 2);
@@ -1020,7 +1022,7 @@ window.BT = window.BT || { Screens: {} };
       this.q.comboMax = Math.max(this.q.comboMax, this.combo);
       if (res.crispy) this.q.crispy++;
       if (match.id === window.PERSONAL.favoriteDish) this.q.fav++;
-      if (this.dayNum >= G.loveOpenDay) this.love = Math.min(1, this.love + G.loveChargePerDish * (BT.perk("loveFast") ? 1.3 : 1));
+      if (this.dayNum >= G.loveOpenDay) this.love = Math.min(1, this.love + G.loveChargePerDish * (BT.perk("loveFast") ? 1.3 : 1) * this.tarot.love);
       tray.clear();
       tray.render();
       this.select(null);
@@ -1290,6 +1292,7 @@ window.BT = window.BT || { Screens: {} };
       if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
       const reqTip = c.hasRequests() ? M.specialRequestTip : 0;
       if (BT.perk("tipAll")) tip *= 1.1;
+      tip *= this.tarot.tip;
       tip += CONFIG.rhythm.tip * c.items.filter((it) => it.perfect).length;   // Ngon tuyệt!
       tip = Math.round(tip + reqTip);
       // Bùa: tip cộng thêm theo món

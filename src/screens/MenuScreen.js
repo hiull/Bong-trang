@@ -110,6 +110,7 @@ window.BT = window.BT || { Screens: {} };
         { id: "quests", cls: "quests-tile", label: "btnQuests", dot: () => Pr.questsClaimable() > 0, go: () => openQuests() },
         { id: "week", cls: "week-btn", label: "weekBtn", dot: () => !BT.Fun.weekly().claimed && BT.Fun.weeklyDone(), go: () => BT.Fun.openWeekly(refreshDots) },
         { id: "mail", cls: "mail-btn", label: "mailBtn", dot: () => BT.Fun.unreadLetters() > 0, go: () => { BT.Fun.openMail(); refreshDots(); } },
+        { id: "tarot", cls: "tarot-tile", label: "tarotTile", dot: () => !BT.Fun.tarotToday(), go: () => BT.Fun.openTarotDaily(refreshDots) },
         { id: "review", cls: "review-tile", label: "btnReviews", dot: () => false, go: () => router.go("Review") }
       ];
       const small = UI.el("div", "menu-small");

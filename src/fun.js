@@ -359,7 +359,7 @@ window.BT = window.BT || { Screens: {} };
       c.type = "button";
       c.dataset.k = String(k);
       const face = UI.el("span", "mface", DG.icons[k]);
-      c.appendChild(UI.el("span", "mback", "?"));
+      c.appendChild(UI.el("span", "mback tarot-back", "🔮"));
       c.appendChild(face);
       c.addEventListener("click", () => {
         if (gm.over || c.classList.contains("up") || gm.open.length >= 2) return;
@@ -409,34 +409,62 @@ window.BT = window.BT || { Screens: {} };
     BT.Save.persist();
     return S.perkPending;
   };
+  // Một lá bài Tarot (mặt úp / mặt ngửa). card: { num, name, en, icon }, rev: lá ngược
+  Fun.tarotCard = function (card, opts) {
+    opts = opts || {};
+    const el = UI.el("button", "tarot-card" + (opts.up ? " up" : "") + (opts.rev ? " rev" : ""));
+    el.type = "button";
+    const inner = UI.el("span", "tarot-inner");
+    const back = UI.el("span", "tarot-back-face");
+    back.appendChild(UI.el("span", "tarot-back-icon", "🔮"));
+    const face = UI.el("span", "tarot-face");
+    face.appendChild(UI.el("span", "tarot-num", card.num));
+    face.appendChild(UI.el("span", "tarot-icon", card.icon));
+    face.appendChild(UI.el("span", "tarot-name", card.name));
+    face.appendChild(UI.el("span", "tarot-en", card.en));
+    inner.appendChild(back);
+    inner.appendChild(face);
+    el.appendChild(inner);
+    return el;
+  };
+  // Qua mốc lớn: 3 lá úp, chạm để lật từng lá, lật rồi mới chọn
   Fun.openPerkPick = function (onDone) {
     const S = BT.Save.state;
     if (!S.perkPending || !S.perkPending.length || document.querySelector(".modal-perk")) return;
     const body = UI.el("div", "perk-pick");
     body.appendChild(UI.el("div", "info-note", UI.t("perkIntro")));
+    const row = UI.el("div", "tarot-row");
+    body.appendChild(row);
+    const desc = UI.el("div", "tarot-desc", UI.t("perkFlipHint"));
+    body.appendChild(desc);
     let api = null;
     S.perkPending.forEach((id) => {
       const p = CONFIG.perks.find((x) => x.id === id);
       if (!p) return;
-      const b = UI.el("button", "perk-opt");
-      b.type = "button";
-      b.dataset.id = id;
-      b.appendChild(UI.el("span", "perk-icon", p.icon));
-      const t = UI.el("span", "perk-txt");
-      t.appendChild(UI.el("b", "", p.name));
-      t.appendChild(UI.el("span", "perk-desc", p.desc));
-      b.appendChild(t);
-      b.addEventListener("click", () => {
-        if (!S.perks.includes(id)) S.perks.push(id);
-        S.perkPending = null;
-        BT.Save.persist();
-        api.close(true);
-        UI.confetti(50);
-        BT.Audio.play("coin");
-        UI.toast(UI.t("perkGot", { name: p.name }), 2600);
-        if (onDone) onDone();
+      const wrap = UI.el("div", "tarot-slot");
+      const card = this.tarotCard(p);
+      card.dataset.id = id;
+      card.addEventListener("click", () => {
+        if (!card.classList.contains("up")) {
+          card.classList.add("up");
+          BT.Audio.play("pop");
+          UI.setText(desc, p.name + " (" + p.en + "): " + p.desc);
+          const take = UI.button(UI.t("perkTake"), "btn-pink small tarot-take", (e) => {
+            e.stopPropagation();
+            if (!S.perks.includes(id)) S.perks.push(id);
+            S.perkPending = null;
+            BT.Save.persist();
+            api.close(true);
+            UI.confetti(50);
+            BT.Audio.play("coin");
+            UI.toast(UI.t("perkGot", { name: p.name }), 2600);
+            if (onDone) onDone();
+          });
+          card.appendChild(take);
+        } else UI.setText(desc, p.name + " (" + p.en + "): " + p.desc);
       });
-      body.appendChild(b);
+      wrap.appendChild(card);
+      row.appendChild(wrap);
     });
     api = UI.modal({ title: UI.t("perkTitle"), body, className: "modal-perk", dismissable: false, buttons: [] });
   };
@@ -447,14 +475,80 @@ window.BT = window.BT || { Screens: {} };
     CONFIG.perks.forEach((p) => {
       const on = S.perks.includes(p.id);
       const it = UI.el("div", "perk-item" + (on ? " on" : ""));
-      it.appendChild(UI.el("span", "perk-icon", on ? p.icon : "🔒"));
+      it.appendChild(this.tarotCard(p, { up: on }));
       const t = UI.el("span", "perk-txt");
-      t.appendChild(UI.el("b", "", on ? p.name : "???"));
+      t.appendChild(UI.el("b", "", on ? p.num + " · " + p.name : "???"));
+      if (on) t.appendChild(UI.el("span", "perk-en", p.en));
       t.appendChild(UI.el("span", "perk-desc", on ? p.desc : ""));
       it.appendChild(t);
       list.appendChild(it);
     });
     UI.modal({ title: UI.t("perksTitle"), body: list, className: "modal-perks", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+  };
+
+  // ---------------- Lá bài hôm nay ----------------
+  Fun.tarotToday = function () {
+    const t = BT.Save.state.tarot;
+    return t && t.date === today() ? t : null;
+  };
+  // Hiệu ứng nhỏ của lá xuôi hôm nay: { tip, patience, love } (mặc định 1)
+  Fun.tarotEffect = function () {
+    const out = { tip: 1, patience: 1, love: 1 };
+    const t = this.tarotToday();
+    if (!t || t.rev) return out;
+    const c = CONFIG.tarot.cards[t.idx];
+    return Object.assign(out, (c && c.effect) || {});
+  };
+  Fun.tarotEffectText = function (c) {
+    const k = Object.keys(c.effect || {})[0];
+    return k ? UI.t("tarotEff_" + k, { p: Math.round((c.effect[k] - 1) * 100) }) : "";
+  };
+  Fun.drawTarot = function () {
+    const S = BT.Save.state;
+    if (this.tarotToday()) return S.tarot;
+    S.tarot = { date: today(), idx: Math.floor(Math.random() * CONFIG.tarot.cards.length), rev: Math.random() < CONFIG.tarot.reversedRate };
+    BT.Save.persist();
+    return S.tarot;
+  };
+  Fun.tarotReading = function (t) {
+    const c = CONFIG.tarot.cards[t.idx];
+    const R = (window.PERSONAL.tarotReadings || [])[t.idx] || {};
+    const box = UI.el("div", "tarot-reading");
+    box.appendChild(UI.el("div", "tarot-rd-title", c.num + " · " + c.name + " (" + c.en + ") · " + UI.t(t.rev ? "tarotRev" : "tarotUp")));
+    box.appendChild(UI.el("div", "tarot-rd-text", (t.rev ? R.rev : R.up) || ""));
+    box.appendChild(UI.el("div", "tarot-rd-eff", t.rev ? UI.t("tarotRevNote") : this.tarotEffectText(c)));
+    return box;
+  };
+  Fun.openTarotDaily = function (onDone) {
+    const body = UI.el("div", "tarot-daily");
+    const row = UI.el("div", "tarot-row");
+    body.appendChild(row);
+    const done = this.tarotToday();
+    if (done) {
+      const c = CONFIG.tarot.cards[done.idx];
+      row.appendChild(this.tarotCard(c, { up: true, rev: done.rev }));
+      body.appendChild(this.tarotReading(done));
+    } else {
+      body.insertBefore(UI.el("div", "info-note", UI.t("tarotIntro")), row);
+      for (let k = 0; k < 3; k++) {
+        const back = this.tarotCard({ num: "", name: "", en: "", icon: "" });
+        back.addEventListener("click", () => {
+          if (this.tarotToday()) return;
+          const t = this.drawTarot();
+          const c = CONFIG.tarot.cards[t.idx];
+          const real = this.tarotCard(c, { rev: t.rev });
+          row.replaceChild(real, back);
+          row.querySelectorAll(".tarot-card").forEach((x) => { if (x !== real) x.classList.add("gone"); });
+          void real.offsetWidth;
+          real.classList.add("up");
+          BT.Audio.play("letter");
+          body.appendChild(this.tarotReading(t));
+          if (onDone) onDone();
+        });
+        row.appendChild(back);
+      }
+    }
+    UI.modal({ title: UI.t("tarotTitle"), body, className: "modal-tarot-daily", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
   };
 
   // ---------------- Bếp tập ----------------

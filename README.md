@@ -282,10 +282,19 @@ Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (v�
 - **Anh Hiếu sửa món làm sai:** giao nhầm/thiếu/thừa/cháy thì anh tự làm lại trong vài giây. Mỗi ca 3 lần, khách bớt nửa tip. Tắt trong Cài đặt → Trợ giúp. Lời thoại: `heroFixLines` trong `personal.js`.
 - **Bếp tập** (nút ở Menu): tập bất kỳ món nào đã mở, không khách thật, không giờ, không tốn tiền hay nguyên liệu.
 - **Mục tiêu phụ:** mỗi mốc (từ Mốc 2) có một mục tiêu nhỏ, hiện ở màn Chuẩn bị. Đạt thì có dấu ✓ trên Bản đồ, lần đầu thưởng 20k. Sửa trong `sideGoals` ở `config.js`.
-- **Bùa:** qua mốc lớn lần đầu chọn 1 trong 3 bùa, giữ mãi. Xem trong Kỷ niệm → Bùa. Có 12 bùa trong `perks` ở `config.js`.
+- **Bùa = lá Tarot:** qua mốc lớn lần đầu, lật 3 lá Ẩn chính úp rồi chọn một lá, giữ mãi. Xem trong Kỷ niệm → Bộ bài. Có 12 lá trong `perks` ở `config.js`.
 - **Tủ giữ món** (từ cấp 6): chọn bịch/ly đã làm xong rồi chạm ô Tủ để cất; chạm ô tủ rồi chạm khách để giao. Để quá 40 giây thì nguội, trừ 1 sao.
 - **Nhịp lắc/cuốn:** lắc đúng lúc vòng tròn khép lại, hoặc cuốn liền một hơi, được *Ngon tuyệt!* và +3k tip. Tắt trong Trợ giúp; Chế độ thư giãn tự tắt.
 - **Đơn mang về** (từ cấp 8): đơn 2–3 món hiện trên điện thoại ở quầy. Chọn món xong rồi chạm vào đơn; đủ món trước khi tài xế đi thì được tiền món + 10k.
 - **Đơn sỉ** (từ cấp 10): một khách gọi 4–6 phần cùng một món trộn hoặc chè. Làm một khay là đủ, game tự trừ nguyên liệu cho các phần còn lại.
 - Đơn mang về và đơn sỉ chỉnh mức trong Cài đặt → Sự kiện.
+
+## 19. Tarot 🔮
+- **Bùa là lá Ẩn chính:** Pháp Sư, Hoàng Hậu, Tình Nhân, Cỗ Xe, Sức Mạnh, Bánh Xe Số Phận, Người Treo Ngược, Tiết Chế, Ngôi Sao, Mặt Trời, Phán Xét, Thế Giới. Mỗi lá có tác dụng theo ý nghĩa của nó.
+- **Lá bài hôm nay** (Sổ tay ở Menu): mỗi ngày rút 1 trong 22 lá Ẩn chính, có thể ra xuôi hoặc ngược.
+  - Lá xuôi cho một hiệu ứng nhỏ trong các ca hôm đó: tip +5%, khách kiên nhẫn +10% hoặc tim sạc nhanh +15%.
+  - Lá ngược chỉ là lời khuyên, không có hiệu ứng.
+  - Màn Chuẩn bị nhắc lá hôm nay.
+- **Lời giải 22 lá** nằm ở `tarotReadings` trong `personal.js` (xuôi `up`, ngược `rev`). Đây là bản nháp; nên để người đọc Tarot sửa theo cách giải của mình. Hiệu ứng và tỉ lệ ra lá ngược sửa trong `tarot` ở `config.js`.
+- Trò lật thẻ hẹn hò dùng mặt lưng bài Tarot.
 

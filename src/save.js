@@ -59,7 +59,8 @@ window.BT = window.BT || { Screens: {} };
       life: { served: 0, rushes: 0, vips: 0, perfect: 0, crispy: 0, customsSold: 0, datesWon: 0 }, // bộ đếm trọn đời (huy hiệu)
       badges: {},
       perks: [],          // bùa đã chọn (giữ mãi)
-      perkPending: null,  // 3 bùa đang chờ chọn
+      perkPending: null,
+      tarot: null,        // lá bài hôm nay { date, idx, rev }  // 3 bùa đang chờ chọn
       whatsNewSeen: (window.CONFIG && CONFIG.whatsNew) ? CONFIG.whatsNew.version : "", // người mới coi như đã xem
       lastFileBackup: "", // ngày lưu ra file gần nhất (yyyy-mm-dd)
       tips: {},           // lời nhắc đã tắt: { install: "yyyy-mm-dd" }

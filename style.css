@@ -1931,3 +1931,38 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .tk-bar { height: 5px; border-radius: 3px; background: #EADDE2; overflow: hidden; }
 .tk-fill { height: 100%; background: #00B964; }
 .takeout-card.hurry .tk-fill { background: #E0485F; }
+
+/* ---------------- Tarot ---------------- */
+.tarot-row { display: flex; justify-content: center; gap: 10px; margin: 8px 0; perspective: 900px; }
+.tarot-slot { display: flex; flex-direction: column; align-items: center; }
+.tarot-card { position: relative; width: 92px; height: 150px; border: 0; padding: 0; background: none; cursor: pointer; font: inherit; color: inherit; }
+.tarot-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.55s ease; }
+.tarot-card.up .tarot-inner { transform: rotateY(180deg); }
+.tarot-card.up.rev .tarot-inner { transform: rotateY(180deg) rotateZ(180deg); }
+.tarot-back-face, .tarot-face { position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 4px 0 rgba(0,0,0,0.15); }
+.tarot-back-face { display: flex; align-items: center; justify-content: center; border: 3px solid #E7C76A;
+  background: radial-gradient(circle at 50% 50%, #8E5BD8 0 22%, transparent 23%), repeating-linear-gradient(45deg, #4B2C82 0 8px, #5A378F 8px 16px); }
+.tarot-back-icon { font-size: 34px; }
+.tarot-face { transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 8px 4px;
+  background: #FFF8E8; border: 3px solid #D9B25A; outline: 1px solid #D9B25A; outline-offset: -7px; }
+.tarot-num { font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 14px; color: #7A5A1A; }
+.tarot-icon { font-size: 38px; line-height: 1; }
+.tarot-name { font-weight: 800; font-size: 12px; text-align: center; line-height: 1.15; color: #4B2C82; }
+.tarot-en { font-family: Georgia, serif; font-style: italic; font-size: 10px; color: #7A5A1A; text-align: center; }
+.tarot-card.gone { opacity: 0.25; pointer-events: none; transition: opacity 0.4s; }
+.tarot-take { position: absolute; left: 50%; bottom: -40px; transform: translateX(-50%); white-space: nowrap; z-index: 2; }
+.modal-perk .tarot-row { margin-bottom: 48px; }
+.tarot-desc { text-align: center; font-size: 13px; min-height: 36px; color: #4B2C82; font-weight: 700; }
+.tarot-reading { margin-top: 10px; text-align: left; background: #F6F0FF; border: 2px solid #CDB8F0; border-radius: 12px; padding: 10px 12px; }
+.tarot-rd-title { font-weight: 800; color: #4B2C82; font-size: 13px; margin-bottom: 4px; }
+.tarot-rd-text { font-size: 15px; line-height: 1.45; }
+.tarot-rd-eff { margin-top: 6px; font-size: 12px; font-weight: 800; color: #7A5A1A; }
+.tarot-chip { margin-top: 6px; padding: 6px 10px; border-radius: 10px; background: #F6F0FF; color: #4B2C82; font-weight: 700; font-size: 13px; }
+.perk-item .tarot-card { width: 56px; height: 92px; flex: none; pointer-events: none; }
+.perk-item .tarot-icon { font-size: 22px; } .perk-item .tarot-name { font-size: 8px; } .perk-item .tarot-en { display: none; } .perk-item .tarot-num { font-size: 10px; }
+.perk-item .tarot-back-icon { font-size: 20px; }
+.perk-en { font-family: Georgia, serif; font-style: italic; font-size: 12px; color: #7A5A1A; }
+/* Thẻ hẹn hò: mặt lưng Tarot */
+.mcard .mback.tarot-back { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 2px solid #E7C76A;
+  background: radial-gradient(circle at 50% 50%, #8E5BD8 0 24%, transparent 25%), repeating-linear-gradient(45deg, #4B2C82 0 7px, #5A378F 7px 14px); font-size: 22px; }
+.mcard:not(.up) { background: #4B2C82; box-shadow: 0 3px 0 #2E1A55; }

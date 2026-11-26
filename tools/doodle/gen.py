@@ -1284,6 +1284,31 @@ def _(ic):
     ic.heart(32, 50, 5, C["hot"])
 
 
+
+@icon("crystal_ball", "🔮")
+def _(ic):
+    ic.rrect(16, 48, 32, 10, 3, C["tan2"])
+    ic.circle(32, 30, 19, C["purple"])
+    ic.ellipse(25, 23, 5, 7, C["white"], rot=-25)
+    ic.star(40, 34, 4, C["gold"])
+    ic.dot(34, 22, 1.4, C["white"])
+
+
+
+@icon("wheel_fortune", "☸️", "☸")
+def _(ic):
+    ic.circle(32, 32, 24, C["gold"])
+    ic.circle(32, 32, 17, C["cream"])
+    for k in range(8):
+        import math
+        a = k * math.pi / 4
+        ic.line([(32 + 6 * math.cos(a), 32 + 6 * math.sin(a)), (32 + 17 * math.cos(a), 32 + 17 * math.sin(a))], OUT, 2)
+    ic.circle(32, 32, 6, C["purple"])
+    for k in range(8):
+        a = k * math.pi / 4 + math.pi / 8
+        ic.dot(32 + 21 * math.cos(a), 32 + 21 * math.sin(a), 1.6, C["dred"])
+
+
 if __name__ == "__main__":
     import sys
     out = sys.argv[1]

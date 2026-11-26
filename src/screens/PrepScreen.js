@@ -54,6 +54,12 @@ window.BT = window.BT || { Screens: {} };
       card.appendChild(BT.MapHelpers.dayInfo(dc));
       if (gift) card.appendChild(UI.el("div", "gift", UI.t("prepGift", { q: M.freeStockQty })));
       if (rescued && !gift) card.appendChild(UI.el("div", "gift", UI.t("prepRescue")));
+      // Lá bài hôm nay
+      {
+        const tt = BT.Fun.tarotToday();
+        const tc = tt ? CONFIG.tarot.cards[tt.idx] : null;
+        card.appendChild(UI.el("div", "tarot-chip", tc ? UI.t("tarotChip", { name: tc.icon + " " + tc.name, rev: tt.rev ? " (" + UI.t("tarotRev").toLowerCase() + ")" : "" }) + (tt.rev ? "" : " · " + BT.Fun.tarotEffectText(tc)) : "🔮 " + UI.t("tarotChipNone")));
+      }
       // Mục tiêu phụ của mốc
       const sg = (run.mode === "story" || run.mode === "replay") ? BT.MS.sideGoal(run.ms, run.season) : null;
       if (sg) {

@@ -244,6 +244,32 @@ window.PERSONAL = {
     "Đã gần ba tháng rồi đó. Em kiên nhẫn ghê, giống y như lúc em chờ anh trễ hẹn.",
     "Lá thư cuối trong hộp thư rồi. Mấy lá tiếp theo, anh muốn nói trực tiếp với em."
   ],
+  // Lá bài hôm nay: lời giải cho 22 lá Ẩn chính (đúng thứ tự 0 → XXI). up = lá xuôi, rev = lá ngược.
+  // Nháp theo chủ đề tiệm; người đọc Tarot sửa theo cách giải của mình nha.
+  tarotReadings: [
+    { up: "Chàng Khờ: một ngày mới, tâm thế mới. Cứ thử món lạ, nói chuyện với khách lạ, đừng sợ vụng.", rev: "Chàng Khờ ngược: hăng quá dễ quên đồ. Trước khi mở tiệm, kiểm lại kho một vòng nha." },
+    { up: "Pháp Sư: mọi thứ em cần đều đã ở trên quầy. Tay khéo, đầu tỉnh, hôm nay làm gì cũng ra món.", rev: "Pháp Sư ngược: làm nhiều thứ một lúc dễ rối tay. Từng khay một thôi." },
+    { up: "Nữ Tư Tế: tin vào trực giác. Khách chưa nói, em đã đoán được họ thích gì.", rev: "Nữ Tư Tế ngược: đừng nghe ồn ào xung quanh quá, nghe chính mình trước." },
+    { up: "Hoàng Hậu: dồi dào và dịu dàng. Món ngon, người thương, tiệm ấm áp.", rev: "Hoàng Hậu ngược: chăm khách nhớ chăm cả bản thân. Uống miếng nước đi." },
+    { up: "Hoàng Đế: có kế hoạch thì ca nào cũng vững. Sắp quầy gọn, giữ nhịp đều.", rev: "Hoàng Đế ngược: cứng nhắc quá thì mệt. Thả lỏng vai một chút." },
+    { up: "Giáo Hoàng: công thức truyền thống vẫn là ngon nhất. Làm chuẩn từng bước.", rev: "Giáo Hoàng ngược: hôm nay thử phá lệ một món sáng tạo xem sao." },
+    { up: "Tình Nhân: một lựa chọn từ trái tim. Có người luôn đứng bên quầy cùng em.", rev: "Tình Nhân ngược: hai lựa chọn đều hay, chọn cái làm em thấy nhẹ lòng." },
+    { up: "Cỗ Xe: quyết tâm và tốc độ. Hôm nay em lái cả ca về đích.", rev: "Cỗ Xe ngược: chạy nhanh quá dễ trật bánh. Chậm mà chắc." },
+    { up: "Sức Mạnh: dịu dàng mà vững vàng. Khách khó tính mấy cũng mềm lòng.", rev: "Sức Mạnh ngược: mệt thì nghỉ, mạnh mẽ không có nghĩa là gồng." },
+    { up: "Ẩn Sĩ: một chút tĩnh lặng giữa ngày đông. Ngọn đèn nhỏ của tiệm vẫn sáng.", rev: "Ẩn Sĩ ngược: đừng ôm hết một mình, gọi anh Hiếu phụ một tay." },
+    { up: "Bánh Xe Số Phận: vận may đang xoay tới. Ca đông, tip nhiều.", rev: "Bánh Xe ngược: hôm nay hơi lận đận cũng không sao, bánh xe sẽ quay lại." },
+    { up: "Công Lý: công bằng và rõ ràng. Làm đúng thì nhận đúng.", rev: "Công Lý ngược: kiểm lại công thức một lần trước khi giao." },
+    { up: "Người Treo Ngược: nhìn từ góc khác, mọi chuyện nhẹ đi. Chậm một nhịp cũng được.", rev: "Người Treo Ngược ngược: đừng chờ mãi, việc nào làm được thì làm luôn." },
+    { up: "Sự Chuyển Hoá: khép lại cái cũ để bắt đầu cái mới. Hôm nay là trang mới của tiệm.", rev: "Sự Chuyển Hoá ngược: buông thứ không còn hợp, dù hơi tiếc." },
+    { up: "Tiết Chế: pha trộn vừa đủ. Nước ngọt vừa, đá vừa, lòng cũng vừa.", rev: "Tiết Chế ngược: đừng nêm quá tay, cả món ăn lẫn cảm xúc." },
+    { up: "Ác Quỷ: cám dỗ của đồ ăn vặt! Hôm nay khách khó cưỡng lại món của em.", rev: "Ác Quỷ ngược: thoát được một thói quen cũ, nhẹ cả người." },
+    { up: "Toà Tháp: một bất ngờ làm đảo lộn mọi thứ, nhưng sau đó là khoảng trời mới.", rev: "Toà Tháp ngược: chuyện lớn hoá nhỏ, chuyện nhỏ hoá không." },
+    { up: "Ngôi Sao: hy vọng và chữa lành. Một ngày nhẹ nhàng, khách hiền như ngôi sao.", rev: "Ngôi Sao ngược: thấy hơi mất phương hướng thì nhìn lại vì sao mình mở tiệm." },
+    { up: "Mặt Trăng: trực giác dẫn đường qua những điều chưa rõ. Tin cảm nhận của mình.", rev: "Mặt Trăng ngược: sương tan dần, mọi chuyện rõ hơn rồi." },
+    { up: "Mặt Trời: rực rỡ, vui vẻ, thành công. Ca hôm nay sáng bừng.", rev: "Mặt Trời ngược: mây che một chút thôi, nắng vẫn ở đó." },
+    { up: "Phán Xét: được ghi nhận. Những cố gắng của em ai cũng thấy.", rev: "Phán Xét ngược: đừng tự chấm điểm mình khắt khe quá." },
+    { up: "Thế Giới: một vòng trọn vẹn. Tiệm nhỏ mà đủ đầy.", rev: "Thế Giới ngược: còn một bước nữa thôi là trọn, cứ từ từ." }
+  ],
   // Anh Hiếu tự sửa món khi Bống làm sai (chọn ngẫu nhiên). Nháp, anh sửa thoải mái.
   heroFixLines: [
     "Để anh làm lại cho, em chăm khách tiếp đi!",

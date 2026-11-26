@@ -558,12 +558,12 @@ window.CONFIG = {
 
   // Màn "Có gì mới": save cũ thấy một lần mỗi khi đổi version. go = nút "Thử ngay" mở đâu.
   whatsNew: {
-    version: "1.8",
+    version: "1.9",
     items: [
       { icon: "💕", title: "Anh Hiếu sửa món", text: "Lỡ giao sai món, anh Hiếu tự nhảy vào làm lại giùm (3 lần mỗi ca, khách bớt tip một chút). Tắt được trong Cài đặt → Trợ giúp.", go: null },
       { icon: "📖", title: "Bếp tập", text: "Tập làm bất kỳ món nào: không khách thật, không tính giờ, không tốn nguyên liệu. Nút Bếp tập ở Menu.", go: "practice" },
       { icon: "✅", title: "Mục tiêu phụ", text: "Mỗi mốc có thêm một mục tiêu nhỏ (không ai bỏ đi, combo 5…). Đạt được thì có dấu ✓ trên Bản đồ và thưởng 20k.", go: "map" },
-      { icon: "✨", title: "Bùa", text: "Qua mốc lớn được chọn 1 trong 3 bùa, giữ mãi: lắc nhanh, tip cao, khách dễ tính…", go: "perks" },
+      { icon: "🔮", title: "Tarot", text: "Bùa giờ là lá Ẩn chính: qua mốc lớn được lật 3 lá úp rồi chọn một. Mỗi ngày còn có Lá bài hôm nay trong Sổ tay.", go: "perks" },
       { icon: "🎵", title: "Nhịp lắc & tủ giữ món", text: "Lắc đúng lúc vòng tròn khép lại, hoặc cuốn liền một hơi, được Ngon tuyệt! và thêm tip. Từ cấp 6 có tủ để làm sẵn món trước giờ đông.", go: null },
       { icon: "📱", title: "Đơn mang về & đơn sỉ", text: "Từ cấp 8 có đơn mang về chờ tài xế, từ cấp 10 có đơn sỉ nhiều phần. Chỉnh mức trong Cài đặt → Sự kiện.", go: "settings" }
     ]
@@ -583,21 +583,50 @@ window.CONFIG = {
   rhythm: { period: 0.8, window: 0.18, needRatio: 0.6, tip: 3 },
 
   // Bùa: qua mốc lớn lần đầu chọn 1 trong 3 bùa chưa có; giữ mãi
+  // Bùa = lá Ẩn chính (Major Arcana) của bộ Tarot. id giữ nguyên để không mất bùa đã chọn.
   perks: [
-    { id: "shakeFast", name: "Tay lắc dẻo", icon: "💪", desc: "Lắc bịch, cuốn bánh bớt 2 lần" },
-    { id: "crispyWide", name: "Lửa đều", icon: "🔥", desc: "Vùng nướng giòn rộng hơn" },
-    { id: "rushTip", name: "Đông mà vui", icon: "🎉", desc: "Giờ cao điểm tip ×2,5 (thay vì ×2)" },
-    { id: "firstPatience", name: "Chào khách", icon: "😉", desc: "2 khách đầu ca kiên nhẫn gấp đôi" },
-    { id: "heroPlus", name: "Anh Hiếu siêng", icon: "💕", desc: "Anh Hiếu sửa món thêm 1 lượt mỗi ca" },
-    { id: "comboKeep", name: "Bền bỉ", icon: "⭐", desc: "Lần làm sai đầu tiên mỗi ca không mất combo" },
-    { id: "loveFast", name: "Tim đầy nhanh", icon: "💖", desc: "Thanh tim sạc nhanh hơn 30%" },
-    { id: "drinkTip", name: "Nước mát", icon: "🧋", desc: "Mỗi món nước thêm 3k tip" },
-    { id: "rollTip", name: "Cuốn khéo", icon: "🌯", desc: "Mỗi món cuốn thêm 5k tip" },
-    { id: "tipAll", name: "Duyên bán hàng", icon: "🥰", desc: "Tip của mọi khách +10%" },
-    { id: "softWalk", name: "Khách dễ tính", icon: "🙂", desc: "Khách bỏ đi lần đầu mỗi ca không mất tim" },
-    { id: "sideBonus", name: "Săn mục tiêu", icon: "✅", desc: "Thưởng mục tiêu phụ ×2" }
+    { id: "rollTip", num: "I", name: "Pháp Sư", en: "The Magician", icon: "✨", desc: "Đôi tay khéo léo: mỗi món cuốn thêm 5k tip" },
+    { id: "loveFast", num: "III", name: "Hoàng Hậu", en: "The Empress", icon: "🌸", desc: "Dồi dào yêu thương: thanh tim sạc nhanh hơn 30%" },
+    { id: "heroPlus", num: "VI", name: "Tình Nhân", en: "The Lovers", icon: "💕", desc: "Có nhau là đủ: anh Hiếu sửa món thêm 1 lượt mỗi ca" },
+    { id: "shakeFast", num: "VII", name: "Cỗ Xe", en: "The Chariot", icon: "🛵", desc: "Ý chí & tốc độ: lắc bịch, cuốn bánh bớt 2 lần" },
+    { id: "comboKeep", num: "VIII", name: "Sức Mạnh", en: "Strength", icon: "💪", desc: "Dịu dàng mà vững: lần sai đầu mỗi ca không mất combo" },
+    { id: "rushTip", num: "X", name: "Bánh Xe Số Phận", en: "Wheel of Fortune", icon: "☸️", desc: "Vận may xoay tới: giờ cao điểm tip ×2,5" },
+    { id: "softWalk", num: "XII", name: "Người Treo Ngược", en: "The Hanged Man", icon: "🪴", desc: "Buông nhẹ một chút: khách bỏ đi lần đầu mỗi ca không mất tim" },
+    { id: "drinkTip", num: "XIV", name: "Tiết Chế", en: "Temperance", icon: "🧋", desc: "Pha trộn hài hoà: mỗi món nước thêm 3k tip" },
+    { id: "firstPatience", num: "XVII", name: "Ngôi Sao", en: "The Star", icon: "⭐", desc: "Hy vọng đầu ngày: 2 khách đầu ca kiên nhẫn gấp đôi" },
+    { id: "crispyWide", num: "XIX", name: "Mặt Trời", en: "The Sun", icon: "☀️", desc: "Ấm áp rực rỡ: vùng nướng giòn rộng hơn" },
+    { id: "sideBonus", num: "XX", name: "Phán Xét", en: "Judgement", icon: "🎉", desc: "Được ghi nhận: thưởng mục tiêu phụ ×2" },
+    { id: "tipAll", num: "XXI", name: "Thế Giới", en: "The World", icon: "💫", desc: "Viên mãn: tip của mọi khách +10%" }
   ],
   perkOffer: 3,
+  // Lá bài hôm nay: 22 lá Ẩn chính; lá xuôi cho hiệu ứng nhỏ trong ngày (tip / kiên nhẫn / sạc tim), lá ngược chỉ là lời khuyên
+  tarot: {
+    reversedRate: 0.25,
+    cards: [
+      { num: "0", name: "Chàng Khờ", en: "The Fool", icon: "🎒", effect: { patience: 1.1 } },
+      { num: "I", name: "Pháp Sư", en: "The Magician", icon: "✨", effect: { tip: 1.05 } },
+      { num: "II", name: "Nữ Tư Tế", en: "The High Priestess", icon: "🌕", effect: { love: 1.15 } },
+      { num: "III", name: "Hoàng Hậu", en: "The Empress", icon: "🌸", effect: { love: 1.15 } },
+      { num: "IV", name: "Hoàng Đế", en: "The Emperor", icon: "🏮", effect: { patience: 1.1 } },
+      { num: "V", name: "Giáo Hoàng", en: "The Hierophant", icon: "📖", effect: { tip: 1.05 } },
+      { num: "VI", name: "Tình Nhân", en: "The Lovers", icon: "💕", effect: { love: 1.15 } },
+      { num: "VII", name: "Cỗ Xe", en: "The Chariot", icon: "🛵", effect: { patience: 1.1 } },
+      { num: "VIII", name: "Sức Mạnh", en: "Strength", icon: "💪", effect: { patience: 1.1 } },
+      { num: "IX", name: "Ẩn Sĩ", en: "The Hermit", icon: "🌑", effect: { love: 1.15 } },
+      { num: "X", name: "Bánh Xe Số Phận", en: "Wheel of Fortune", icon: "☸️", effect: { tip: 1.05 } },
+      { num: "XI", name: "Công Lý", en: "Justice", icon: "🪙", effect: { tip: 1.05 } },
+      { num: "XII", name: "Người Treo Ngược", en: "The Hanged Man", icon: "🪴", effect: { patience: 1.1 } },
+      { num: "XIII", name: "Sự Chuyển Hoá", en: "Death", icon: "🌅", effect: { tip: 1.05 } },
+      { num: "XIV", name: "Tiết Chế", en: "Temperance", icon: "🧋", effect: { patience: 1.1 } },
+      { num: "XV", name: "Ác Quỷ", en: "The Devil", icon: "😈", effect: { tip: 1.05 } },
+      { num: "XVI", name: "Toà Tháp", en: "The Tower", icon: "⚡", effect: { love: 1.15 } },
+      { num: "XVII", name: "Ngôi Sao", en: "The Star", icon: "⭐", effect: { patience: 1.1 } },
+      { num: "XVIII", name: "Mặt Trăng", en: "The Moon", icon: "🌕", effect: { love: 1.15 } },
+      { num: "XIX", name: "Mặt Trời", en: "The Sun", icon: "☀️", effect: { tip: 1.05 } },
+      { num: "XX", name: "Phán Xét", en: "Judgement", icon: "🎉", effect: { tip: 1.05 } },
+      { num: "XXI", name: "Thế Giới", en: "The World", icon: "💫", effect: { tip: 1.05 } }
+    ]
+  },
 
   // Mục tiêu phụ mỗi mốc (từ Mốc 2): cố định theo số mốc; đạt lần đầu thưởng sideGoalReward (k)
   sideGoalReward: 20,
@@ -1144,13 +1173,26 @@ window.CONFIG = {
     bulkLine: "Cho chị {n} phần {dish} nha, lớp chị đông lắm!",
     bulkLacking: "Thiếu nguyên liệu cho {n} phần (còn thiếu {ing})",
     bulkDone: "Đơn sỉ {n} phần xong!",
-    perkTitle: "Chọn một bùa cho tiệm",
-    perkIntro: "Qua mốc lớn rồi! Chọn một bùa, tiệm giữ mãi.",
-    perkBtn: "Chọn bùa mới ✨",
-    perkGot: "Tiệm có bùa mới: {name}",
-    perksTitle: "Bùa của tiệm",
-    perksCount: "Bùa · {a}/{b}",
-    perkNone: "Qua mốc lớn để chọn bùa đầu tiên",
+    perkTitle: "Rút một lá bài cho tiệm",
+    perkIntro: "Qua mốc lớn rồi! Lật 3 lá úp, chọn một lá làm bùa hộ mệnh cho tiệm (giữ mãi).",
+    perkBtn: "Rút lá bài mới ✨",
+    perkGot: "Tiệm có thêm lá {name}",
+    perkTake: "Chọn lá này",
+    perkFlipHint: "Chạm vào lá bài để lật",
+    perksTitle: "Bộ bài của tiệm",
+    perksCount: "Bộ bài · {a}/{b}",
+    perkNone: "Qua mốc lớn để rút lá bài đầu tiên",
+    tarotTile: "Lá bài hôm nay 🔮",
+    tarotTitle: "Lá bài hôm nay",
+    tarotIntro: "Hít một hơi, nghĩ về ca bán hôm nay, rồi chọn một lá.",
+    tarotUp: "Xuôi",
+    tarotRev: "Ngược",
+    tarotEff_tip: "Hôm nay: tip +{p}%",
+    tarotEff_patience: "Hôm nay: khách kiên nhẫn +{p}%",
+    tarotEff_love: "Hôm nay: thanh tim sạc nhanh +{p}%",
+    tarotRevNote: "Lá ngược: không có hiệu ứng, chỉ là một lời nhắc nhỏ.",
+    tarotChip: "Lá hôm nay: {name}{rev}",
+    tarotChipNone: "Chưa rút lá bài hôm nay (Sổ tay)",
     setHoldCabinet: "Tủ giữ món (làm sẵn trước, từ cấp 6)",
     setRhythm: "Nhịp lắc / cuốn (trúng nhịp được Ngon tuyệt!)",
     holdTitle: "Tủ",
