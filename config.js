@@ -572,6 +572,11 @@ window.CONFIG = {
 
   // Anh Hiếu tự sửa món làm sai: số lượt mỗi ca, thời gian làm lại, tip còn lại, kiên nhẫn giữ tối thiểu
   heroFix: { perShift: 3, sec: 2.5, tipMult: 0.5, keepPatience: 0.3 },
+  // Tủ giữ món: từ cấp fromLevel, slots ô; để quá staleSec giây thì nguội (trừ 1 sao)
+  hold: { fromLevel: 6, slots: 2, staleSec: 40 },
+  // Nhịp lắc/cuốn: vòng nhịp chu kỳ period giây; chạm trong ±window (tỉ lệ chu kỳ) là trúng; trúng ≥ needRatio số lần lắc → Ngon tuyệt! (+tip k)
+  rhythm: { period: 0.8, window: 0.18, needRatio: 0.6, tip: 3 },
+
   // Bùa: qua mốc lớn lần đầu chọn 1 trong 3 bùa chưa có; giữ mãi
   perks: [
     { id: "shakeFast", name: "Tay lắc dẻo", icon: "💪", desc: "Lắc bịch, cuốn bánh bớt 2 lần" },
@@ -1129,6 +1134,14 @@ window.CONFIG = {
     perksTitle: "Bùa của tiệm",
     perksCount: "Bùa · {a}/{b}",
     perkNone: "Qua mốc lớn để chọn bùa đầu tiên",
+    setHoldCabinet: "Tủ giữ món (làm sẵn trước, từ cấp 6)",
+    setRhythm: "Nhịp lắc / cuốn (trúng nhịp được Ngon tuyệt!)",
+    holdTitle: "Tủ",
+    holdHow: "Chọn bịch/ly đã làm xong rồi chạm ô tủ để cất",
+    holdNoGrill: "Bánh nướng ăn nóng mới ngon, không cất tủ được",
+    holdStored: "Đã cất vào tủ",
+    holdStale: "nguội",
+    perfectShake: "Ngon tuyệt!",
     setHeroFix: "Anh Hiếu sửa món làm sai (3 lần mỗi ca)",
     heroFixLeft: "còn {n} lần",
     sideGoalTitle: "Mục tiêu phụ",

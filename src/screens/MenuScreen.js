@@ -362,6 +362,8 @@ window.BT = window.BT || { Screens: {} };
         pane = panes.assist;
         toggle("relaxMode", UI.t("setRelax"));
         toggle("heroFix", UI.t("setHeroFix"));
+        toggle("holdCabinet", UI.t("setHoldCabinet"));
+        toggle("rhythm", UI.t("setRhythm"));
         toggle("oneTapDeliver", UI.t("setOneTapDeliver"));
         toggle("oneTapAction", UI.t("setOneTapAction"));
         toggle("tapPour", UI.t("setTapPour"));

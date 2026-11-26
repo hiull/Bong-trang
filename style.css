@@ -1901,3 +1901,21 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .perk-desc { font-size: 13px; color: #7a6a70; }
 .perk-item { opacity: 0.55; }
 .perk-item.on { opacity: 1; background: #FFF6E0; }
+
+/* Tủ giữ món */
+.counter.has-hold { padding-right: 76px; position: relative; }
+.hold-box { position: absolute; right: 6px; top: 6px; bottom: 6px; width: 66px; display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+.hold-title { display: none; }
+.hold-slot { position: relative; flex: 1; min-height: 0; border: 2px dashed #C9A9B3; border-radius: 12px; background: rgba(255,255,255,0.7); padding: 0; overflow: hidden; cursor: pointer; }
+.hold-slot:not(.full)::before { content: "Tủ"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #B596A0; }
+.hold-slot.full { border-style: solid; border-color: var(--brown); background: #fff; }
+.hold-slot.stale { border-color: #9aa3ad; background: #EEF1F4; }
+.hold-slot.stale::after { content: "nguội"; position: absolute; bottom: 1px; left: 0; right: 0; text-align: center; font-size: 10px; font-weight: 800; color: #6b7682; }
+.hold-slot > .tray { transform: scale(0.34); transform-origin: top left; width: 294%; pointer-events: auto; }
+.hold-slot .selected { outline: 3px solid var(--pink); }
+/* Nhịp lắc */
+.beat-ring { position: absolute; left: 50%; top: 50%; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; border: 4px solid rgba(255, 92, 138, 0.75); pointer-events: none; animation: beat-close 0.8s linear infinite; }
+@keyframes beat-close { from { transform: scale(1.7); opacity: 0.25; } to { transform: scale(1); opacity: 1; } }
+.shake-zone { position: relative; }
+.shake-zone.hit .big-bag { filter: drop-shadow(0 0 10px #FFD54F); }
+.perfect-pop { position: absolute; left: 50%; top: 8%; transform: translateX(-50%); font-family: var(--font-title); font-size: 26px; color: #FF5C8A; text-shadow: 0 2px 0 #fff; animation: pop-in 0.3s ease-out; white-space: nowrap; }

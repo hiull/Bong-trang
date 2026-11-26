@@ -82,6 +82,7 @@ window.BT = window.BT || { Screens: {} };
       this.burnt = false;
       this.sauces = {};
       this.layers = [];    // quầy chè: các lớp theo đúng thứ tự chạm
+      this.perfect = false; // lắc/cuốn trúng nhịp (Ngon tuyệt!)
     }
 
     isEmpty() { return !this.base; }

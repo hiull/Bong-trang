@@ -32,7 +32,7 @@ window.BT = window.BT || { Screens: {} };
       regularCustomers: { chu_tu: 0, chi_lan: 0, be_na: 0, tomortle: 0, co_hanh: 0 },
       checkin: { streak: 0, lastDate: "" },
       dailyQuests: { date: "", list: [] },
-      settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, heroFix: true,
+      settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, heroFix: true, holdCabinet: true, rhythm: true,
         // Mức từng sự kiện: 0 Tắt · 0.5 Ít · 1 Vừa · 2 Nhiều
         events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }, patienceBoost: 0,
         relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false,

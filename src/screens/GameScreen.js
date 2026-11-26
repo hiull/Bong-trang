@@ -27,7 +27,10 @@ window.BT = window.BT || { Screens: {} };
       this.heroLeft = !this.practice && this.S.settings.heroFix !== false ? CONFIG.heroFix.perShift + (BT.perk("heroPlus") ? 1 : 0) : 0;
       this.comboKept = false;   // bùa Bền bỉ
       this.walkSoftUsed = false; // bùa Khách dễ tính
-      this.heroUsed = 0;   // anh Hiếu phụ tiệm ca này
+      this.heroUsed = 0;
+      // Tủ giữ món (từ cấp 6, bật trong Trợ giúp)
+      this.holdOn = !this.practice && run.level >= CONFIG.hold.fromLevel && this.S.settings.holdCabinet !== false;
+      this.rhythmOn = this.S.settings.rhythm !== false && !this.S.settings.relaxMode;   // anh Hiếu phụ tiệm ca này
       // Giờ cao điểm, khách đặc biệt, thú cưng, kỷ lục
       this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel
         && BT.ev("rush") > 0 && (BT.ev("rush") >= 1 || Math.random() < BT.ev("rush"));
@@ -261,6 +264,24 @@ window.BT = window.BT || { Screens: {} };
       this.grillGroup.classList.add("n" + this.grills.length);
       counter.appendChild(this.trayGroup);
       counter.appendChild(this.grillGroup);
+      // Tủ giữ món
+      this.held = [];
+      this.holdSlots = [];
+      if (this.holdOn) {
+        const box = UI.el("div", "hold-box");
+        box.appendChild(UI.el("div", "hold-title", UI.t("holdTitle")));
+        for (let i = 0; i < CONFIG.hold.slots; i++) {
+          const slot = UI.el("button", "hold-slot");
+          slot.type = "button";
+          slot.dataset.i = String(i);
+          slot.addEventListener("click", (e) => { if (e.target === slot) this.tapHold(i); });
+          this.holdSlots.push(slot);
+          this.held.push(null);
+          box.appendChild(slot);
+        }
+        counter.appendChild(box);
+        counter.classList.add("has-hold");
+      }
       el.appendChild(counter);
       this.counter = counter;
 
@@ -346,6 +367,7 @@ window.BT = window.BT || { Screens: {} };
         if (this.freezeLeft <= 0) { this.freezeLeft = 0; this.front.classList.remove("loving"); }
       }
 
+      if (this.holdOn) this.syncHeld();
       // Bếp tập: khách tập không bao giờ bỏ đi
       if (this.practice) this.customers.forEach((c) => { if (c.state === "waiting") c.patience = c.max; });
       // Sinh khách
@@ -941,7 +963,7 @@ window.BT = window.BT || { Screens: {} };
         const same = pending.find((it) => UI.recipe(it.id).zone === tray.zone) || pending[0];
         const bad = BT.Tray.evaluate(tray, same);
         // Anh Hiếu tự sửa món (còn lượt trong ca)
-        if (this.heroLeft > 0 && !c.heroFixing) { this.heroFix(c, tray, same); return; }
+        if (this.heroLeft > 0 && !c.heroFixing) { this.heroFix(c, tray, same); if (this.holdOn) this.syncHeld(); return; }
         const vars = c.vars({ ing: bad.ing ? UI.ing(bad.ing).short : "" });
         const key = {
           notOrdered: "wrongNotOrdered", missing: "wrongMissing", extra: "wrongExtra", notMixed: "wrongNotMixed",
@@ -962,6 +984,9 @@ window.BT = window.BT || { Screens: {} };
 
       // Đúng một món
       match.crispy = res.crispy;
+      if (tray.perfect) match.perfect = true;
+      const heldE = (this.held || []).find((h) => h && h.tray === tray);
+      if (heldE && Date.now() - heldE.at > CONFIG.hold.staleSec * 1000) match.stale = true;
       c.markDone(match);
       this.combo = Math.min(G.comboMax, this.combo + 1);
       this.q.comboMax = Math.max(this.q.comboMax, this.combo);
@@ -983,6 +1008,7 @@ window.BT = window.BT || { Screens: {} };
       } else {
         this.complete(c);
       }
+      if (this.holdOn) this.syncHeld();
       this.updateLove();
       this.updateHud();
       this.updateTabDots();
@@ -1055,6 +1081,43 @@ window.BT = window.BT || { Screens: {} };
       this.router.backTo("Menu");
     }
 
+    // ---------------- Tủ giữ món ----------------
+    tapHold(i) {
+      if (this.isPaused() || !this.holdOn) return;
+      const h = this.held[i];
+      if (h) { this.select(this.selected === h.tray ? null : h.tray); BT.Audio.play("tap"); return; }
+      const t = this.selected;
+      if (t && t.kind === "grill") { UI.toast(UI.t("holdNoGrill")); return; }
+      if (!t || t.isEmpty() || !this.trays.includes(t)) { UI.toast(UI.t("holdHow")); return; }
+      // Đưa khay vào tủ, đặt khay trống mới vào chỗ cũ
+      const idx = this.trays.indexOf(t);
+      const nt = new BT.Tray(t.index, "tray");
+      this.trays[idx] = nt;
+      this.trayGroup.replaceChild(nt.el, t.el);
+      this.bindTray(nt);
+      nt.render();
+      this.held[i] = { tray: t, at: Date.now() };
+      this.holdSlots[i].appendChild(t.el);
+      this.holdSlots[i].classList.add("full");
+      this.select(null);
+      BT.Audio.play("pop");
+      UI.toast(UI.t("holdStored"));
+    }
+    // Ô tủ có khay đã giao/bỏ → trả ô trống; đánh dấu món nguội
+    syncHeld() {
+      (this.held || []).forEach((h, i) => {
+        if (!h) return;
+        if (h.tray.isEmpty()) {
+          h.tray.el.remove();
+          this.held[i] = null;
+          this.holdSlots[i].classList.remove("full", "stale");
+          if (this.selected === h.tray) this.select(null);
+          return;
+        }
+        this.holdSlots[i].classList.toggle("stale", Date.now() - h.at > CONFIG.hold.staleSec * 1000);
+      });
+    }
+
     // Số lần lắc/cuốn cần (nâng cấp, bùa Tay lắc dẻo)
     shakeNeed() {
       const G = CONFIG.gameplay;
@@ -1091,6 +1154,7 @@ window.BT = window.BT || { Screens: {} };
       if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
       const reqTip = c.hasRequests() ? M.specialRequestTip : 0;
       if (BT.perk("tipAll")) tip *= 1.1;
+      tip += CONFIG.rhythm.tip * c.items.filter((it) => it.perfect).length;   // Ngon tuyệt!
       tip = Math.round(tip + reqTip);
       // Bùa: tip cộng thêm theo món
       c.items.forEach((it) => { const z = (UI.recipe(it.id) || {}).zone; if (z === "nuoc" && BT.perk("drinkTip")) tip += 3; if (z === "cuon" && BT.perk("rollTip")) tip += 5; });
@@ -1099,6 +1163,7 @@ window.BT = window.BT || { Screens: {} };
       const fiveMin = G.ratingSteps[0].min - (up.quat > 0 ? CONFIG.upgrades.quat.fiveStarDrop : 0);
       let stars = p >= fiveMin ? 5 : G.ratingSteps.find((s) => p >= s.min).stars;
       if (c.wrongOnce) stars = Math.min(stars, G.ratingAfterWrongMax);
+      if (c.items.some((it) => it.stale)) stars = Math.max(1, stars - 1);   // món để tủ quá lâu
 
       this.stats.revenue += pay + comboBonus;
       this.stats.tips += tip;
@@ -1559,6 +1624,7 @@ window.BT = window.BT || { Screens: {} };
     select(t) {
       this.selected = t || null;
       this.containers().forEach((x) => x.el.classList.toggle("selected", x === this.selected));
+      (this.held || []).forEach((h) => { if (h) h.tray.el.classList.toggle("selected", h.tray === this.selected); });
       this.updateHint();
     }
 
@@ -1686,6 +1752,22 @@ window.BT = window.BT || { Screens: {} };
       const items = tray.el.querySelector(".bag-items");
       if (items) bag.appendChild(items.cloneNode(true));
       zone.appendChild(bag);
+      // Nhịp lắc: vòng co lại theo nhịp, chạm đúng lúc vòng khép là trúng
+      const RH = CONFIG.rhythm;
+      const rhythm = this.rhythmOn;
+      let hits = 0;
+      let rollDowns = 0;
+      layer.beatPeriod = RH.period;
+      layer.beatT0 = performance.now();
+      if (rhythm && !roll) {
+        const ring = UI.el("div", "beat-ring");
+        ring.style.animationDuration = RH.period + "s";
+        zone.appendChild(ring);
+      }
+      const onBeat = () => {
+        const ph = (((performance.now() - layer.beatT0) / 1000) % RH.period) / RH.period;
+        return ph <= RH.window || ph >= 1 - RH.window;
+      };
       layer.appendChild(zone);
       const meter = UI.el("div", "meter");
       const fill = UI.el("div", "meter-fill");
@@ -1724,6 +1806,14 @@ window.BT = window.BT || { Screens: {} };
       };
       const complete = () => {
         finished = true;
+        // Ngon tuyệt!: lắc trúng nhịp đủ nhiều / cuốn liền một hơi
+        if (rhythm && (roll ? rollDowns <= 1 : hits >= Math.ceil(need * RH.needRatio))) {
+          tray.perfect = true;
+          layer.classList.add("perfect");
+          zone.appendChild(UI.el("div", "perfect-pop", UI.t("perfectShake")));
+          BT.Audio.vibrate(CONFIG.gameplay.vibrateGood);
+          BT.Audio.play("star");
+        }
         if (roll) { tray.rolled = true; UI.setText(hint, UI.t("rollDone")); BT.Audio.play("roll"); }
         else {
           tray.tied = true;
@@ -1738,6 +1828,7 @@ window.BT = window.BT || { Screens: {} };
         if (finished || this.isPaused()) return;
         count++;
         tray.shakeCount = count;
+        if (rhythm && onBeat()) { hits++; zone.classList.remove("hit"); void zone.offsetWidth; zone.classList.add("hit"); }
         BT.Audio.play("shake");
         show();
         // topping xáo trộn trong bịch
@@ -1747,10 +1838,15 @@ window.BT = window.BT || { Screens: {} };
         if (count >= need) complete();
       };
       layer.close = close;
+      layer.bump = bump;
+      // Cuốn một hơi (dùng cho kiểm thử): bắt đầu một lần vuốt, finish() cuốn xong
+      layer.rollGesture = () => { rollDowns++; };
+      layer.rollGesture.finish = () => { progress = 1; show(); complete(); };
       this.shakeLayer = layer;
 
       zone.addEventListener("pointerdown", (e) => {
         down = e.pointerId; lastX = e.clientX; startY = e.clientY; dir = 0; swiped = false;
+        if (roll) { rollDowns++; startY = e.clientY + progress * ((bag.offsetHeight || 1) * G.rollDistance); }
         try { zone.setPointerCapture(e.pointerId); } catch (err) { /* bỏ qua */ }
       });
       zone.addEventListener("pointermove", (e) => {
