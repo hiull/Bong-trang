@@ -237,6 +237,51 @@ window.BT = window.BT || { Screens: {} };
       // ---------- Cài đặt ----------
       function openSettings() {
         const body = UI.el("div", "settings");
+        const refreshers = [];   // cập nhật lại các nút khi chọn chế độ nhanh
+        // ---- Chế độ nhanh (đầu trang, luôn thấy) ----
+        const presetBox = UI.el("div", "presets");
+        const presetRow = UI.el("div", "preset-row");
+        const presetNote = UI.el("div", "preset-note");
+        presetBox.appendChild(UI.el("div", "set-section", UI.t("presetTitle")));
+        presetBox.appendChild(presetRow);
+        presetBox.appendChild(presetNote);
+        body.appendChild(presetBox);
+        const presetBtns = {};
+        Object.keys(CONFIG.presets).forEach((id) => {
+          const b = UI.button(UI.t("preset_" + id), "btn-white small preset-btn", () => {
+            BT.applyPreset(id);
+            BT.Audio.play("tap");
+            refreshAll();
+          });
+          b.dataset.p = id;
+          presetBtns[id] = b;
+          presetRow.appendChild(b);
+        });
+        const refreshPreset = () => {
+          const cur = BT.currentPreset();
+          Object.keys(presetBtns).forEach((id) => presetBtns[id].classList.toggle("on", id === cur));
+          UI.setText(presetNote, cur ? UI.t("presetHint_" + cur) : UI.t("presetCustom"));
+        };
+        const refreshAll = () => { refreshers.forEach((f) => f()); refreshPreset(); };
+        // ---- Tab ----
+        const tabs = UI.el("div", "set-tabs");
+        body.appendChild(tabs);
+        const panes = {};
+        ["general", "assist", "events"].forEach((id, k) => {
+          const t = UI.button(UI.t("setTab_" + id), "set-tab" + (k === 0 ? " on" : ""), () => {
+            tabs.querySelectorAll(".set-tab").forEach((x) => x.classList.toggle("on", x === t));
+            Object.keys(panes).forEach((pid) => { panes[pid].hidden = pid !== id; });
+            BT.Audio.play("tap");
+          });
+          t.dataset.tab = id;
+          tabs.appendChild(t);
+          const pane = UI.el("div", "set-pane");
+          pane.dataset.tab = id;
+          pane.hidden = k !== 0;
+          panes[id] = pane;
+          body.appendChild(pane);
+        });
+        let pane = panes.general;
         const toggle = (key, label) => {
           const row = UI.el("div", "set-row");
           row.appendChild(UI.el("span", "set-label", label));
@@ -245,48 +290,54 @@ window.BT = window.BT || { Screens: {} };
           btn.setAttribute("role", "switch");
           btn.setAttribute("aria-label", label);
           btn.appendChild(UI.el("span", "switch-text", S.settings[key] ? UI.t("on") : UI.t("off")));
+          const draw = () => { btn.classList.toggle("on", !!S.settings[key]); UI.setText(btn.firstChild, S.settings[key] ? UI.t("on") : UI.t("off")); };
+          refreshers.push(draw);
           btn.addEventListener("click", () => {
             S.settings[key] = !S.settings[key];
-            btn.classList.toggle("on", S.settings[key]);
-            UI.setText(btn.firstChild, S.settings[key] ? UI.t("on") : UI.t("off"));
+            draw();
             BT.Audio.applySettings();
             BT.Save.persist();
             BT.Audio.play("tap");
             if (key === "vibrate" && S.settings.vibrate) BT.Audio.vibrate(CONFIG.gameplay.vibrateGood);
             if (key === "fullscreen") BT.Fullscreen.apply();
+            refreshPreset();
           });
           row.appendChild(btn);
-          body.appendChild(row);
+          pane.appendChild(row);
         };
+        // Nút xoay vòng nhiều mức
+        const cycler = (label, cls, values, names, get, set) => {
+          const row = UI.el("div", "set-row");
+          row.appendChild(UI.el("span", "set-label", label));
+          const name = () => names[Math.max(0, values.indexOf(get()))];
+          const btn = UI.button(name(), "btn-white small " + cls, () => {
+            const i = values.indexOf(get());
+            set(values[(i + 1) % values.length]);
+            draw();
+            BT.Save.persist();
+            BT.Audio.play("tap");
+            refreshPreset();
+          });
+          const draw = () => { UI.setText(btn, name()); btn.dataset.v = String(get()); };
+          refreshers.push(draw);
+          draw();
+          row.appendChild(btn);
+          pane.appendChild(row);
+          return btn;
+        };
+        // ---- Tab Chung ----
         toggle("music", UI.t("setMusic"));
         toggle("sfx", UI.t("setSfx"));
         if (navigator.vibrate) toggle("vibrate", UI.t("setVibrate"));
         if (BT.Fullscreen.supported()) toggle("fullscreen", UI.t("setFullscreen"));
-        // Sự kiện: mỗi dòng một nút xoay vòng Vừa → Nhiều → Tắt → Ít
-        body.appendChild(UI.el("div", "set-section", UI.t("setEventsTitle")));
-        body.appendChild(UI.el("div", "set-note", UI.t("setEventsNote")));
-        if (!S.settings.events) S.settings.events = {};
-        const evCycle = [1, 2, 0, 0.5];
-        ["shiftEvent", "rush", "vip", "rival", "spill", "cat", "flirt", "helperMishap", "rent", "date"].forEach((key) => {
-          const row = UI.el("div", "set-row");
-          row.appendChild(UI.el("span", "set-label", UI.t("ev_" + key)));
-          const label = () => CONFIG.texts.evLevels[String(BT.ev(key))];
-          const btn = UI.button(label(), "btn-white small ev-btn ev-" + String(BT.ev(key)).replace(".", "_"), () => {
-            const i = evCycle.indexOf(BT.ev(key));
-            const v = evCycle[(i + 1) % evCycle.length];
-            S.settings.events[key] = v;
-            UI.setText(btn, label());
-            btn.className = btn.className.replace(/ev-[0-9_]+/, "ev-" + String(v).replace(".", "_"));
-            BT.Save.persist();
-            BT.Audio.play("tap");
-          });
-          btn.dataset.ev = key;
-          row.appendChild(btn);
-          body.appendChild(row);
-        });
-        // Trợ giúp
-        body.appendChild(UI.el("div", "set-section", UI.t("setAssistTitle")));
         toggle("autoSeasonSkin", UI.t("setAutoSeasonSkin"));
+        cycler(UI.t("setTextScale"), "ts-btn", [1, 2, 3], CONFIG.texts.textScales, () => S.settings.textScale || 1, (v) => { S.settings.textScale = v; BT.applyTextScale(); });
+        pane.appendChild(UI.button(UI.t("setHowTo"), "btn-purple small", () => { m.close(true); UI.howTo(); }));
+        pane.appendChild(UI.button(UI.t("setBackup"), "btn-white small set-backup", () => { m.close(true); openBackup(); }));
+        pane.appendChild(UI.button(UI.t("setWhatsNew"), "btn-white small whatsnew-btn", () => { m.close(true); openWhatsNew(); }));
+        pane.appendChild(UI.button(UI.t("setWipe"), "btn-white small danger", () => { m.close(true); openWipe(); }));
+        // ---- Tab Trợ giúp ----
+        pane = panes.assist;
         toggle("relaxMode", UI.t("setRelax"));
         toggle("oneTapDeliver", UI.t("setOneTapDeliver"));
         toggle("oneTapAction", UI.t("setOneTapAction"));
@@ -302,27 +353,19 @@ window.BT = window.BT || { Screens: {} };
         toggle("lateAdd", UI.t("setLateAdd"));
         toggle("showRecipe", UI.t("setShowRecipe"));
         toggle("realRecipes", UI.t("setRealRecipes"));
-        {
-          const levels = [0, 0.25, 0.5];
-          const row = UI.el("div", "set-row");
-          row.appendChild(UI.el("span", "set-label", UI.t("setPatience")));
-          const label = () => CONFIG.texts.patienceLevels[Math.max(0, levels.indexOf(S.settings.patienceBoost || 0))];
-          const btn = UI.button(label(), "btn-white small patience-btn", () => {
-            const i = levels.indexOf(S.settings.patienceBoost || 0);
-            S.settings.patienceBoost = levels[(i + 1) % levels.length];
-            UI.setText(btn, label());
-            BT.Save.persist();
-            BT.Audio.play("tap");
-          });
-          row.appendChild(btn);
-          body.appendChild(row);
-        }
-        body.appendChild(UI.button(UI.t("setHowTo"), "btn-purple small", () => { m.close(true); UI.howTo(); }));
-        body.appendChild(UI.button(UI.t("setBackup"), "btn-white small", () => { m.close(true); openBackup(); }));
-        body.appendChild(UI.button(UI.t("setWhatsNew"), "btn-white small whatsnew-btn", () => { m.close(true); openWhatsNew(); }));
-        body.appendChild(UI.button(UI.t("setWipe"), "btn-white small danger", () => { m.close(true); openWipe(); }));
+        cycler(UI.t("setPatience"), "patience-btn", [0, 0.25, 0.5], CONFIG.texts.patienceLevels, () => S.settings.patienceBoost || 0, (v) => { S.settings.patienceBoost = v; });
+        // ---- Tab Sự kiện: Vừa → Nhiều → Tắt → Ít ----
+        pane = panes.events;
+        pane.appendChild(UI.el("div", "set-note", UI.t("setEventsNote")));
+        if (!S.settings.events) S.settings.events = {};
+        const evNames = [1, 2, 0, 0.5].map((v) => CONFIG.texts.evLevels[String(v)]);
+        BT.EVENT_KEYS.forEach((key) => {
+          const btn = cycler(UI.t("ev_" + key), "ev-btn", [1, 2, 0, 0.5], evNames, () => BT.ev(key), (v) => { S.settings.events[key] = v; });
+          btn.dataset.ev = key;
+        });
         body.appendChild(UI.el("div", "set-footer", UI.t("footer")));
-        const m = UI.modal({ title: UI.t("settingsTitle"), body, dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+        refreshPreset();
+        const m = UI.modal({ title: UI.t("settingsTitle"), body, className: "modal-settings", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
       }
 
       // ---------- Sao lưu & Khôi phục mã TIEM1- ----------

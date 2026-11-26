@@ -36,7 +36,7 @@ window.BT = window.BT || { Screens: {} };
         // Mức từng sự kiện: 0 Tắt · 0.5 Ít · 1 Vừa · 2 Nhiều
         events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }, patienceBoost: 0,
         relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false,
-        fewerRequests: false, bookPause: false, moreHearts: false, softFail: false, threeTrays: false, autoSeasonSkin: true },
+        fewerRequests: false, bookPause: false, moreHearts: false, softFail: false, threeTrays: false, autoSeasonSkin: true, textScale: 1 },
       tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false, day16: false },
       endingSeen: false,
       appVersionSeen: CONFIG.version,
@@ -241,6 +241,30 @@ window.BT = window.BT || { Screens: {} };
 
   // Trợ giúp đang bật? (bật riêng, hoặc nằm trong gói "Chế độ thư giãn")
   // Mức của một sự kiện (Cài đặt → Sự kiện): 0 Tắt, 0.5 Ít, 1 Vừa (mặc định), 2 Nhiều
+  BT.EVENT_KEYS = ["shiftEvent", "rush", "vip", "rival", "spill", "cat", "flirt", "helperMishap", "rent", "date"];
+  // Chế độ nhanh: ghi đè các khoá trong CONFIG.presets[id] (không đụng âm thanh, màn hình, cỡ chữ)
+  BT.applyPreset = function (id) {
+    const P = CONFIG.presets[id];
+    const s = BT.Save.state.settings;
+    Object.keys(P.settings).forEach((k) => { s[k] = P.settings[k]; });
+    s.events = Object.assign({}, P.events);
+    BT.Save.persist();
+  };
+  BT.currentPreset = function () {
+    const s = BT.Save.state.settings;
+    return Object.keys(CONFIG.presets).find((id) => {
+      const P = CONFIG.presets[id];
+      return Object.keys(P.settings).every((k) => s[k] === P.settings[k]) && BT.EVENT_KEYS.every((k) => BT.ev(k) === P.events[k]);
+    }) || null;
+  };
+  // Cỡ chữ: lớp ts-1/2/3 trên #app
+  BT.applyTextScale = function () {
+    const app = document.getElementById("app");
+    if (!app) return;
+    const v = (BT.Save.state && BT.Save.state.settings.textScale) || 1;
+    app.classList.remove("ts-1", "ts-2", "ts-3");
+    app.classList.add("ts-" + v);
+  };
   BT.ev = function (key) {
     const e = BT.Save.state && BT.Save.state.settings.events;
     const v = e ? e[key] : undefined;

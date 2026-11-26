@@ -570,6 +570,25 @@ window.CONFIG = {
     ]
   },
 
+  // Chế độ nhanh trong Cài đặt: đặt sẵn trợ giúp + mức sự kiện
+  presets: {
+    relax: {
+      settings: { relaxMode: true, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
+        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0.5 },
+      events: { shiftEvent: 0.5, rush: 0.5, vip: 1, rival: 0, spill: 0, cat: 1, flirt: 1, helperMishap: 0, rent: 0.5, date: 2 }
+    },
+    normal: {
+      settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
+        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0 },
+      events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }
+    },
+    hard: {
+      settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
+        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: false, showRecipe: false, realRecipes: true, patienceBoost: 0 },
+      events: { shiftEvent: 2, rush: 2, vip: 2, rival: 2, spill: 2, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }
+    }
+  },
+
   // Chống mất tiến trình
   safety: { snapshots: 3, backupEveryDays: 7, tipSnoozeDays: 7, backupAfterShifts: 3 },
 
@@ -1047,6 +1066,19 @@ window.CONFIG = {
     setLateAdd: "Thêm nguyên liệu sau khi làm xong",
     setShowRecipe: "Hiện công thức trên order",
     setEventsTitle: "Sự kiện",
+    presetTitle: "Chế độ nhanh",
+    preset_relax: "Thư giãn",
+    preset_normal: "Bình thường",
+    preset_hard: "Thử thách",
+    presetHint_relax: "Bật hết trợ giúp, khách kiên nhẫn hơn, ít sự cố, hay được hẹn hò.",
+    presetHint_normal: "Như mặc định của game.",
+    presetHint_hard: "Ẩn công thức, công thức chuẩn ngoài đời, nhiều giờ cao điểm & sự kiện.",
+    presetCustom: "Đang tuỳ chỉnh riêng. Chọn một chế độ để đặt lại.",
+    setTab_general: "Chung",
+    setTab_assist: "Trợ giúp",
+    setTab_events: "Sự kiện",
+    setTextScale: "Cỡ chữ",
+    textScales: ["Vừa", "Lớn", "Rất lớn"],
     setEventsNote: "Chạm để đổi mức: Vừa (như mặc định) → Nhiều → Tắt → Ít",
     evLevels: { "0": "Tắt", "0.5": "Ít", "1": "Vừa", "2": "Nhiều" },
     ev_shiftEvent: "Sự kiện đầu ca (gió, mưa, lễ hội…)",
