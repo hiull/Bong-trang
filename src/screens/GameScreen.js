@@ -17,6 +17,7 @@ window.BT = window.BT || { Screens: {} };
       this.run = run;
       this.dayId = run.key;                    // "ms13" | "secret" | "daily" | "endless"
       this.dayNum = run.level;                 // cấp mốc: so với ngày mở món
+      this.lifeAdd = { vips: 0, rushes: 0, customsSold: 0, bonusNext: 0 };   // chỉ ghi vào save khi hết ca (bỏ ca thì không tính)
       BT.recipeLevel = run.level;              // công thức chuẩn ngoài đời: đòi nguyên liệu theo cấp của ca
       this.secret = run.mode === "secret";
       this.endless = run.mode === "endless";
@@ -80,7 +81,8 @@ window.BT = window.BT || { Screens: {} };
       const zoneIds = this.openZones.map((z) => z.id);
       this.dishPool = this.dishPoolAll = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))))
         .map((r) => UI.recipe(r.id))
-        .concat(BT.Fun.customRecipes().filter((r) => zoneIds.includes(r.zone)));   // món sáng tạo của Bống
+        .concat(BT.Fun.customRecipes().filter((r) => zoneIds.includes(r.zone)
+          && [r.base, ...r.toppings, ...r.finish].every((id) => !C.ingredients[id] || C.ingredients[id].openDay <= this.dayNum)));   // món sáng tạo của Bống
       this.typePool = Object.keys(C.customerTypes).filter((id) => {
         const t = C.customerTypes[id];
         return t.kind === "normal" && t.openDay <= this.dayNum;
@@ -511,9 +513,11 @@ window.BT = window.BT || { Screens: {} };
           this.vipCame = true;
           const o = this.makeOrder();
           if (v.twoDish && o.items.length < 2) o.items.push(this.makeOrder().items[0]);
+          o.reviewer = this.spawned === this.reviewerAt;
           const c = this.spawn(seat, "hoc_sinh", o, { typeDef: Object.assign({ kind: "vip" }, v), tag: v.name, speech: UI.pick(v.lines) });
           c.vip = v;
           this.spawned++;
+          if (this.spawned === this.spillAt) this.showSpill();
           this.spawnTimer = this.nextGap();
           return;
         }
@@ -638,7 +642,7 @@ window.BT = window.BT || { Screens: {} };
         this.rush.el.remove();
         this.rush = null;
         this.rushDone = true;
-        this.S.life.rushes++;
+        this.lifeAdd.rushes++;
         UI.toast(UI.t("rushEnd"), 2000);
         return;
       }
@@ -971,9 +975,9 @@ window.BT = window.BT || { Screens: {} };
         c.vipPaid = true;
         const v = c.vip;
         this.S.wallet += v.reward;
-        this.S.life.vips++;
+        this.lifeAdd.vips++;
         UI.toast(UI.t("vipServed", { name: v.name, x: UI.money(v.reward) }), 2600);
-        if (v.boostNext) { this.S.bonusNext = (this.S.bonusNext || 0) + v.boostNext; this.scope.timeout(() => UI.toast(UI.t("vipBoost", { name: v.name }), 2600), 2700); }
+        if (v.boostNext) { this.lifeAdd.bonusNext += v.boostNext; this.scope.timeout(() => UI.toast(UI.t("vipBoost", { name: v.name }), 2600), 2700); }
       }
       if (this.rival) {
         this.rival.streak++;
@@ -987,7 +991,7 @@ window.BT = window.BT || { Screens: {} };
       let base = 0;
       if (c.combo) base = UI.recipe("combo_tinh_yeu").price;
       else c.items.forEach((it) => { base += UI.recipePrice(it.id) * (it.crispy ? 1 + G.crispyBonus : 1); });
-      c.items.forEach((it) => { if (UI.recipe(it.id) && UI.recipe(it.id).custom) this.S.life.customsSold++; });
+      c.items.forEach((it) => { if (UI.recipe(it.id) && UI.recipe(it.id).custom) this.lifeAdd.customsSold++; });
       const pay = Math.round(base * speed);
       let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1) * (this.rush ? CONFIG.rush.tipMult : 1);
       if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
@@ -1896,12 +1900,21 @@ window.BT = window.BT || { Screens: {} };
     }
 
     // Kết thúc Ca vô tận: không có mục tiêu, giữ toàn bộ tiền, cộng tiến độ theo số khách
+    // Ghi các bộ đếm của ca vào save (chỉ khi ca kết thúc, bỏ ca giữa chừng thì không tính)
+    commitLife() {
+      const L = this.S.life, A = this.lifeAdd;
+      L.vips += A.vips; L.rushes += A.rushes; L.customsSold += A.customsSold;
+      if (A.bonusNext) this.S.bonusNext = (this.S.bonusNext || 0) + A.bonusNext;
+      this.lifeAdd = { vips: 0, rushes: 0, customsSold: 0, bonusNext: 0 };
+    }
+
     finishEndless(income) {
       const S = this.S;
       const MS = BT.MS;
       const served = this.stats.served;
       const claim = BT.Endless.claim(served, income);
       S.life.served += served;
+      this.commitLife();
       const petCoins = this.hamsterCoins();
       const units = BT.Endless.units(served);
       S.ms.shifts++;
@@ -1983,6 +1996,7 @@ window.BT = window.BT || { Screens: {} };
       // Tim vàng tính riêng từng mùa
       // Bộ đếm trọn đời & thú cưng sau ca
       S.life.served += this.stats.served;
+      this.commitLife();
       S.life.crispy += this.q.crispy || 0;
       if (passed && !this.secret && this.stats.walkouts === 0) S.life.perfect++;
       const petCoins = this.hamsterCoins();

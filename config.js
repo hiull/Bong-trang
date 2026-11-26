@@ -1364,6 +1364,7 @@ window.CONFIG = {
     backupOpen: "Mở file sao lưu",
     backupFileHint: "Lưu file vào Tệp hoặc iCloud Drive để đổi máy hay lỡ mất dữ liệu vẫn lấy lại được.",
     backupFileSaved: "Đã lưu file sao lưu",
+    backupFileMaybe: "Chưa mở được bảng Chia sẻ. Nếu không thấy file, dùng Sao chép mã sao lưu bên dưới nha.",
     backupRecovered: "Dữ liệu lưu bị lỗi, game đã lấy lại bản dự phòng gần nhất",
     tipInstall: "Thêm game vào màn hình chính để không mất tiến trình",
     tipInstallBtn: "Cách làm",

@@ -1864,3 +1864,4 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .nb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .nb-grid .nb-tile { padding: 14px 8px; min-height: 64px; }
 .nb-grid .nb-tile:last-child:nth-child(odd) { grid-column: span 2; }
+.switch:disabled, .set-row .btn:disabled { opacity: 0.55; cursor: default; }

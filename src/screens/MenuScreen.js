@@ -7,6 +7,7 @@ window.BT = window.BT || { Screens: {} };
 
   BT.Screens.Menu = {
     mount(root, params, router) {
+      const scope = UI.scope();   // hẹn giờ của Menu, tự huỷ khi rời Menu
       const S = BT.Save.state;
       const P = window.PERSONAL;
       const Pr = BT.Progress;
@@ -145,7 +146,7 @@ window.BT = window.BT || { Screens: {} };
       // Quà của anh Hiếu ngày đặc biệt (mỗi ngày một lần)
       const gift = S.welcomeSeen ? BT.Fun.giftDue() : null;
       // Có gì mới: save cũ xem một lần mỗi khi có bản mới (nhường quà ngày đặc biệt)
-      if (S.welcomeSeen && !gift && S.whatsNewSeen !== CONFIG.whatsNew.version) setTimeout(() => { if (!UI.modals.length) openWhatsNew(); }, 400);
+      if (S.welcomeSeen && !gift && S.whatsNewSeen !== CONFIG.whatsNew.version) scope.timeout(() => { if (!UI.modals.length) openWhatsNew(); }, 400);
 
       function openWhatsNew() {
         const W = CONFIG.whatsNew;
@@ -191,7 +192,7 @@ window.BT = window.BT || { Screens: {} };
         draw();
       }
       if (gift) {
-        setTimeout(() => {
+        scope.timeout(() => {
           UI.confetti(80);
           BT.Audio.play("letter");
           const body = UI.el("div", "story");
@@ -297,11 +298,21 @@ window.BT = window.BT || { Screens: {} };
           btn.setAttribute("role", "switch");
           btn.setAttribute("aria-label", label);
           btn.appendChild(UI.el("span", "switch-text", S.settings[key] ? UI.t("on") : UI.t("off")));
-          const draw = () => { btn.classList.toggle("on", !!S.settings[key]); UI.setText(btn.firstChild, S.settings[key] ? UI.t("on") : UI.t("off")); };
+          // Đang bật Chế độ thư giãn: các trợ giúp nằm trong đó hiện Bật & khoá lại
+          const locked = () => key !== "relaxMode" && !!S.settings.relaxMode && CONFIG.relaxMode.includes(key);
+          const draw = () => {
+            const on = locked() || !!S.settings[key];
+            btn.classList.toggle("on", on);
+            btn.disabled = locked();
+            btn.title = locked() ? UI.t("setRelaxNote") : "";
+            UI.setText(btn.firstChild, on ? UI.t("on") : UI.t("off"));
+          };
+          draw();
           refreshers.push(draw);
           btn.addEventListener("click", () => {
+            if (locked()) return;
             S.settings[key] = !S.settings[key];
-            draw();
+            if (key === "relaxMode") refreshers.forEach((f) => f()); else draw();
             BT.Audio.applySettings();
             BT.Save.persist();
             BT.Audio.play("tap");
@@ -313,11 +324,12 @@ window.BT = window.BT || { Screens: {} };
           pane.appendChild(row);
         };
         // Nút xoay vòng nhiều mức
-        const cycler = (label, cls, values, names, get, set) => {
+        const cycler = (label, cls, values, names, get, set, lockedFn) => {
           const row = UI.el("div", "set-row");
           row.appendChild(UI.el("span", "set-label", label));
           const name = () => names[Math.max(0, values.indexOf(get()))];
           const btn = UI.button(name(), "btn-white small " + cls, () => {
+            if (lockedFn && lockedFn()) return;
             const i = values.indexOf(get());
             set(values[(i + 1) % values.length]);
             draw();
@@ -325,7 +337,7 @@ window.BT = window.BT || { Screens: {} };
             BT.Audio.play("tap");
             refreshPreset();
           });
-          const draw = () => { UI.setText(btn, name()); btn.dataset.v = String(get()); };
+          const draw = () => { UI.setText(btn, name()); btn.dataset.v = String(get()); if (lockedFn) btn.disabled = lockedFn(); };
           refreshers.push(draw);
           draw();
           row.appendChild(btn);
@@ -360,7 +372,7 @@ window.BT = window.BT || { Screens: {} };
         toggle("lateAdd", UI.t("setLateAdd"));
         toggle("showRecipe", UI.t("setShowRecipe"));
         toggle("realRecipes", UI.t("setRealRecipes"));
-        cycler(UI.t("setPatience"), "patience-btn", [0, 0.25, 0.5], CONFIG.texts.patienceLevels, () => S.settings.patienceBoost || 0, (v) => { S.settings.patienceBoost = v; });
+        cycler(UI.t("setPatience"), "patience-btn", [0, 0.25, 0.5], CONFIG.texts.patienceLevels, () => (S.settings.relaxMode ? BT.patienceBoost() : S.settings.patienceBoost || 0), (v) => { S.settings.patienceBoost = v; }, () => !!S.settings.relaxMode);
         // ---- Tab Sự kiện: Vừa → Nhiều → Tắt → Ít ----
         pane = panes.events;
         pane.appendChild(UI.el("div", "set-note", UI.t("setEventsNote")));
@@ -377,6 +389,7 @@ window.BT = window.BT || { Screens: {} };
 
       // ---------- Sao lưu & Khôi phục mã TIEM1- ----------
       function openBackup() {
+        BT.Safety.prepare();
         const body = UI.el("div", "backup");
         const out = UI.el("textarea", "backup-code");
         out.readOnly = true;
@@ -560,7 +573,7 @@ window.BT = window.BT || { Screens: {} };
         });
       }
 
-      return { destroy() { UI.closeAllModals(); } };
+      return { destroy() { scope.clear(); UI.closeAllModals(); } };
     }
   };
 })();

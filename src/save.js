@@ -141,7 +141,8 @@ window.BT = window.BT || { Screens: {} };
 
     reset() {
       this.state = defaults();
-      if (this.available) { try { localStorage.removeItem(KEY); } catch (e) { /* bỏ qua */ } }
+      if (this.available) { try { localStorage.removeItem(KEY); localStorage.removeItem(KEY + "_bk"); } catch (e) { /* bỏ qua */ } }
+      if (BT.applyTextScale) BT.applyTextScale();
     },
 
     // Ghi lại tiền & kho ở đầu ngày để nút "Làm lại ngày" quay về đúng chỗ này.
@@ -234,6 +235,7 @@ window.BT = window.BT || { Screens: {} };
     this.state = merge(defaults(), data);
     if (BT.MS) BT.MS.migrate(this.state);
     this.persist();
+    if (BT.applyTextScale) BT.applyTextScale();
     return true;
   };
 

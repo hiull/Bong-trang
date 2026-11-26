@@ -37,6 +37,7 @@ window.BT = window.BT || { Screens: {} };
     },
     claimGift(d) {
       const S = BT.Save.state;
+      if (S.specialSeen[d.key]) return false;   // đã nhận rồi (Menu dựng lại trước khi bấm)
       S.specialSeen[d.key] = true;
       if (d.gift) S.wallet += d.gift;
       BT.Save.persist();
