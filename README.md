@@ -208,7 +208,10 @@ Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (v�
 - Số lần ghé và mức thưởng chỉnh trong `config.js` (`tomoFlirtPerDay`, `tomoFlirtSecret`, `flirtRewardTip`, `flirtGiveUpTip`).
 
 ## 10. Sao lưu tiến trình
-Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao lưu**. Cất mã vào app Ghi chú hoặc gửi qua email (đừng gửi qua Messenger/Zalo vì tin nhắn dài có thể bị cắt). Đổi máy thì dán mã vào ô **Dán mã để khôi phục**.
+- **Thêm game vào màn hình chính** (Safari → Chia sẻ → Thêm vào MH chính). Safari có thể xoá dữ liệu của trang web không mở khoảng 7 ngày; game đã thêm vào màn hình chính an toàn hơn. Menu tự nhắc nếu chưa thêm.
+- **Lưu ra file:** ⚙️ Cài đặt → Chung → Sao lưu & Khôi phục → *Lưu ra file* (iPad/iPhone mở bảng Chia sẻ để cất vào Tệp / iCloud Drive). Đổi máy hoặc lỡ mất dữ liệu thì bấm *Mở file sao lưu*. Lâu chưa lưu file, Menu sẽ nhắc.
+- **Mã sao lưu** (cách cũ) vẫn dùng được: sao chép mã, cất vào Ghi chú; dán mã để khôi phục.
+- Game tự giữ 3 bản dự phòng trong máy (mỗi ngày một bản). Nếu file lưu bị lỗi, game tự lấy lại bản gần nhất.
 
 ## 11. Toàn màn hình
 - **Android / máy tính (Chrome, Edge…):** lần chạm đầu tiên game tự bật toàn màn hình (trình duyệt bắt buộc phải có một lần chạm). Lỡ thoát ra thì chạm tiếp là bật lại. Muốn tắt: **⚙️ Cài đặt → Toàn màn hình**.
@@ -267,4 +270,11 @@ Vào **⚙️ Cài đặt → Sao lưu & Khôi phục 💾 → Sao chép mã sao
 | Hẹn hò sau ca | ngẫu nhiên ít hơn (qua mốc lớn vẫn có) | ngẫu nhiên gấp đôi |
 
 *Tắt* là không xảy ra. Các mốc cốt truyện có thời tiết cố định vẫn giữ nguyên. Ca bí mật vẫn đủ lượt thả thính.
+
+## 17. Menu, Cài đặt & Có gì mới
+- **Sổ tay** ở Menu gom Điểm danh, Nhiệm vụ, Tuần này, Thư, Đánh giá; chấm đỏ báo có việc chưa xem.
+- **Cài đặt** có 3 tab (Chung / Trợ giúp / Sự kiện) và **Chế độ nhanh**: *Thư giãn* (bật hết trợ giúp, ít sự cố), *Bình thường* (mặc định), *Thử thách* (ẩn công thức, công thức chuẩn ngoài đời, nhiều sự kiện). Chỉnh tay từng mục thì hiện "Đang tuỳ chỉnh". Sửa các chế độ trong `presets` ở `config.js`.
+- **Cỡ chữ** Vừa / Lớn / Rất lớn (tab Chung) phóng to chữ trong hộp thoại, bong bóng khách và thông báo.
+- **Có gì mới:** khi anh cập nhật game, người đã chơi sẽ thấy các thẻ giới thiệu một lần. Sửa nội dung trong `whatsNew` ở `config.js`; muốn Bống xem lại thẻ mới thì đổi `version`.
+- Font chữ tải song song: mạng chậm vẫn vào game ngay bằng font của máy.
 

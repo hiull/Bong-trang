@@ -100,8 +100,8 @@ window.CONFIG = {
     recipeBookPauseUntilDay: 2,
     vibrateGood: 30,
     vibrateBad: 80,
-    fontWaitMaxSec: 3,
-    bootMinSec: 0.9,
+    fontWaitMaxSec: 1.2,
+    bootMinSec: 0.4,
     // Dành cho các giai đoạn sau
     comboStepBonus: 0.05,
     comboMax: 10,

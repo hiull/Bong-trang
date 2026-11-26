@@ -29,14 +29,14 @@ window.BT = window.BT || { Screens: {} };
       set(0);
 
       const tick = () => {
-        shown += (target - shown) * 0.15 + 0.3;
+        shown += (target - shown) * 0.3 + 0.6;
         if (shown > target) shown = target;
         set(shown);
         if (shown >= 100) {
-          scope.timeout(() => router.go("Menu", {}, { replace: true }), 150);
+          scope.timeout(() => router.go("Menu", {}, { replace: true }), 80);
           return;
         }
-        scope.timeout(tick, 30);
+        scope.timeout(tick, 20);
       };
       tick();
 
