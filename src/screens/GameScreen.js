@@ -24,7 +24,12 @@ window.BT = window.BT || { Screens: {} };
       this.practice = run.mode === "practice";   // Bếp tập: không khách thật, không tính tiền
       this.helperOn = !this.practice && BT.Helper.working(run);
       // Anh Hiếu tự sửa món làm sai (giới hạn mỗi ca)
-      this.heroLeft = !this.practice && this.S.settings.heroFix !== false ? CONFIG.heroFix.perShift + (BT.perk("heroPlus") ? 1 : 0) : 0;
+      // Anh Hiếu giúp làm món (không có ở Bếp tập & Ca bí mật — ở đó anh là khách)
+      this.heroOn = !this.practice && !this.secret && this.S.settings.heroFix !== false;
+      this.heroLeft = !this.heroOn ? 0 : (CONFIG.heroFix.perShift > 0 ? CONFIG.heroFix.perShift : Infinity);
+      this.heroQueue = [];
+      this.heroBusy = false;
+      this.heroPick = false;
       this.comboKept = false;   // bùa Bền bỉ
       this.walkSoftUsed = false; // bùa Khách dễ tính
       this.heroUsed = 0;
@@ -214,6 +219,16 @@ window.BT = window.BT || { Screens: {} };
       hud.appendChild(left);
       hud.appendChild(UI.iconButton("📖", UI.t("bookTitle"), () => this.openBook(), "hud-book"));
       hud.appendChild(UI.iconButton("⏸", UI.t("pauseTitle"), () => this.openPause(), "hud-pause"));
+      if (this.heroOn) {
+        const hb = UI.el("button", "icon-btn hero-btn");
+        hb.type = "button";
+        hb.setAttribute("aria-label", UI.t("heroBtn"));
+        hb.title = UI.t("heroBtn");
+        hb.appendChild(UI.icon("tomortle"));
+        hb.addEventListener("click", () => this.toggleHeroPick());
+        this.heroBtn = hb;
+        hud.appendChild(hb);
+      }
       if (this.practice) {
         const bar = UI.el("div", "practice-bar");
         bar.appendChild(UI.el("span", "pr-name", UI.t("practiceBar", { dish: UI.recipe(this.run.practiceDish).name })));
@@ -382,6 +397,13 @@ window.BT = window.BT || { Screens: {} };
       }
 
       if (this.holdOn) this.syncHeld();
+      // Anh Hiếu: giữ chân khách đang chờ anh; cứu khách sắp bỏ đi
+      if (this.heroOn) this.customers.forEach((c) => {
+        if (c.state !== "waiting" || c.isCat) return;
+        if (c.heroFixing) { c.patience = Math.max(c.patience, c.max * CONFIG.heroFix.keepPatience); return; }
+        if (c.type && c.type.kind === "tomortle") return;
+        if (c.pct() < CONFIG.heroFix.rescueAt && c.pending().length) this.heroTask(c, c.pending()[0], "rescue");
+      });
       // Bếp tập: khách tập không bao giờ bỏ đi
       if (this.practice) this.customers.forEach((c) => { if (c.state === "waiting") c.patience = c.max; });
       // Sinh khách
@@ -950,6 +972,14 @@ window.BT = window.BT || { Screens: {} };
 
     onCustomerTap(c) {
       if (this.isPaused()) return;
+      // Đang chọn khách để nhờ anh Hiếu làm giùm
+      if (this.heroPick) {
+        this.heroPick = false;
+        if (this.heroBtn) this.heroBtn.classList.remove("on");
+        const it = !c.isCat && c.state === "waiting" ? c.pending()[0] : null;
+        if (!it || !this.heroTask(c, it, "make")) UI.toast(UI.t("heroPickNo"));
+        return;
+      }
       if (c.isCat) { this.feedCat(c); return; }
       if (!this.selected) { UI.toast(UI.t("pickTrayFirst")); return; }
       this.deliver(c, this.selected);
@@ -987,7 +1017,7 @@ window.BT = window.BT || { Screens: {} };
         const same = pending.find((it) => UI.recipe(it.id).zone === tray.zone) || pending[0];
         const bad = BT.Tray.evaluate(tray, same);
         // Anh Hiếu tự sửa món (còn lượt trong ca)
-        if (this.heroLeft > 0 && !c.heroFixing) { this.heroFix(c, tray, same); if (this.holdOn) this.syncHeld(); return; }
+        if (this.heroOn && !c.heroFixing && this.heroFix(c, tray, same, bad)) { if (this.holdOn) this.syncHeld(); return; }
         const vars = c.vars({ ing: bad.ing ? UI.ing(bad.ing).short : "" });
         const key = {
           notOrdered: "wrongNotOrdered", missing: "wrongMissing", extra: "wrongExtra", notMixed: "wrongNotMixed",
@@ -1045,39 +1075,79 @@ window.BT = window.BT || { Screens: {} };
       this.updateHint();
     }
 
-    // ---------------- Anh Hiếu sửa món làm sai ----------------
-    heroFix(c, tray, item) {
-      const H = CONFIG.heroFix;
-      this.heroLeft--;
+    // ---------------- Anh Hiếu giúp làm món ----------------
+    // kind: "fix" (làm lại món giao sai), "topup" (bỏ thêm 1–2 phần còn thiếu), "make" (Bống nhờ), "rescue" (khách sắp bỏ đi)
+    // Anh làm lần lượt từng việc (hàng chờ); khách đang chờ anh thì không bỏ đi.
+    heroTask(c, item, kind) {
+      if (!this.heroOn || !c || !item || c.heroFixing || item.done) return false;
+      if (this.heroLeft !== Infinity) { if (this.heroLeft <= 0) return false; this.heroLeft--; }
       this.heroUsed++;
-      tray.clear();
-      tray.render();
-      this.select(null);
-      if (BT.perk("comboKeep") && !this.comboKept) this.comboKept = true; else this.combo = 0;
       c.heroFixing = true;
-      c.patience = Math.max(c.patience, c.max * H.keepPatience);
+      item.heroFixed = kind === "topup" ? "topup" : true;
+      c.patience = Math.max(c.patience, c.max * CONFIG.heroFix.keepPatience);
+      this.heroQueue.push({ c, item, kind });
+      if (!this.heroBusy) this.heroNext();
+      else c.react(UI.t("heroWait"), "🙂", CONFIG.gameplay.reactionShowSec);
+      this.updateHud();
+      return true;
+    }
+    heroNext() {
+      const H = CONFIG.heroFix;
+      const task = this.heroQueue.shift();
+      if (!task) { this.heroBusy = false; return; }
+      const { c, item, kind } = task;
+      if (this.over || c.state !== "waiting" || item.done) { c.heroFixing = false; this.heroNext(); return; }
+      this.heroBusy = true;
       BT.Audio.play("pop");
-      // Anh Hiếu ló ra nói một câu
+      const P = window.PERSONAL;
+      const lines = { fix: P.heroFixLines, topup: P.heroTopUpLines, make: P.heroMakeLines, rescue: P.heroRescueLines }[kind] || P.heroFixLines;
+      const sec = kind === "topup" ? H.topUpSec : H.sec;
       const box = UI.el("div", "hero-fix");
       box.appendChild(UI.icon("tomortle"));
       const txt = UI.el("div", "hero-fix-text");
-      txt.appendChild(UI.el("div", "", UI.pick(window.PERSONAL.heroFixLines || ["Để anh làm lại cho!"])));
-      txt.appendChild(UI.el("div", "hero-fix-left", UI.t("heroFixLeft", { n: this.heroLeft })));
+      txt.appendChild(UI.el("div", "", UI.pick(lines || ["Để anh làm cho!"])));
+      if (this.heroQueue.length) txt.appendChild(UI.el("div", "hero-fix-left", UI.t("heroQueue", { n: this.heroQueue.length })));
       box.appendChild(txt);
+      if (this.heroBox) this.heroBox.remove();
+      this.heroBox = box;
       (this.front || this.el).appendChild(box);
-      this.scope.timeout(() => box.remove(), H.sec * 1000 + 600);
       this.scope.timeout(() => {
+        box.remove();
+        if (this.heroBox === box) this.heroBox = null;
         c.heroFixing = false;
-        if (this.over || c.state !== "waiting" || item.done) return;
-        item.heroFixed = true;
-        c.markDone(item);
-        BT.Audio.play("add");
-        if (c.pending().length > 0) c.react(UI.t("partialOk"), "😋", CONFIG.gameplay.reactionShowSec);
-        else this.complete(c);
-        this.updateHud();
-        this.updateTabDots();
-      }, H.sec * 1000);
-      this.updateHud();
+        if (!this.over && c.state === "waiting" && !item.done) {
+          c.markDone(item);
+          BT.Audio.play("add");
+          if (c.pending().length > 0) c.react(UI.t("partialOk"), "😋", CONFIG.gameplay.reactionShowSec);
+          else this.complete(c);
+          this.updateHud();
+          this.updateTabDots();
+        }
+        this.heroNext();
+      }, sec * 1000);
+    }
+    // Giao sai: khay chỉ thiếu 1–2 phần (không thừa gì) → làm nốt; còn lại → làm lại cả món
+    heroFix(c, tray, item, bad) {
+      let kind = "fix";
+      if (bad && bad.reason === "missing" && this.fitsDish(tray, item)) {
+        const req = BT.Tray.requirements(item);
+        const miss = req.r.zone === "che" ? req.layers.length - tray.layers.length
+          : Object.keys(req.need).reduce((s, id) => s + Math.max(0, req.need[id] - (tray.items[id] || 0)), 0);
+        if (miss >= 1 && miss <= 2) kind = "topup";
+      }
+      if (!this.heroTask(c, item, kind)) return false;
+      tray.clear();
+      tray.render();
+      this.select(null);
+      if (kind === "fix") { if (BT.perk("comboKeep") && !this.comboKept) this.comboKept = true; else this.combo = 0; }
+      return true;
+    }
+    toggleHeroPick() {
+      if (this.isPaused() || !this.heroOn) return;
+      this.heroPick = !this.heroPick;
+      if (this.heroBtn) this.heroBtn.classList.toggle("on", this.heroPick);
+      if (this.heroPick) UI.toast(UI.t("heroPickHint"), 2200);
+      BT.Audio.play("tap");
     }
 
     // ---------------- Bếp tập ----------------
@@ -1297,7 +1367,11 @@ window.BT = window.BT || { Screens: {} };
       tip = Math.round(tip + reqTip);
       // Bùa: tip cộng thêm theo món
       c.items.forEach((it) => { const z = (UI.recipe(it.id) || {}).zone; if (z === "nuoc" && BT.perk("drinkTip")) tip += 3; if (z === "cuon" && BT.perk("rollTip")) tip += 5; });
-      if (c.items.some((it) => it.heroFixed)) tip = Math.round(tip * CONFIG.heroFix.tipMult);   // anh Hiếu làm lại giùm
+      // Anh Hiếu làm giùm: bớt tip (lá Tình Nhân thì không bớt)
+      if (!BT.perk("heroPlus")) {
+        if (c.items.some((it) => it.heroFixed === true)) tip = Math.round(tip * CONFIG.heroFix.tipMult);
+        else if (c.items.some((it) => it.heroFixed === "topup")) tip = Math.round(tip * CONFIG.heroFix.topUpTipMult);
+      }
       const comboBonus = Math.round(pay * G.comboStepBonus * Math.max(0, this.combo - 1));
       const fiveMin = G.ratingSteps[0].min - (up.quat > 0 ? CONFIG.upgrades.quat.fiveStarDrop : 0);
       let stars = p >= fiveMin ? 5 : G.ratingSteps.find((s) => p >= s.min).stars;

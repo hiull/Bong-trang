@@ -558,9 +558,9 @@ window.CONFIG = {
 
   // Màn "Có gì mới": save cũ thấy một lần mỗi khi đổi version. go = nút "Thử ngay" mở đâu.
   whatsNew: {
-    version: "1.9",
+    version: "2.0",
     items: [
-      { icon: "💕", title: "Anh Hiếu sửa món", text: "Lỡ giao sai món, anh Hiếu tự nhảy vào làm lại giùm (3 lần mỗi ca, khách bớt tip một chút). Tắt được trong Cài đặt → Trợ giúp.", go: null },
+      { icon: "💕", title: "Anh Hiếu sửa món", text: "Lỡ giao sai, anh Hiếu làm lại hoặc bỏ nốt phần thiếu; khách sắp bỏ đi anh tự làm giúp; bấm nút có hình anh trên đầu màn để nhờ làm món cho khách bất kỳ. Khách bớt tip một chút. Tắt trong Cài đặt → Trợ giúp.", go: null },
       { icon: "📖", title: "Bếp tập", text: "Tập làm bất kỳ món nào: không khách thật, không tính giờ, không tốn nguyên liệu. Nút Bếp tập ở Menu.", go: "practice" },
       { icon: "✅", title: "Mục tiêu phụ", text: "Mỗi mốc có thêm một mục tiêu nhỏ (không ai bỏ đi, combo 5…). Đạt được thì có dấu ✓ trên Bản đồ và thưởng 20k.", go: "map" },
       { icon: "🔮", title: "Tarot", text: "Bùa giờ là lá Ẩn chính: qua mốc lớn được lật 3 lá úp rồi chọn một. Mỗi ngày còn có Lá bài hôm nay trong Sổ tay.", go: "perks" },
@@ -570,7 +570,8 @@ window.CONFIG = {
   },
 
   // Anh Hiếu tự sửa món làm sai: số lượt mỗi ca, thời gian làm lại, tip còn lại, kiên nhẫn giữ tối thiểu
-  heroFix: { perShift: 3, sec: 2.5, tipMult: 0.5, keepPatience: 0.3 },
+  // perShift 0 = không giới hạn (anh làm lần lượt). topUp = bỏ thêm 1–2 phần còn thiếu (nhanh hơn, bớt ít tip hơn). rescueAt = khách dưới mức kiên nhẫn này thì anh tự làm giúp
+  heroFix: { perShift: 0, sec: 2.5, tipMult: 0.5, topUpSec: 1.2, topUpTipMult: 0.75, keepPatience: 0.3, rescueAt: 0.15 },
   // Đơn mang về (kiểu đặt qua app): từ cấp fromLevel; số đơn mỗi ca (cấp ≥ moreFromLevel thì 2); xuất hiện ở tiến độ window;
   // chờ tài xế sec giây; giao đủ được tiền món + fee (k); trễ thì mất đơn, không mất tim
   takeout: { fromLevel: 8, moreFromLevel: 12, window: [0.2, 0.75], sec: [60, 80], items: [2, 3], fee: 10 },
@@ -587,7 +588,7 @@ window.CONFIG = {
   perks: [
     { id: "rollTip", num: "I", name: "Pháp Sư", en: "The Magician", icon: "✨", desc: "Đôi tay khéo léo: mỗi món cuốn thêm 5k tip" },
     { id: "loveFast", num: "III", name: "Hoàng Hậu", en: "The Empress", icon: "🌸", desc: "Dồi dào yêu thương: thanh tim sạc nhanh hơn 30%" },
-    { id: "heroPlus", num: "VI", name: "Tình Nhân", en: "The Lovers", icon: "💕", desc: "Có nhau là đủ: anh Hiếu sửa món thêm 1 lượt mỗi ca" },
+    { id: "heroPlus", num: "VI", name: "Tình Nhân", en: "The Lovers", icon: "💕", desc: "Có nhau là đủ: anh Hiếu làm giùm mà khách không bớt tip" },
     { id: "shakeFast", num: "VII", name: "Cỗ Xe", en: "The Chariot", icon: "🛵", desc: "Ý chí & tốc độ: lắc bịch, cuốn bánh bớt 2 lần" },
     { id: "comboKeep", num: "VIII", name: "Sức Mạnh", en: "Strength", icon: "💪", desc: "Dịu dàng mà vững: lần sai đầu mỗi ca không mất combo" },
     { id: "rushTip", num: "X", name: "Bánh Xe Số Phận", en: "Wheel of Fortune", icon: "☸️", desc: "Vận may xoay tới: giờ cao điểm tip ×2,5" },
@@ -1201,7 +1202,12 @@ window.CONFIG = {
     holdStored: "Đã cất vào tủ",
     holdStale: "nguội",
     perfectShake: "Ngon tuyệt!",
-    setHeroFix: "Anh Hiếu sửa món làm sai (3 lần mỗi ca)",
+    setHeroFix: "Anh Hiếu giúp làm món (sửa món sai, cứu khách sắp đi, nút Nhờ anh)",
+    heroBtn: "Nhờ anh Hiếu",
+    heroPickHint: "Chạm vào khách cần anh Hiếu làm giùm",
+    heroPickNo: "Khách này không cần làm giúp",
+    heroWait: "Đợi anh Hiếu xíu",
+    heroQueue: "còn {n} món đang chờ anh",
     heroFixLeft: "còn {n} lần",
     sideGoalTitle: "Mục tiêu phụ",
     sideGoalDone: "Mục tiêu phụ: {text} ✓",

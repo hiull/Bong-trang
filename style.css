@@ -1966,3 +1966,8 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .mcard .mback.tarot-back { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 2px solid #E7C76A;
   background: radial-gradient(circle at 50% 50%, #8E5BD8 0 24%, transparent 25%), repeating-linear-gradient(45deg, #4B2C82 0 7px, #5A378F 7px 14px); font-size: 22px; }
 .mcard:not(.up) { background: #4B2C82; box-shadow: 0 3px 0 #2E1A55; }
+
+/* Nút Nhờ anh Hiếu */
+.hero-btn { padding: 2px; }
+.hero-btn .dd, .hero-btn svg { width: 30px; height: 30px; }
+.hero-btn.on { background: #FFD6E2; box-shadow: 0 0 0 3px #FF5C8A; animation: wobble 0.8s ease-in-out infinite; }

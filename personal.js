@@ -279,6 +279,23 @@ window.PERSONAL = {
     "Ca đông quá ha, món này để anh.",
     "Đưa anh khay đó, em làm món khác đi."
   ],
+  // Anh Hiếu bỏ thêm phần còn thiếu / Bống nhờ làm giùm / cứu khách sắp bỏ đi
+  heroTopUpLines: [
+    "Thiếu xíu thôi, anh bỏ thêm cho.",
+    "Để anh rắc thêm, xong liền!",
+    "Gần đủ rồi nè, anh thêm nốt."
+  ],
+  heroMakeLines: [
+    "Có anh! Món này để anh.",
+    "Em cứ lo khách khác, anh làm cái này.",
+    "Nhận đơn! Anh làm liền.",
+    "Bà chủ ra lệnh, anh làm ngay."
+  ],
+  heroRescueLines: [
+    "Khách sắp đi kìa, để anh làm nhanh!",
+    "Khoan về đã, có liền nè!",
+    "Anh lo khách này, em cứ làm tiếp."
+  ],
   // Hẹn hò sau ca: mỗi lần thắng trò lật thẻ mở một ghi chú (theo thứ tự). Nháp, anh sửa thoải mái.
   dateNotes: [
     "Buổi hẹn đầu tiên sau ca: hai đứa ngồi ăn ké phần bánh tráng còn dư, ngon hơn mọi nhà hàng.",

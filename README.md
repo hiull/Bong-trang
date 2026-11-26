@@ -279,7 +279,14 @@ Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (v�
 - Font chữ tải song song: mạng chậm vẫn vào game ngay bằng font của máy.
 
 ## 18. Gameplay mới
-- **Anh Hiếu sửa món làm sai:** giao nhầm/thiếu/thừa/cháy thì anh tự làm lại trong vài giây. Mỗi ca 3 lần, khách bớt nửa tip. Tắt trong Cài đặt → Trợ giúp. Lời thoại: `heroFixLines` trong `personal.js`.
+- **Anh Hiếu giúp làm món** (không giới hạn lượt; anh làm lần lượt từng việc, khách đang chờ anh thì không bỏ đi):
+  - *Giao sai* (nhầm, thừa, cháy…): anh làm lại cả món, khách bớt nửa tip.
+  - *Khay chỉ thiếu 1–2 phần:* anh bỏ nốt cho đủ, nhanh hơn, khách chỉ bớt 1/4 tip.
+  - *Nút có hình anh Hiếu* trên đầu màn chơi: bấm rồi chạm một khách, anh làm món cho khách đó.
+  - *Khách sắp bỏ đi* (dưới 15% kiên nhẫn): anh tự làm giúp.
+  - Lá Tình Nhân: anh giúp mà khách không bớt tip.
+  - Tắt trong Cài đặt → Trợ giúp.
+  - Lời thoại: `heroFixLines`, `heroTopUpLines`, `heroMakeLines`, `heroRescueLines` trong `personal.js`. Thời gian và tip sửa ở `heroFix` trong `config.js`.
 - **Bếp tập** (nút ở Menu): tập bất kỳ món nào đã mở, không khách thật, không giờ, không tốn tiền hay nguyên liệu.
 - **Mục tiêu phụ:** mỗi mốc (từ Mốc 2) có một mục tiêu nhỏ, hiện ở màn Chuẩn bị. Đạt thì có dấu ✓ trên Bản đồ, lần đầu thưởng 20k. Sửa trong `sideGoals` ở `config.js`.
 - **Bùa = lá Tarot:** qua mốc lớn lần đầu, lật 3 lá Ẩn chính úp rồi chọn một lá, giữ mãi. Xem trong Kỷ niệm → Bộ bài. Có 12 lá trong `perks` ở `config.js`.
