@@ -30,6 +30,8 @@ window.BT = window.BT || { Screens: {} };
       this.heroQueue = [];
       this.tipQueue = [];   // gợi ý lần đầu gặp cơ chế
       this.heroBusy = false;
+      this.heroCur = null;
+      this.rescueUsed = 0;
       this.heroPick = false;
       this.comboKept = false;   // bùa Bền bỉ
       this.walkSoftUsed = false; // bùa Khách dễ tính
@@ -397,7 +399,8 @@ window.BT = window.BT || { Screens: {} };
         if (this.freezeLeft <= 0) { this.freezeLeft = 0; this.front.classList.remove("loving"); }
       }
 
-      if (this.holdOn) this.syncHeld();
+      this.tickHero(dt);
+      if (this.holdOn) { this.held.forEach((h) => { if (h) h.age += dt; }); this.syncHeld(); }
       this.tickTips();
       // Anh Hiếu: giữ chân khách đang chờ anh; cứu khách sắp bỏ đi
       if (this.heroOn) this.customers.forEach((c) => {
@@ -455,7 +458,7 @@ window.BT = window.BT || { Screens: {} };
         if (this.takeoutPlan.length && pr >= this.takeoutPlan[0]) { this.takeoutPlan.shift(); this.spawnTakeout(); }
         if (this.bulkPlan !== false && !this.bulkDone && pr >= this.bulkPlan) {
           const seat = this.seats.findIndex((s) => s === null);
-          if (seat >= 0) { this.bulkDone = true; const c = this.spawnBulk(null, null, seat); if (c) this.spawned++; }
+          if (seat >= 0) { this.bulkDone = true; this.spawnBulk(null, null, seat); }   // khách thêm, không đếm vào lượt
         }
       }
       this.tickTakeouts(dt);
@@ -466,7 +469,7 @@ window.BT = window.BT || { Screens: {} };
       this.customers.slice().forEach((c) => c.update(cdt, this.freezeLeft > 0 || !!this.tut));
       if (this.helper && !this.tut) BT.Helper.tick(this, dt);
       this.tickTutorial();
-      const allServed = this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0;
+      const allServed = this.spawned >= this.total && this.groupPending === 0 && this.customers.filter((c) => !c.isCat).length === 0 && !(this.takeouts && this.takeouts.length);
       // Tới mốc thả thính (hoặc hết khách mà còn lượt chưa ghé) → anh Hiếu vào khi tiệm đang rảnh tay
       const due = this.endless
         ? this.dayNum >= G.tomoFlirtFromDay && this.stats.served >= (this.flirtDone + 1) * CONFIG.endless.flirtEvery
@@ -1066,7 +1069,7 @@ window.BT = window.BT || { Screens: {} };
       match.crispy = res.crispy;
       if (tray.perfect) match.perfect = true;
       const heldE = (this.held || []).find((h) => h && h.tray === tray);
-      if (heldE && Date.now() - heldE.at > CONFIG.hold.staleSec * 1000) match.stale = true;
+      if (heldE && heldE.age > CONFIG.hold.staleSec) match.stale = true;
       c.markDone(match);
       this.combo = Math.min(G.comboMax, this.combo + 1);
       this.q.comboMax = Math.max(this.q.comboMax, this.combo);
@@ -1097,31 +1100,48 @@ window.BT = window.BT || { Screens: {} };
 
     // ---------------- Anh Hiếu giúp làm món ----------------
     // kind: "fix" (làm lại món giao sai), "topup" (bỏ thêm 1–2 phần còn thiếu), "make" (Bống nhờ), "rescue" (khách sắp bỏ đi)
-    // Anh làm lần lượt từng việc (hàng chờ); khách đang chờ anh thì không bỏ đi.
-    heroTask(c, item, kind) {
-      if (!this.heroOn || !c || !item || c.heroFixing || item.done) return false;
-      if (this.heroLeft !== Infinity) { if (this.heroLeft <= 0) return false; this.heroLeft--; }
-      this.heroUsed++;
+    // Anh làm lần lượt (hàng chờ), theo thời gian chơi (tạm dừng thì anh cũng dừng), có tốn nguyên liệu.
+    heroUse(item, portions) {
+      const req = BT.Tray.requirements(item);
+      const use = {};
+      const add = (id, n) => { if (id && CONFIG.ingredients[id]) use[id] = (use[id] || 0) + n * portions; };
+      add(req.r.base, 1);
+      if (req.r.zone === "che") req.layers.forEach((id) => add(id, 1));
+      else Object.keys(req.need).forEach((id) => add(id, req.need[id]));
+      req.finishIngs.forEach((id) => add(id, 1));
+      Object.keys(req.sauces || {}).forEach((id) => add(id, req.sauces[id]));
+      if (req.pour) add(req.pour, 1);
+      return use;
+    }
+    heroLack(use) { return Object.keys(use).find((id) => BT.Save.stock(id) < use[id]) || null; }
+    heroTask(c, item, kind, use) {
+      if (!this.heroOn || !c || !item || c.heroFixing || item.done || c.state !== "waiting") return false;
+      if (c.type && c.type.kind === "tomortle") return false;   // món của chính anh Hiếu
+      if (kind === "rescue" && this.rescueUsed >= CONFIG.heroFix.rescuePerShift) return false;
+      if (this.heroLeft !== Infinity && this.heroLeft <= 0) return false;
+      use = use || this.heroUse(item, c.bulk > 1 ? c.bulk : 1);
+      const lack = this.heroLack(use);
+      if (lack) { if (kind !== "rescue") UI.toast(UI.t("heroNoStock", { ing: UI.ing(lack).short }), 2400); return false; }
+      if (this.heroLeft !== Infinity) this.heroLeft--;
+      if (kind === "rescue") this.rescueUsed++;
       c.heroFixing = true;
-      item.heroFixed = kind === "topup" ? "topup" : true;
       c.patience = Math.max(c.patience, c.max * CONFIG.heroFix.keepPatience);
-      this.heroQueue.push({ c, item, kind });
-      if (!this.heroBusy) this.heroNext();
+      this.heroQueue.push({ c, item, kind, use });
+      if (!this.heroCur) this.heroNext();
       else c.react(UI.t("heroWait"), "🙂", CONFIG.gameplay.reactionShowSec);
       this.updateHud();
       return true;
     }
     heroNext() {
       const H = CONFIG.heroFix;
-      const task = this.heroQueue.shift();
-      if (!task) { this.heroBusy = false; return; }
-      const { c, item, kind } = task;
-      if (this.over || c.state !== "waiting" || item.done) { c.heroFixing = false; this.heroNext(); return; }
+      let task = this.heroQueue.shift();
+      while (task && (this.over || task.c.state !== "waiting" || task.item.done)) { task.c.heroFixing = false; task = this.heroQueue.shift(); }
+      if (!task) { this.heroCur = null; this.heroBusy = false; return; }
       this.heroBusy = true;
+      this.heroCur = { task, left: task.kind === "topup" ? H.topUpSec : H.sec };
       BT.Audio.play("pop");
       const P = window.PERSONAL;
-      const lines = { fix: P.heroFixLines, topup: P.heroTopUpLines, make: P.heroMakeLines, rescue: P.heroRescueLines }[kind] || P.heroFixLines;
-      const sec = kind === "topup" ? H.topUpSec : H.sec;
+      const lines = { fix: P.heroFixLines, topup: P.heroTopUpLines, make: P.heroMakeLines, rescue: P.heroRescueLines }[task.kind] || P.heroFixLines;
       const box = UI.el("div", "hero-fix");
       box.appendChild(UI.icon("tomortle"));
       const txt = UI.el("div", "hero-fix-text");
@@ -1131,11 +1151,23 @@ window.BT = window.BT || { Screens: {} };
       if (this.heroBox) this.heroBox.remove();
       this.heroBox = box;
       (this.front || this.el).appendChild(box);
-      this.scope.timeout(() => {
-        box.remove();
-        if (this.heroBox === box) this.heroBox = null;
-        c.heroFixing = false;
-        if (!this.over && c.state === "waiting" && !item.done) {
+    }
+    // Gọi trong update(dt): đếm thời gian anh làm món
+    tickHero(dt) {
+      if (!this.heroCur) return;
+      this.heroCur.left -= dt;
+      if (this.heroCur.left > 0) return;
+      const { c, item, kind, use } = this.heroCur.task;
+      if (this.heroBox) { this.heroBox.remove(); this.heroBox = null; }
+      c.heroFixing = false;
+      if (!this.over && c.state === "waiting" && !item.done) {
+        const lack = this.heroLack(use);
+        if (lack) UI.toast(UI.t("heroNoStock", { ing: UI.ing(lack).short }), 2400);
+        else {
+          Object.keys(use).forEach((id) => { this.S.inventory[id] = BT.Save.stock(id) - use[id]; });
+          if (this.grid && this.grid.refresh) this.grid.refresh();
+          item.heroFixed = kind === "topup" ? "topup" : true;
+          this.heroUsed++;
           c.markDone(item);
           BT.Audio.play("add");
           if (c.pending().length > 0) c.react(UI.t("partialOk"), "😋", CONFIG.gameplay.reactionShowSec);
@@ -1143,19 +1175,30 @@ window.BT = window.BT || { Screens: {} };
           this.updateHud();
           this.updateTabDots();
         }
-        this.heroNext();
-      }, sec * 1000);
-    }
-    // Giao sai: khay chỉ thiếu 1–2 phần (không thừa gì) → làm nốt; còn lại → làm lại cả món
-    heroFix(c, tray, item, bad) {
-      let kind = "fix";
-      if (bad && bad.reason === "missing" && this.fitsDish(tray, item)) {
-        const req = BT.Tray.requirements(item);
-        const miss = req.r.zone === "che" ? req.layers.length - tray.layers.length
-          : Object.keys(req.need).reduce((s, id) => s + Math.max(0, req.need[id] - (tray.items[id] || 0)), 0);
-        if (miss >= 1 && miss <= 2) kind = "topup";
       }
-      if (!this.heroTask(c, item, kind)) return false;
+      this.heroNext();
+    }
+    // Giao sai: khay chỉ thiếu 1–2 phần (không thừa gì) → làm nốt; còn lại → làm lại cả món.
+    // Thả đúng món nhưng nhầm khách (khách không gọi món ở quầy này) thì không nhảy vào.
+    heroFix(c, tray, item, bad) {
+      if (!bad || bad.reason === "notOrdered" || UI.recipe(item.id).zone !== tray.zone) return false;
+      // Khay đúng y món của một khách khác đang chờ → chỉ là thả nhầm khách, giữ khay
+      if (this.customers.some((x) => x !== c && x.state === "waiting" && !x.isCat && x.pending().some((it) => BT.Tray.evaluate(tray, it).ok))) return false;
+      let kind = "fix";
+      let use = null;
+      if (bad.reason === "missing" && this.fitsDish(tray, item)) {
+        const req = BT.Tray.requirements(item);
+        const add = {};
+        if (req.r.zone === "che") req.layers.slice(tray.layers.length).forEach((id) => { add[id] = (add[id] || 0) + 1; });
+        else Object.keys(req.need).forEach((id) => { const n = req.need[id] - (tray.items[id] || 0); if (n > 0) add[id] = n; });
+        const miss = Object.keys(add).reduce((s2, id) => s2 + add[id], 0);
+        if (miss >= 1 && miss <= 2 && !(c.bulk > 1)) {
+          kind = "topup";
+          req.finishIngs.forEach((id) => { if (!tray.finish.includes(id)) add[id] = (add[id] || 0) + 1; });
+          use = add;
+        }
+      }
+      if (!this.heroTask(c, item, kind, use)) return false;
       tray.clear();
       tray.render();
       this.select(null);
@@ -1354,7 +1397,7 @@ window.BT = window.BT || { Screens: {} };
       this.trayGroup.replaceChild(nt.el, t.el);
       this.bindTray(nt);
       nt.render();
-      this.held[i] = { tray: t, at: Date.now() };
+      this.held[i] = { tray: t, age: 0 };   // tuổi tính theo thời gian chơi
       this.holdSlots[i].appendChild(t.el);
       this.holdSlots[i].classList.add("full");
       this.select(null);
@@ -1372,7 +1415,7 @@ window.BT = window.BT || { Screens: {} };
           if (this.selected === h.tray) this.select(null);
           return;
         }
-        this.holdSlots[i].classList.toggle("stale", Date.now() - h.at > CONFIG.hold.staleSec * 1000);
+        this.holdSlots[i].classList.toggle("stale", h.age > CONFIG.hold.staleSec);
       });
     }
 
@@ -1886,6 +1929,7 @@ window.BT = window.BT || { Screens: {} };
     }
 
     select(t) {
+      if (t && this.heroPick) { this.heroPick = false; if (this.heroBtn) this.heroBtn.classList.remove("on"); }
       this.selected = t || null;
       this.containers().forEach((x) => x.el.classList.toggle("selected", x === this.selected));
       (this.held || []).forEach((h) => { if (h) h.tray.el.classList.toggle("selected", h.tray === this.selected); });
@@ -2322,7 +2366,8 @@ window.BT = window.BT || { Screens: {} };
     // ---------------- Tạm dừng ----------------
     openPause() {
       if (this.practice) {   // Bếp tập: đổi món hoặc thoát
-        UI.modal({ title: UI.t("practiceBtn"), body: UI.t("practiceIntro"), dismissable: true, buttons: [
+        if (document.querySelector(".modal-practice-pause:not(.closing)")) return;
+        UI.modal({ title: UI.t("practiceBtn"), body: UI.t("practiceIntro"), className: "modal-practice-pause", dismissable: true, buttons: [
           { label: UI.t("btnContinue"), cls: "btn-pink" },
           { label: UI.t("practiceChange"), cls: "btn-white", onClick: () => BT.openPractice(this.router, true) },
           { label: UI.t("practiceExit"), cls: "btn-white", onClick: () => this.practiceExit() }
