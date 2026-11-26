@@ -1821,3 +1821,10 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .ev-btn { min-width: 72px; }
 .ev-btn.ev-0 { opacity: 0.6; }
 .ev-btn.ev-2 { background: #FFE0EA; }
+
+/* Lời nhắc chống mất tiến trình */
+.safety-tip { display: flex; align-items: center; gap: 8px; margin: 4px auto 0; max-width: 520px; padding: 6px 6px 6px 12px; border-radius: 14px; background: #FFF4D6; border: 2px solid #F2C14E; font-size: 13px; font-weight: 700; color: #6b4a00; }
+.safety-tip .tip-text { flex: 1; line-height: 1.3; }
+.safety-tip .tip-x { border: 0; background: none; font-size: 20px; line-height: 1; color: #9a7a2a; padding: 4px 6px; cursor: pointer; }
+.backup-row { display: flex; gap: 8px; margin: 6px 0 10px; flex-wrap: wrap; }
+.modal-install .modal-body { white-space: pre-line; text-align: left; line-height: 1.5; }

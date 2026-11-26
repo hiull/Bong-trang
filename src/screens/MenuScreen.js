@@ -115,7 +115,15 @@ window.BT = window.BT || { Screens: {} };
       small.appendChild(weekBtn);
       el.appendChild(small);
 
-      el.appendChild(UI.el("div", "footer", UI.t("footer")));
+      // Lời nhắc chống mất tiến trình nằm chỗ dòng chữ cuối (không che nút nào)
+      const footBox = UI.el("div", "menu-foot");
+      const drawFoot = () => {
+        footBox.innerHTML = "";
+        const tip = BT.Safety.tipEl(drawFoot);
+        footBox.appendChild(tip || UI.el("div", "footer", UI.t("footer")));
+      };
+      drawFoot();
+      el.appendChild(footBox);
       root.appendChild(el);
 
       function refreshDots() {
@@ -287,6 +295,22 @@ window.BT = window.BT || { Screens: {} };
           else manual();
         }));
         body.appendChild(UI.el("div", "backup-warn", "⚠️ " + UI.t("backupWarn")));
+        body.appendChild(UI.el("div", "backup-label", UI.t("backupFileHint")));
+        const fileRow = UI.el("div", "backup-row");
+        fileRow.appendChild(UI.button(UI.t("backupFile"), "btn-pink small backup-file", () => BT.Safety.saveFile()));
+        fileRow.appendChild(UI.button(UI.t("backupOpen"), "btn-white small backup-open", () => {
+          confirmBox(UI.t("backupConfirm"), UI.t("backupOpen"), () => {
+            BT.Safety.openFile().then((done) => {
+              if (!done) return;
+              UI.closeAllModals();
+              UI.toast(UI.t("backupDone"), 2600);
+              BT.Audio.applySettings();
+              router.stack.length = 0;
+              router.go("Menu");
+            }).catch((e) => UI.toast(e && e.message === "unsupported" ? UI.t("backupUnsupported") : UI.t("backupBad"), 3000));
+          });
+        }));
+        body.appendChild(fileRow);
         body.appendChild(UI.el("div", "backup-label", UI.t("backupPaste")));
         const inp = UI.el("textarea", "backup-code");
         inp.rows = 3;

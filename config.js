@@ -556,6 +556,9 @@ window.CONFIG = {
     bt_cuon_bo:       { toppings: ["bo_beo", "muoi_tom", "cha_bong", "kho_bo", "rau_ram"], finish: ["cuon"] }
   },
 
+  // Chống mất tiến trình
+  safety: { snapshots: 3, backupEveryDays: 7, tipSnoozeDays: 7, backupAfterShifts: 3 },
+
   // Món sáng tạo (Bếp sáng tạo): giá = tổng giá 1 phần nguyên liệu × priceMult + priceAdd
   customDish: {
     max: 3, minIng: 2, maxIng: 5, nameMax: 24, priceMult: 2, priceAdd: 5,
@@ -1303,6 +1306,19 @@ window.CONFIG = {
     setBackup: "Sao lưu & Khôi phục 💾",
     setWipe: "Xoá dữ liệu",
     backupTitle: "Sao lưu & Khôi phục 💾",
+    backupFile: "Lưu ra file",
+    backupOpen: "Mở file sao lưu",
+    backupFileHint: "Lưu file vào Tệp hoặc iCloud Drive để đổi máy hay lỡ mất dữ liệu vẫn lấy lại được.",
+    backupFileSaved: "Đã lưu file sao lưu",
+    backupRecovered: "Dữ liệu lưu bị lỗi, game đã lấy lại bản dự phòng gần nhất",
+    tipInstall: "Thêm game vào màn hình chính để không mất tiến trình",
+    tipInstallBtn: "Cách làm",
+    tipBackup: "Đã lâu chưa lưu tiến trình ra file",
+    tipBackupBtn: "Lưu ngay",
+    installTitle: "Thêm vào màn hình chính",
+    installApple: "1. Mở game bằng Safari.\n2. Chạm nút Chia sẻ (ô vuông có mũi tên lên).\n3. Chọn Thêm vào MH chính, rồi Thêm.\n\nTừ giờ mở game bằng biểu tượng mới trên màn hình chính. Safari có thể tự xoá dữ liệu của trang web không mở trong khoảng 7 ngày, còn game đã thêm vào màn hình chính thì an toàn hơn.",
+    installOther: "1. Chạm nút ⋮ (menu) của trình duyệt.\n2. Chọn Cài đặt ứng dụng hoặc Thêm vào màn hình chính.\n\nTừ giờ mở game bằng biểu tượng mới trên màn hình chính để dữ liệu được giữ an toàn hơn.",
+    installOk: "Đã hiểu",
     backupCopy: "Sao chép mã sao lưu",
     backupCopied: "Đã sao chép mã! Dán vào Ghi chú hoặc gửi qua email để cất giữ nha 💾",
     backupCopyManual: "Nhấn giữ vào ô mã để chọn tất cả rồi sao chép nha",

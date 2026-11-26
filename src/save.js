@@ -58,6 +58,8 @@ window.BT = window.BT || { Screens: {} };
       lettersRead: 0,     // số thư hằng tuần đã đọc
       life: { served: 0, rushes: 0, vips: 0, perfect: 0, crispy: 0, customsSold: 0, datesWon: 0 }, // bộ đếm trọn đời (huy hiệu)
       badges: {},
+      lastFileBackup: "", // ngày lưu ra file gần nhất (yyyy-mm-dd)
+      tips: {},           // lời nhắc đã tắt: { install: "yyyy-mm-dd" }
       customs: [],        // món sáng tạo (tối đa 3)
       datesNotes: [],     // ghi chú hẹn hò đã mở         // huy hiệu đã mở
       weekly: { week: "", list: [], claimed: false }, // nhiệm vụ tuần
@@ -100,8 +102,14 @@ window.BT = window.BT || { Screens: {} };
       try {
         const raw = localStorage.getItem(KEY);
         if (!raw) return false;
-        const data = JSON.parse(raw);
-        if (!data || !(data.version >= 1 && data.version <= 3)) return false;
+        let data = null;
+        try { data = JSON.parse(raw); } catch (e) { data = null; }
+        if (!data || !(data.version >= 1 && data.version <= 3)) {
+          // File lưu hỏng: lấy bản dự phòng gần nhất còn đọc được
+          data = this.fromSnapshots();
+          if (!data) return false;
+          this.recovered = true;
+        }
         this.state = merge(defaults(), data);
         // Bản lưu theo ngày → mốc
         if (BT.MS && BT.MS.migrate(this.state)) this.persist();
@@ -122,6 +130,7 @@ window.BT = window.BT || { Screens: {} };
       if (!this.available) return false;
       try {
         localStorage.setItem(KEY, JSON.stringify(this.state));
+        this.snapshot(false);
         return true;
       } catch (e) {
         return false;
@@ -150,7 +159,29 @@ window.BT = window.BT || { Screens: {} };
       return true;
     },
 
-    stock(id) { return this.state.inventory[id] || 0; }
+    stock(id) { return this.state.inventory[id] || 0; },
+
+    // ---- Bản dự phòng trong máy: mỗi ngày một bản, giữ 3 bản gần nhất ----
+    snapshotList() {
+      try { const l = JSON.parse(localStorage.getItem(KEY + "_bk") || "[]"); return Array.isArray(l) ? l : []; } catch (e) { return []; }
+    },
+    snapshot(force) {
+      if (!this.available) return;
+      const d = new Date();
+      const day = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+      let list = this.snapshotList();
+      if (!force && list[0] && list[0].day === day) return;
+      list.unshift({ day, t: Date.now(), data: JSON.stringify(this.state) });
+      list = list.slice(0, CONFIG.safety.snapshots);
+      try { localStorage.setItem(KEY + "_bk", JSON.stringify(list)); }
+      catch (e) { try { localStorage.setItem(KEY + "_bk", JSON.stringify(list.slice(0, 1))); } catch (e2) { /* đầy bộ nhớ: bỏ qua */ } }
+    },
+    fromSnapshots() {
+      for (const s of this.snapshotList()) {
+        try { const d = JSON.parse(s.data); if (d && d.version >= 1 && d.version <= 3) return d; } catch (e) { /* thử bản sau */ }
+      }
+      return null;
+    }
   };
 
   // ---------------- Mã sao lưu TIEM1- ----------------
@@ -174,6 +205,8 @@ window.BT = window.BT || { Screens: {} };
     return new Uint8Array(await res.arrayBuffer());
   }
 
+  // Nội dung file sao lưu (= mã sao lưu, mở bằng Ghi chú cũng đọc được)
+  Save.fileText = function () { return this.exportCode(); };
   Save.exportCode = async function () {
     const data = Object.assign({}, this.state, { dayBackup: null, today: null });
     const bytes = new TextEncoder().encode(JSON.stringify(data));

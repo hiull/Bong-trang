@@ -113,6 +113,8 @@ window.BT = window.BT || { Screens: {} };
   function start() {
     applyColors();
     BT.Save.load();
+    BT.Safety.requestPersist();
+    if (BT.Save.recovered) setTimeout(() => UI.toast(UI.t("backupRecovered"), 3500), 1200);
     document.title = window.PERSONAL.shopName;
     UI.setText(document.getElementById("rotate-text"), UI.t("rotate"));
     UI.setText(document.querySelector("#rotate-overlay .rotate-icon"), "📱");
