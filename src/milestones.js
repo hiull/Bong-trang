@@ -148,6 +148,29 @@ window.BT = window.BT || { Screens: {} };
       return cfg;
     },
 
+    // Mục tiêu phụ của mốc (từ Mốc 2), cố định theo số mốc & mùa
+    sideGoal(i, sid) {
+      sid = sid || BT.Save.state.season || 1;
+      if (i < 2) return null;
+      const m = this.get(i, sid);
+      if (!m) return null;
+      const pool = CONFIG.sideGoals.filter((g) => (g.fromLevel || 1) <= m.level);
+      return pool.length ? pool[(i * 7 + sid * 3) % pool.length] : null;
+    },
+    sideCheck(goal, g) {
+      const q = g.q;
+      switch (goal.id) {
+        case "noWalk": return g.stats.walkouts === 0;
+        case "combo5": return q.comboMax >= 5;
+        case "five5": return q.five >= 5;
+        case "noHero": return (g.heroUsed || 0) === 0;
+        case "fav3": return q.fav >= 3;
+        case "req3": return q.req >= 3;
+        case "crispy3": return q.crispy >= 3;
+        default: return false;
+      }
+    },
+
     run(i, opts) {
       const replay = !!(opts && opts.replay);
       const S = BT.Save.state;

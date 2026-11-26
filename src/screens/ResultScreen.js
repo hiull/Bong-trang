@@ -88,6 +88,8 @@ window.BT = window.BT || { Screens: {} };
       row(UI.t("statRating"), s.avgRating ? "⭐ " + UI.rating(s.avgRating) : "–");
       body.appendChild(table);
 
+      if (s.side) body.appendChild(UI.el("div", "side-goal " + (s.side.done ? "done" : "fail"),
+        s.side.done ? UI.t("sideGoalDone", { text: s.side.text }) + (s.side.first ? UI.t("sideGoalFirst", { x: UI.money(CONFIG.sideGoalReward) }) : "") : UI.t("sideGoalFail", { text: s.side.text })));
       if (s.dateOffer) {
         const db = UI.button(UI.t("dateBtn"), "btn-purple small date-btn", () => { if (db.disabled) return; db.disabled = true; BT.Fun.dateGame(); });
         body.appendChild(db);

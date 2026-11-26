@@ -570,21 +570,35 @@ window.CONFIG = {
     ]
   },
 
+  // Anh Hiếu tự sửa món làm sai: số lượt mỗi ca, thời gian làm lại, tip còn lại, kiên nhẫn giữ tối thiểu
+  heroFix: { perShift: 3, sec: 2.5, tipMult: 0.5, keepPatience: 0.3 },
+  // Mục tiêu phụ mỗi mốc (từ Mốc 2): cố định theo số mốc; đạt lần đầu thưởng sideGoalReward (k)
+  sideGoalReward: 20,
+  sideGoals: [
+    { id: "noWalk", text: "Không để khách nào bỏ đi" },
+    { id: "combo5", text: "Đạt combo 5 món liên tiếp" },
+    { id: "five5", text: "Nhận 5 đánh giá 5 sao" },
+    { id: "noHero", text: "Tự làm đúng hết, không cần anh Hiếu sửa món" },
+    { id: "fav3", text: "Bán 3 phần món ruột của tiệm" },
+    { id: "req3", text: "Làm đúng 3 yêu cầu riêng của khách", fromLevel: 3 },
+    { id: "crispy3", text: "Nướng giòn 3 bánh", fromLevel: 4 }
+  ],
+
   // Chế độ nhanh trong Cài đặt: đặt sẵn trợ giúp + mức sự kiện
   presets: {
     relax: {
       settings: { relaxMode: true, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
-        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0.5 },
+        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0.5, heroFix: true },
       events: { shiftEvent: 0.5, rush: 0.5, vip: 1, rival: 0, spill: 0, cat: 1, flirt: 1, helperMishap: 0, rent: 0.5, date: 2 }
     },
     normal: {
       settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
-        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0 },
+        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0, heroFix: true },
       events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }
     },
     hard: {
       settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
-        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: false, showRecipe: false, realRecipes: true, patienceBoost: 0 },
+        bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: false, showRecipe: false, realRecipes: true, patienceBoost: 0, heroFix: false },
       events: { shiftEvent: 2, rush: 2, vip: 2, rival: 2, spill: 2, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }
     }
   },
@@ -1091,6 +1105,22 @@ window.CONFIG = {
     ev_helperMishap: "Anh Hiếu đến trễ, làm đổ",
     ev_rent: "Tiền thuê nhà",
     ev_date: "Hẹn hò sau ca",
+    setHeroFix: "Anh Hiếu sửa món làm sai (3 lần mỗi ca)",
+    heroFixLeft: "còn {n} lần",
+    sideGoalTitle: "Mục tiêu phụ",
+    sideGoalDone: "Mục tiêu phụ: {text} ✓",
+    sideGoalFirst: " (+{x})",
+    sideGoalFail: "Mục tiêu phụ chưa đạt: {text}",
+    practiceBtn: "Bếp tập",
+    practiceTitle: "Bếp tập: chọn món để tập",
+    practiceIntro: "Không có khách thật, không tính giờ, không tốn tiền hay nguyên liệu. Tập thoải mái nha!",
+    practiceOkTitle: "Chuẩn rồi!",
+    practiceOk: "Làm đúng {dish} rồi. Tập món khác không?",
+    practiceAgain: "Tập món khác",
+    practiceSame: "Làm lại món này",
+    practiceChange: "Đổi món",
+    practiceExit: "Thoát",
+    practiceBar: "Bếp tập · {dish}",
     setRealRecipes: "Công thức chuẩn ngoài đời (thêm hành phi, sa tế, muối tôm…)",
     setPatience: "Kiên nhẫn của khách",
     setRelax: "Chế độ thư giãn (bật hết trợ giúp)",

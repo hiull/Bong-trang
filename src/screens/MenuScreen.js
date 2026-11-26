@@ -115,6 +115,7 @@ window.BT = window.BT || { Screens: {} };
       const small = UI.el("div", "menu-small");
       const nbBtn = UI.button(UI.t("notebookBtn"), "btn-white notebook-btn", () => openNotebook());
       small.appendChild(nbBtn);
+      small.appendChild(UI.button(UI.t("practiceBtn"), "btn-white practice-btn", () => BT.openPractice(router)));
       el.appendChild(small);
       function openNotebook() {
         const grid = UI.el("div", "nb-grid");
@@ -358,6 +359,7 @@ window.BT = window.BT || { Screens: {} };
         // ---- Tab Trợ giúp ----
         pane = panes.assist;
         toggle("relaxMode", UI.t("setRelax"));
+        toggle("heroFix", UI.t("setHeroFix"));
         toggle("oneTapDeliver", UI.t("setOneTapDeliver"));
         toggle("oneTapAction", UI.t("setOneTapAction"));
         toggle("tapPour", UI.t("setTapPour"));

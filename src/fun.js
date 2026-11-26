@@ -398,5 +398,44 @@ window.BT = window.BT || { Screens: {} };
     UI.modal({ title: UI.t("dateBookTitle"), body: list, className: "modal-flirt-book modal-dates", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
   };
 
+  // ---------------- Bếp tập ----------------
+  // Món tập được: đã mở ở cấp hiện tại (kể cả món sáng tạo đủ nguyên liệu)
+  Fun.practiceDishes = function () {
+    const lv = this.level();
+    const zones = CONFIG.zones.filter((z) => z.openDay <= lv && CONFIG.build.playableZones.includes(z.id)).map((z) => z.id);
+    const opened = (id) => !CONFIG.ingredients[id] || CONFIG.ingredients[id].openDay <= lv;
+    BT.recipeLevel = lv;
+    const base = CONFIG.recipes.filter((r) => !r.combo && r.openDay <= lv && zones.includes(r.zone)).map((r) => UI.recipe(r.id));
+    const customs = this.customRecipes().filter((r) => zones.includes(r.zone) && [r.base, ...r.toppings, ...r.finish].every(opened));
+    return base.concat(customs);
+  };
+  BT.startPractice = function (router, id, opts) {
+    const S = BT.Save.state;
+    const MS = BT.MS;
+    // Đang tập dở (đổi món) → trả lại kho/tiền trước rồi chụp lại
+    if (S.dayBackup && S.dayBackup.day === "practice" && !S.dayBackup.finished) BT.Save.restoreDay();
+    if (router.current && router.current.practice) router.current.over = true;
+    BT.Save.snapshotDay("practice");
+    Object.keys(CONFIG.ingredients).forEach((k) => { S.inventory[k] = Math.max(BT.Save.stock(k), 99); });
+    S.today = { day: "practice", expense: 0 };
+    BT.Save.persist();
+    const sid = S.season || 1;
+    const lv = MS.current().level;
+    const run = { mode: "practice", key: "practice", season: sid, ms: S.ms.index, level: lv, cfg: MS.shiftCfg(S.ms.index, false, "sunny", sid),
+      event: "sunny", scripted: false, practiceDish: id };
+    router.go("Game", { run }, opts);
+  };
+  BT.openPractice = function (router, inGame) {
+    UI.closeAllModals();
+    const list = UI.el("div", "pr-list");
+    list.appendChild(UI.el("div", "info-note", UI.t("practiceIntro")));
+    Fun.practiceDishes().forEach((r) => {
+      const b = UI.button(r.emoji + " " + r.name, "btn-white small pr-dish", () => { UI.closeAllModals(); BT.startPractice(router, r.id, inGame ? { replace: true } : undefined); });
+      b.dataset.id = r.id;
+      list.appendChild(b);
+    });
+    UI.modal({ title: UI.t("practiceTitle"), body: list, className: "modal-practice", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-white" }] });
+  };
+
   BT.Fun = Fun;
 })();

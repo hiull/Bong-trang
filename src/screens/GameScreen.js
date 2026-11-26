@@ -21,7 +21,11 @@ window.BT = window.BT || { Screens: {} };
       BT.recipeLevel = run.level;              // công thức chuẩn ngoài đời: đòi nguyên liệu theo cấp của ca
       this.secret = run.mode === "secret";
       this.endless = run.mode === "endless";
-      this.helperOn = BT.Helper.working(run);   // anh Hiếu phụ tiệm ca này
+      this.practice = run.mode === "practice";   // Bếp tập: không khách thật, không tính tiền
+      this.helperOn = !this.practice && BT.Helper.working(run);
+      // Anh Hiếu tự sửa món làm sai (giới hạn mỗi ca)
+      this.heroLeft = !this.practice && this.S.settings.heroFix !== false ? CONFIG.heroFix.perShift : 0;
+      this.heroUsed = 0;   // anh Hiếu phụ tiệm ca này
       // Giờ cao điểm, khách đặc biệt, thú cưng, kỷ lục
       this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel
         && BT.ev("rush") > 0 && (BT.ev("rush") >= 1 || Math.random() < BT.ev("rush"));
@@ -43,7 +47,7 @@ window.BT = window.BT || { Screens: {} };
       this.started = false;
       this.over = false;
 
-      this.total = this.endless ? Infinity : this.dayCfg.customers + (this.S.bonusCustomers || 0);
+      this.total = this.endless || this.practice ? Infinity : this.dayCfg.customers + (this.S.bonusCustomers || 0);
       this.spawned = 0;
       this.done = 0;
       this.hearts = BT.assist("moreHearts") ? CONFIG.assist.hearts : G.hearts;
@@ -94,7 +98,7 @@ window.BT = window.BT || { Screens: {} };
       const I = CONFIG.incidents;
       this.spillAt = -1;
       this.spillLeft = 0;
-      if (!this.secret && !this.endless && this.dayNum >= I.fromDay && Math.random() < I.spillRate * BT.ev("spill")) {
+      if (!this.secret && !this.endless && !this.practice && this.dayNum >= I.fromDay && Math.random() < I.spillRate * BT.ev("spill")) {
         this.spillAt = Math.max(1, Math.round(this.total * UI.rand(I.spillAtProgress[0], I.spillAtProgress[1])));
         this.catsToday = G.catMaxPerDay;
       }
@@ -125,9 +129,9 @@ window.BT = window.BT || { Screens: {} };
         for (let i = 0; i < this.total; i++) if (!this.plan[i]) slots.push(i);
         return slots;
       };
-      if (this.endless) {
+      if (this.endless || this.practice) {
         this.flirtAt = [];
-        this.tomoWanted = Infinity;
+        this.tomoWanted = this.practice ? 0 : Infinity;
         return;
       }
       if (this.secret) {
@@ -167,7 +171,7 @@ window.BT = window.BT || { Screens: {} };
 
     // ---------------- Dựng giao diện ----------------
     build(root) {
-      const el = UI.el("div", "screen game skin-" + BT.Fun.skin() + " weather-" + this.dayCfg.weather);
+      const el = UI.el("div", "screen game skin-" + BT.Fun.skin() + " weather-" + this.dayCfg.weather + (this.practice ? " practice" : ""));
       this.el = el;
 
       // HUD
@@ -191,6 +195,13 @@ window.BT = window.BT || { Screens: {} };
       hud.appendChild(left);
       hud.appendChild(UI.iconButton("📖", UI.t("bookTitle"), () => this.openBook(), "hud-book"));
       hud.appendChild(UI.iconButton("⏸", UI.t("pauseTitle"), () => this.openPause(), "hud-pause"));
+      if (this.practice) {
+        const bar = UI.el("div", "practice-bar");
+        bar.appendChild(UI.el("span", "pr-name", UI.t("practiceBar", { dish: UI.recipe(this.run.practiceDish).name })));
+        bar.appendChild(UI.button(UI.t("practiceChange"), "btn-white small pr-change", () => BT.openPractice(this.router, true)));
+        bar.appendChild(UI.button(UI.t("practiceExit"), "btn-white small pr-exit", () => this.practiceExit()));
+        el.appendChild(bar);
+      }
       el.appendChild(hud);
 
       // Mặt tiền tiệm & khách
@@ -333,8 +344,10 @@ window.BT = window.BT || { Screens: {} };
         if (this.freezeLeft <= 0) { this.freezeLeft = 0; this.front.classList.remove("loving"); }
       }
 
+      // Bếp tập: khách tập không bao giờ bỏ đi
+      if (this.practice) this.customers.forEach((c) => { if (c.state === "waiting") c.patience = c.max; });
       // Sinh khách
-      if (this.spawned < this.total) {
+      if (!this.practice && this.spawned < this.total) {
         this.spawnTimer -= dt;
         if (this.spawnTimer <= 0) {
           const free = this.seats.findIndex((s) => s === null);
@@ -405,6 +418,7 @@ window.BT = window.BT || { Screens: {} };
       this.scope.timeout(() => {
         layer.remove();
         this.started = true;
+        if (this.practice) this.practiceSpawn();
         if (this.helped) UI.toast(UI.t("retryHelp"), 2600);
       }, steps.length * ms);
     }
@@ -923,6 +937,8 @@ window.BT = window.BT || { Screens: {} };
         // Lấy lý do từ món cùng khu với khay (nếu có)
         const same = pending.find((it) => UI.recipe(it.id).zone === tray.zone) || pending[0];
         const bad = BT.Tray.evaluate(tray, same);
+        // Anh Hiếu tự sửa món (còn lượt trong ca)
+        if (this.heroLeft > 0 && !c.heroFixing) { this.heroFix(c, tray, same); return; }
         const vars = c.vars({ ing: bad.ing ? UI.ing(bad.ing).short : "" });
         const key = {
           notOrdered: "wrongNotOrdered", missing: "wrongMissing", extra: "wrongExtra", notMixed: "wrongNotMixed",
@@ -959,6 +975,8 @@ window.BT = window.BT || { Screens: {} };
         BT.Audio.play("add");
         const p = UI.center(c.el);
         UI.floatText(p.x, p.y - 30, "✓", "stars");
+      } else if (this.practice) {
+        this.practiceOk(c);
       } else {
         this.complete(c);
       }
@@ -966,6 +984,72 @@ window.BT = window.BT || { Screens: {} };
       this.updateHud();
       this.updateTabDots();
       this.updateHint();
+    }
+
+    // ---------------- Anh Hiếu sửa món làm sai ----------------
+    heroFix(c, tray, item) {
+      const H = CONFIG.heroFix;
+      this.heroLeft--;
+      this.heroUsed++;
+      tray.clear();
+      tray.render();
+      this.select(null);
+      this.combo = 0;
+      c.heroFixing = true;
+      c.patience = Math.max(c.patience, c.max * H.keepPatience);
+      BT.Audio.play("pop");
+      // Anh Hiếu ló ra nói một câu
+      const box = UI.el("div", "hero-fix");
+      box.appendChild(UI.icon("tomortle"));
+      const txt = UI.el("div", "hero-fix-text");
+      txt.appendChild(UI.el("div", "", UI.pick(window.PERSONAL.heroFixLines || ["Để anh làm lại cho!"])));
+      txt.appendChild(UI.el("div", "hero-fix-left", UI.t("heroFixLeft", { n: this.heroLeft })));
+      box.appendChild(txt);
+      (this.front || this.el).appendChild(box);
+      this.scope.timeout(() => box.remove(), H.sec * 1000 + 600);
+      this.scope.timeout(() => {
+        c.heroFixing = false;
+        if (this.over || c.state !== "waiting" || item.done) return;
+        item.heroFixed = true;
+        c.markDone(item);
+        BT.Audio.play("add");
+        if (c.pending().length > 0) c.react(UI.t("partialOk"), "😋", CONFIG.gameplay.reactionShowSec);
+        else this.complete(c);
+        this.updateHud();
+        this.updateTabDots();
+      }, H.sec * 1000);
+      this.updateHud();
+    }
+
+    // ---------------- Bếp tập ----------------
+    practiceSpawn() {
+      const id = this.run.practiceDish;
+      const c = this.spawn(0, "hoc_sinh", { items: [{ id, reqs: [] }] }, { speech: UI.t("practiceBar", { dish: UI.recipe(id).name }) });
+      this.spawned++;
+      return c;
+    }
+    practiceOk(c) {
+      BT.Audio.play("coin");
+      UI.confetti(40);
+      c.state = "gone";
+      if (c.el) c.el.remove();
+      this.customers = this.customers.filter((x) => x !== c);
+      this.seats = this.seats.map((s) => (s === c ? null : s));
+      const dish = UI.recipe(this.run.practiceDish).name;
+      UI.modal({ title: UI.t("practiceOkTitle"), body: UI.t("practiceOk", { dish }), className: "modal-practice-ok", dismissable: false, buttons: [
+        { label: UI.t("practiceAgain"), cls: "btn-pink", onClick: () => BT.openPractice(this.router, true) },
+        { label: UI.t("practiceSame"), cls: "btn-white", onClick: () => this.practiceSpawn() },
+        { label: UI.t("practiceExit"), cls: "btn-white", onClick: () => this.practiceExit() }
+      ] });
+    }
+    practiceExit() {
+      this.over = true;
+      BT.Save.restoreDay();
+      this.S.dayBackup = null;
+      this.S.today = null;
+      BT.Save.persist();
+      UI.closeAllModals();
+      this.router.backTo("Menu");
     }
 
     // Khách nhận đủ món: tính tiền, đánh giá
@@ -997,6 +1081,7 @@ window.BT = window.BT || { Screens: {} };
       if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
       const reqTip = c.hasRequests() ? M.specialRequestTip : 0;
       tip = Math.round(tip + reqTip);
+      if (c.items.some((it) => it.heroFixed)) tip = Math.round(tip * CONFIG.heroFix.tipMult);   // anh Hiếu làm lại giùm
       const comboBonus = Math.round(pay * G.comboStepBonus * Math.max(0, this.combo - 1));
       const fiveMin = G.ratingSteps[0].min - (up.quat > 0 ? CONFIG.upgrades.quat.fiveStarDrop : 0);
       let stars = p >= fiveMin ? 5 : G.ratingSteps.find((s) => p >= s.min).stars;
@@ -1838,6 +1923,14 @@ window.BT = window.BT || { Screens: {} };
 
     // ---------------- Tạm dừng ----------------
     openPause() {
+      if (this.practice) {   // Bếp tập: đổi món hoặc thoát
+        UI.modal({ title: UI.t("practiceBtn"), body: UI.t("practiceIntro"), dismissable: true, buttons: [
+          { label: UI.t("btnContinue"), cls: "btn-pink" },
+          { label: UI.t("practiceChange"), cls: "btn-white", onClick: () => BT.openPractice(this.router, true) },
+          { label: UI.t("practiceExit"), cls: "btn-white", onClick: () => this.practiceExit() }
+        ] });
+        return;
+      }
       if (this.over || this.pauseReasons.has("menu")) return;
       this.pauseReasons.add("menu");
       BT.Audio.suspend();
@@ -1992,6 +2085,20 @@ window.BT = window.BT || { Screens: {} };
         progress = MS.addProgress(units, { replay: run.mode === "replay" });
       }
       ({ newMemory, minor, ending, card2, newMemory2, helperChapter } = this.applyCleared(progress));
+      // Mục tiêu phụ của mốc
+      let side = null;
+      if (!this.secret && (run.mode === "story" || run.mode === "replay")) {
+        const sg = MS.sideGoal(run.ms, run.season);
+        if (sg) {
+          const done = passed && MS.sideCheck(sg, this);
+          const rs2 = MS.stateOf(run.season);
+          rs2.side = rs2.side || {};
+          const first = done && !rs2.side[run.ms];
+          if (done) rs2.side[run.ms] = true;
+          if (first) S.wallet += CONFIG.sideGoalReward;
+          side = { text: sg.text, done, first };
+        }
+      }
       if (this.helperOn) { const hr = BT.Helper.onShiftEnd(this); if (helperChapter === null) helperChapter = hr.chapter; }
       // Tim vàng tính riêng từng mùa
       // Bộ đếm trọn đời & thú cưng sau ca
@@ -2029,7 +2136,7 @@ window.BT = window.BT || { Screens: {} };
       const majorCleared = !!(progress && progress.cleared && (MS.get(progress.cleared) || {}).major);
       const dateOffer = passed && !this.secret && BT.ev("date") > 0 && (majorCleared || Math.random() < CONFIG.dateGame.rate * BT.ev("date"));
       const summary = {
-        badges, dateOffer,
+        badges, dateOffer, side,
         day: this.dayId, run, title: UI.runTitle(run), endSeason: S.season || 1, passed, lostHearts, stars, secret: this.secret,
         units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter, petCoins, newRecord,
         memory: newMemory, newGold, allGold, ending, levelUp,

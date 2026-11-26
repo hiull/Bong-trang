@@ -54,6 +54,12 @@ window.BT = window.BT || { Screens: {} };
       card.appendChild(BT.MapHelpers.dayInfo(dc));
       if (gift) card.appendChild(UI.el("div", "gift", UI.t("prepGift", { q: M.freeStockQty })));
       if (rescued && !gift) card.appendChild(UI.el("div", "gift", UI.t("prepRescue")));
+      // Mục tiêu phụ của mốc
+      const sg = (run.mode === "story" || run.mode === "replay") ? BT.MS.sideGoal(run.ms, run.season) : null;
+      if (sg) {
+        const got = !!(BT.MS.stateOf(run.season).side || {})[run.ms];
+        card.appendChild(UI.el("div", "side-goal" + (got ? " done" : ""), UI.t("sideGoalTitle") + ": " + sg.text + (got ? " ✓" : "")));
+      }
       body.appendChild(card);
 
       // Anh Hiếu phụ tiệm: chọn việc cho ca này

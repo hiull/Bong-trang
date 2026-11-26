@@ -18,12 +18,17 @@ window.BT = window.BT || { Screens: {} };
   }
 
   // Thông tin mốc (không phải của một ca cụ thể): món mới chỉ có ở mốc lớn
-  function msInfo(m) {
+  function msInfo(m, sid) {
     const box = UI.el("div", "day-info");
     box.appendChild(UI.el("div", "info-line", UI.t(m.major ? "msMajorLabel" : "msMinorLabel", { k: m.level })));
     box.appendChild(UI.el("div", "info-line", UI.t("msCustomers", { c: m.cfg.customers }) + " · " + UI.t("target") + ": " + UI.money(m.cfg.target)));
     const names = (m.cfg.unlock || []).map((id) => UI.recipe(id).name);
     if (names.length) box.appendChild(UI.el("div", "info-note", UI.t("newDishes", { list: names.join(", ") })));
+    const sg = BT.MS.sideGoal(m.index, sid);
+    if (sg) {
+      const got = !!(BT.MS.stateOf(sid).side || {})[m.index];
+      box.appendChild(UI.el("div", "side-goal" + (got ? " done" : ""), UI.t("sideGoalTitle") + ": " + sg.text + (got ? " ✓" : "")));
+    }
     return box;
   }
 
@@ -117,13 +122,14 @@ window.BT = window.BT || { Screens: {} };
           node.appendChild(UI.el("span", "node-dot", done ? "✓" : ""));
         }
         if (locked && ms.major) node.appendChild(UI.el("span", "node-lock", "🔒"));
+        if ((vs.side || {})[ms.index]) node.appendChild(UI.el("span", "node-side", "✓"));
         node.addEventListener("click", () => {
           if (locked) { UI.toast(UI.t("msLocked", { n: ms.index })); return; }
           BT.Audio.play("tap");
           if (isCur && ms.index === cur && !seasonDone) { router.go("Prep", { run: MS.run(cur) }); return; }
           UI.modal({
             title: UI.runTitle({ mode: "story", ms: ms.index, season: view }),
-            body: msInfo(ms),
+            body: msInfo(ms, view),
             dismissable: true,
             buttons: [{ label: UI.t("btnReplay"), cls: "btn-pink", onClick: () => router.go("Prep", { run: MS.run(ms.index, { replay: true, season: view }) }) }]
           });
