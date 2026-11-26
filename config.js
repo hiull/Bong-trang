@@ -556,6 +556,20 @@ window.CONFIG = {
     bt_cuon_bo:       { toppings: ["bo_beo", "muoi_tom", "cha_bong", "kho_bo", "rau_ram"], finish: ["cuon"] }
   },
 
+  // Màn "Có gì mới": save cũ thấy một lần mỗi khi đổi version. go = nút "Thử ngay" mở đâu.
+  whatsNew: {
+    version: "1.7",
+    items: [
+      { icon: "💾", title: "Giữ tiến trình an toàn", text: "Thêm game vào màn hình chính và thỉnh thoảng Lưu ra file (Cài đặt → Sao lưu) để không bao giờ mất tiệm.", go: "backup" },
+      { icon: "🍽️", title: "Bếp sáng tạo", text: "Tự nghĩ tối đa 3 món của riêng tiệm: chọn quầy, chọn nguyên liệu, đặt tên. Khách sẽ gọi thử!", go: "kitchen" },
+      { icon: "💕", title: "Hẹn hò sau ca", text: "Qua mốc lớn hoặc thỉnh thoảng sau ca thắng có trò lật thẻ. Thắng thì mở một trang Sổ hẹn hò.", go: null },
+      { icon: "⭐", title: "Huy hiệu", text: "14 huy hiệu cho những cột mốc của tiệm, mở được là có thưởng. Xem trong Kỷ niệm.", go: "badges" },
+      { icon: "📋", title: "Nhiệm vụ tuần", text: "Mỗi tuần 5 nhiệm vụ, xong hết nhận đồ trang trí độc quyền không bán ở cửa hàng.", go: "weekly" },
+      { icon: "✉️", title: "Thư & ngày đặc biệt", text: "Mỗi tuần một lá thư mới. Ngày sinh nhật, kỷ niệm có quà bất ngờ.", go: "mail" },
+      { icon: "⚙️", title: "Chơi theo ý mình", text: "Cài đặt có chế độ nhanh Thư giãn / Bình thường / Thử thách, chỉnh từng sự kiện, cỡ chữ và công thức chuẩn ngoài đời.", go: "settings" }
+    ]
+  },
+
   // Chống mất tiến trình
   safety: { snapshots: 3, backupEveryDays: 7, tipSnoozeDays: 7, backupAfterShifts: 3 },
 
@@ -1307,6 +1321,12 @@ window.CONFIG = {
     setWipe: "Xoá dữ liệu",
     backupTitle: "Sao lưu & Khôi phục 💾",
     backupFile: "Lưu ra file",
+    wnTitle: "Có gì mới",
+    wnNext: "Tiếp",
+    wnPrev: "Trước",
+    wnGo: "Thử ngay",
+    wnDone: "Xong",
+    setWhatsNew: "Có gì mới",
     backupOpen: "Mở file sao lưu",
     backupFileHint: "Lưu file vào Tệp hoặc iCloud Drive để đổi máy hay lỡ mất dữ liệu vẫn lấy lại được.",
     backupFileSaved: "Đã lưu file sao lưu",

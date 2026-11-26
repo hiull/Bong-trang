@@ -58,6 +58,7 @@ window.BT = window.BT || { Screens: {} };
       lettersRead: 0,     // số thư hằng tuần đã đọc
       life: { served: 0, rushes: 0, vips: 0, perfect: 0, crispy: 0, customsSold: 0, datesWon: 0 }, // bộ đếm trọn đời (huy hiệu)
       badges: {},
+      whatsNewSeen: (window.CONFIG && CONFIG.whatsNew) ? CONFIG.whatsNew.version : "", // người mới coi như đã xem
       lastFileBackup: "", // ngày lưu ra file gần nhất (yyyy-mm-dd)
       tips: {},           // lời nhắc đã tắt: { install: "yyyy-mm-dd" }
       customs: [],        // món sáng tạo (tối đa 3)
@@ -110,6 +111,7 @@ window.BT = window.BT || { Screens: {} };
           if (!data) return false;
           this.recovered = true;
         }
+        if (data.whatsNewSeen === undefined) data.whatsNewSeen = "";   // save cũ: cho xem Có gì mới
         this.state = merge(defaults(), data);
         // Bản lưu theo ngày → mốc
         if (BT.MS && BT.MS.migrate(this.state)) this.persist();
@@ -228,6 +230,7 @@ window.BT = window.BT || { Screens: {} };
     } else if (kind !== "J") throw new Error("bad");
     const data = JSON.parse(new TextDecoder().decode(bytes));
     if (!data || !(data.version >= 1 && data.version <= 3) || typeof data.wallet !== "number") throw new Error("bad");
+    if (data.whatsNewSeen === undefined) data.whatsNewSeen = "";
     this.state = merge(defaults(), data);
     if (BT.MS) BT.MS.migrate(this.state);
     this.persist();

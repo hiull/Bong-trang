@@ -137,6 +137,52 @@ window.BT = window.BT || { Screens: {} };
 
       // Quà của anh Hiếu ngày đặc biệt (mỗi ngày một lần)
       const gift = S.welcomeSeen ? BT.Fun.giftDue() : null;
+      // Có gì mới: save cũ xem một lần mỗi khi có bản mới (nhường quà ngày đặc biệt)
+      if (S.welcomeSeen && !gift && S.whatsNewSeen !== CONFIG.whatsNew.version) setTimeout(() => { if (!UI.modals.length) openWhatsNew(); }, 400);
+
+      function openWhatsNew() {
+        const W = CONFIG.whatsNew;
+        S.whatsNewSeen = W.version;
+        BT.Save.persist();
+        let i = 0;
+        const body = UI.el("div", "wn");
+        const holder = UI.el("div", "wn-holder");
+        const dots = UI.el("div", "wn-dots");
+        const nav = UI.el("div", "wn-nav");
+        body.appendChild(holder);
+        body.appendChild(dots);
+        body.appendChild(nav);
+        const actions = {
+          backup: () => openBackup(),
+          kitchen: () => BT.Fun.openKitchen(),
+          badges: () => BT.Fun.openBadges(),
+          weekly: () => BT.Fun.openWeekly(refreshDots),
+          mail: () => { BT.Fun.openMail(); refreshDots(); },
+          settings: () => openSettings()
+        };
+        let api = null;
+        const draw = () => {
+          const it = W.items[i];
+          holder.innerHTML = "";
+          const card = UI.el("div", "wn-card");
+          card.appendChild(UI.el("div", "wn-icon", it.icon));
+          card.appendChild(UI.el("div", "wn-title", it.title));
+          card.appendChild(UI.el("div", "wn-text", it.text));
+          if (it.go && actions[it.go]) card.appendChild(UI.button(UI.t("wnGo"), "btn-pink small wn-go", () => { api.close(true); actions[it.go](); }));
+          holder.appendChild(card);
+          dots.innerHTML = "";
+          W.items.forEach((x, k) => dots.appendChild(UI.el("span", "wn-dot" + (k === i ? " on" : ""))));
+          nav.innerHTML = "";
+          const prev = UI.button(UI.t("wnPrev"), "btn-white small wn-prev", () => { if (i > 0) { i--; draw(); } });
+          if (i === 0) prev.disabled = true;
+          nav.appendChild(prev);
+          nav.appendChild(i < W.items.length - 1
+            ? UI.button(UI.t("wnNext"), "btn-white small wn-next", () => { i++; draw(); BT.Audio.play("tap"); })
+            : UI.button(UI.t("wnDone"), "btn-pink small wn-done", () => api.close()));
+        };
+        api = UI.modal({ title: UI.t("wnTitle"), body, className: "modal-whatsnew", dismissable: true, buttons: [] });
+        draw();
+      }
       if (gift) {
         setTimeout(() => {
           UI.confetti(80);
@@ -273,6 +319,7 @@ window.BT = window.BT || { Screens: {} };
         }
         body.appendChild(UI.button(UI.t("setHowTo"), "btn-purple small", () => { m.close(true); UI.howTo(); }));
         body.appendChild(UI.button(UI.t("setBackup"), "btn-white small", () => { m.close(true); openBackup(); }));
+        body.appendChild(UI.button(UI.t("setWhatsNew"), "btn-white small whatsnew-btn", () => { m.close(true); openWhatsNew(); }));
         body.appendChild(UI.button(UI.t("setWipe"), "btn-white small danger", () => { m.close(true); openWipe(); }));
         body.appendChild(UI.el("div", "set-footer", UI.t("footer")));
         const m = UI.modal({ title: UI.t("settingsTitle"), body, dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
