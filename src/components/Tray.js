@@ -94,7 +94,7 @@ window.BT = window.BT || { Screens: {} };
       return sum(this.items) + sum(this.sauces) + this.finish.length + this.layers.length + (this.base ? 1 : 0);
     }
 
-    canShake() { return !!this.base && this.zone === "tron" && !this.tied; }
+    canShake() { return !!this.base && (this.zone === "tron" || this.zone === "chien") && !this.tied; }
     canRoll() { return !!this.base && this.zone === "cuon" && !this.rolled && Object.keys(this.items).length > 0; }
     needsCrack() { return this.zone === "nuong" && !!this.items.trung_cut && !this.cracked && !this.burnt; }
 
@@ -154,6 +154,17 @@ window.BT = window.BT || { Screens: {} };
             return { ok: true };
           }
           if (this.finish.length) return fail("afterFinish");
+          return topping();
+
+        case "chien":
+          // Xe chiên: bỏ viên vào rổ → lắc rổ chiên → rưới tương
+          if (roleOf(ingId, "chien") === "finish") {
+            if (!this.tied) return fail("needFry");
+            if (this.finish.includes(ingId)) return fail("finishTwice", { ing: ing.short });
+            this.finish.push(ingId);
+            return { ok: true };
+          }
+          if (this.tied) return fail("alreadyFried");
           return topping();
 
         case "cuon":

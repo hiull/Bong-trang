@@ -305,3 +305,11 @@ Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (v�
 - **Lời giải 22 lá** nằm ở `tarotReadings` trong `personal.js` (xuôi `up`, ngược `rev`). Đây là bản nháp; nên để người đọc Tarot sửa theo cách giải của mình. Hiệu ứng và tỉ lệ ra lá ngược sửa trong `tarot` ở `config.js`.
 - Trò lật thẻ hẹn hò dùng mặt lưng bài Tarot.
 
+## 20. Mùa 3, Góc bói bài, món theo mùa & những cải thiện khác
+- **Mùa 3 · Xe cá viên chiên** (mốc 31–45, mở sau khi xem đoạn kết Mùa 2). Quầy Chiên: chạm Rổ chiên → bỏ các loại viên → bấm Lắc rổ → rưới tương. Nội dung trong `personal.js`: `season3Intro`, `ending3`, `bonusMessage3`, `recipeCards3` (15 thẻ), `memories3` (thêm ảnh nếu muốn).
+- **Góc bói bài:** từ cấp 3, thỉnh thoảng có khách nhờ bói sau khi nhận món. Lật 1 lá, chọn cách giải hợp tâm trạng khách để được +15k tip (không hợp thì +5k). Câu hỏi của khách nằm ở `readingQuestions` trong `personal.js` (`tone`: cheer / honest / fun). Chỉnh mức trong Cài đặt → Sự kiện.
+- **Món theo mùa** (theo tháng trên máy): Tết (tháng 1–2), Hè (5–8), Trung thu (9–10), Đông (11–12). Ngoài mùa thì món và nguyên liệu ẩn.
+- **Chạm lại nguyên liệu vừa thêm để bỏ ra.** Nếu khách đang đòi gấp đôi phần đó thì chạm lại là thêm phần thứ hai.
+- **Gợi ý lần đầu:** lần đầu gặp nút anh Hiếu, tủ giữ món, đơn mang về, đơn sỉ, quầy chiên hay nhịp lắc, game chỉ chỗ và cách dùng.
+- **Anh Hiếu giúp làm món** giờ tốn nguyên liệu, làm theo thời gian chơi (tạm dừng thì anh cũng dừng), cứu khách sắp bỏ đi tối đa 2 lần mỗi ca (Chế độ thư giãn: 5 lần). Thả đúng món nhưng nhầm khách thì khay được giữ lại.
+

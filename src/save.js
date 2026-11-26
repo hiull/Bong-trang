@@ -17,6 +17,7 @@ window.BT = window.BT || { Screens: {} };
       season: 1,          // mùa đang chơi
       msBySeason: {},     // tiến độ các mùa không đang chơi
       s2: { cards: [], memories: [], endingSeen: false, bonusSeen: false, goldHearts: 0, started: false }, // mùa 2
+      s3: { cards: [], memories: [], endingSeen: false, bonusSeen: false, goldHearts: 0, started: false }, // mùa 3
       wallet: CONFIG.money.startWallet,
       xp: 0,
       days: {},

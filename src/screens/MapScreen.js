@@ -45,9 +45,10 @@ window.BT = window.BT || { Screens: {} };
       el.appendChild(UI.topbar(UI.t("mapTitle"), () => router.back()));
 
       // Thanh chọn mùa (khi đã mở hơn một mùa)
-      if (playing > 1 || (S.s2 && S.s2.started)) {
+      const maxOpen = Math.max(playing, ...CONFIG.seasons.filter((x) => x.id > 1 && S["s" + x.id] && S["s" + x.id].started).map((x) => x.id));
+      if (maxOpen > 1) {
         const tabs = UI.el("div", "season-tabs");
-        CONFIG.seasons.filter((x) => x.id <= Math.max(playing, S.s2 && S.s2.started ? 2 : 1)).forEach((x) => {
+        CONFIG.seasons.filter((x) => x.id <= maxOpen).forEach((x) => {
           const b = UI.button(UI.t("seasonTab", { s: x.id }), "btn-white small" + (x.id === view ? " active" : ""), () => router.go("Map", { season: x.id }, { replace: true }));
           tabs.appendChild(b);
         });

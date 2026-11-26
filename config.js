@@ -13,7 +13,7 @@ window.CONFIG = {
   build: {
     stage: 6,
     maxPlayableDay: 15,
-    playableZones: ["tron", "nuong", "cuon", "nuoc", "che"],
+    playableZones: ["tron", "nuong", "cuon", "nuoc", "che", "chien"],
     secretPlayable: true
   },
 
@@ -287,7 +287,8 @@ window.CONFIG = {
     { id: "nuong", icon: "🔥", name: "Nướng", openDay: 4, container: "Vỉ nướng" },
     { id: "cuon", icon: "🌯", name: "Cuốn", openDay: 7, container: "Thớt tre" },
     { id: "nuoc", icon: "🧋", name: "Nước", openDay: 2, container: "Ly nhựa" },
-    { id: "che", icon: "🍧", name: "Chè", openDay: 16, container: "Cốc chè" }
+    { id: "che", icon: "🍧", name: "Chè", openDay: 16, container: "Cốc chè" },
+    { id: "chien", icon: "🍢", name: "Chiên", openDay: 31, container: "Rổ chiên" }
   ],
 
   // Vai trò nguyên liệu theo khu: đế (cho đầu tiên) / kết thúc (cho sau cùng)
@@ -296,7 +297,8 @@ window.CONFIG = {
     nuong: { base: ["bt_tron"], finish: ["mayo", "tuong_ot"] },
     cuon: { base: ["bt_phoi_suong"], finish: ["nuoc_cham"] },
     nuoc: { base: ["ly"], finish: ["tra", "nuoc_mia", "da"] },
-    che: { base: ["coc_che"], finish: ["da", "dua_nao"] }
+    che: { base: ["coc_che"], finish: ["da", "dua_nao"] },
+    chien: { base: ["ro_chien"], finish: ["tuong_ot", "tuong_me", "sot_pho_mai"] }
   },
 
   // Nguyên liệu (Mục 7.2). price = giá nhập 5 phần. short = tên ngắn dùng trong câu thoại.
@@ -317,10 +319,10 @@ window.CONFIG = {
     bt_tron:       { name: "Bánh tráng tròn (nướng)", short: "bánh tráng tròn", emoji: "⚪", zones: ["nuong"], openDay: 4, price: 5 },
     hanh_la:       { name: "Hành lá",                 short: "hành lá",        emoji: "🌱", zones: ["nuong"], openDay: 4, price: 3 },
     mayo:          { name: "Mayonnaise",              short: "sốt mayonnaise", emoji: "🥫", zones: ["nuong"], openDay: 4, price: 6 },
-    tuong_ot:      { name: "Tương ớt",                short: "tương ớt",       emoji: "🔴", zones: ["nuong"], openDay: 4, price: 5 },
+    tuong_ot:      { name: "Tương ớt",                short: "tương ớt",       emoji: "🔴", zones: ["nuong", "chien"], openDay: 4, price: 5 },
     muoi_tom:      { name: "Muối tôm",                short: "muối tôm",       emoji: "🧂", zones: ["tron", "cuon"], openDay: 5, price: 4 },
     bo_beo:        { name: "Bơ béo (sốt bơ)",         short: "sốt bơ",         emoji: "🧈", zones: ["tron", "cuon"], openDay: 5, price: 8 },
-    xuc_xich:      { name: "Xúc xích",                short: "xúc xích",       emoji: "🌭", zones: ["nuong"], openDay: 6, price: 12 },
+    xuc_xich:      { name: "Xúc xích",                short: "xúc xích",       emoji: "🌭", zones: ["nuong", "chien"], openDay: 6, price: 12 },
     cha_bong:      { name: "Chà bông",                short: "chà bông",       emoji: "🟫", zones: ["nuong", "cuon"], openDay: 6, price: 10 },
     bt_phoi_suong: { name: "Bánh tráng phơi sương",   short: "bánh tráng phơi sương", emoji: "📃", zones: ["cuon"], openDay: 7, price: 6 },
     thit_luoc:     { name: "Thịt luộc",               short: "thịt luộc",      emoji: "🥓", zones: ["cuon"], openDay: 7, price: 15 },
@@ -328,6 +330,15 @@ window.CONFIG = {
     nuoc_cham:     { name: "Nước chấm me",            short: "nước chấm",      emoji: "🫙", zones: ["cuon"], openDay: 7, price: 5 },
     nuoc_mia:      { name: "Nước mía",                short: "nước mía",       emoji: "🎋", zones: ["nuoc"], openDay: 8, price: 8 },
     pho_mai:       { name: "Phô mai",                 short: "phô mai",        emoji: "🧀", zones: ["nuong"], openDay: 9, price: 15 },
+    // Mùa 3 · xe cá viên chiên
+    ro_chien:      { name: "Rổ chiên",                short: "rổ chiên",       emoji: "🧺", zones: ["chien"], openDay: 31, price: 3 },
+    ca_vien:       { name: "Cá viên",                 short: "cá viên",        emoji: "🍢", zones: ["chien"], openDay: 31, price: 10 },
+    bo_vien:       { name: "Bò viên",                 short: "bò viên",        emoji: "🍡", zones: ["chien"], openDay: 31, price: 12 },
+    khoai_tay:     { name: "Khoai tây cắt que",       short: "khoai tây",      emoji: "🍟", zones: ["chien"], openDay: 32, price: 8 },
+    tom_vien:      { name: "Tôm viên",                short: "tôm viên",       emoji: "🍤", zones: ["chien"], openDay: 33, price: 14 },
+    tuong_me:      { name: "Tương me",                short: "tương me",       emoji: "🌰", zones: ["chien"], openDay: 33, price: 4 },
+    dau_hu_pm:     { name: "Đậu hũ phô mai",          short: "đậu hũ phô mai", emoji: "🍘", zones: ["chien"], openDay: 34, price: 12 },
+    sot_pho_mai:   { name: "Sốt phô mai",             short: "sốt phô mai",    emoji: "🫕", zones: ["chien"], openDay: 34, price: 6 },
     mut_dua:       { name: "Mứt dừa",                 short: "mứt dừa",        emoji: "🍬", zones: ["tron"], openDay: 1, price: 6, months: [1, 2] },
     xi_muoi:       { name: "Xí muội",                 short: "xí muội",        emoji: "🍒", zones: ["nuoc"], openDay: 2, price: 4, months: [5, 6, 7, 8] },
     trung_muoi:    { name: "Trứng muối",              short: "trứng muối",     emoji: "🌝", zones: ["nuong"], openDay: 4, price: 8, months: [9, 10] },
@@ -382,6 +393,25 @@ window.CONFIG = {
       toppings: ["kho_bo", "kho_muc", "tom_kho", "trung_cut", "xoai", "rau_ram", "dau_phong", "hanh_phi"], finish: ["tac", "lac"], price: 40, openDay: 10 },
     { id: "tra_sua_tran_chau", name: "Trà sữa trân châu", short: "Trà sữa", emoji: "🧋", zone: "nuoc", base: "ly",
       toppings: ["tran_chau"], finish: ["rot:tra", "da"], price: 20, openDay: 11 },
+    // Mùa 3 · xe cá viên chiên: bỏ viên vào rổ → lắc rổ chiên → rưới tương
+    { id: "ca_vien_chien", name: "Cá viên chiên", short: "Cá viên chiên", emoji: "🍢", zone: "chien", base: "ro_chien",
+      toppings: ["ca_vien", "bo_vien"], finish: ["lac", "tuong_ot"], price: 20, openDay: 31 },
+    { id: "khoai_tay_chien", name: "Khoai tây chiên", short: "Khoai chiên", emoji: "🍟", zone: "chien", base: "ro_chien",
+      toppings: ["khoai_tay"], finish: ["lac", "tuong_ot"], price: 15, openDay: 32 },
+    { id: "tom_vien_chien", name: "Tôm viên chiên sốt me", short: "Tôm viên me", emoji: "🍤", zone: "chien", base: "ro_chien",
+      toppings: ["tom_vien", "ca_vien"], finish: ["lac", "tuong_me"], price: 25, openDay: 33 },
+    { id: "dau_hu_pho_mai", name: "Đậu hũ phô mai chiên", short: "Đậu hũ phô mai", emoji: "🍘", zone: "chien", base: "ro_chien",
+      toppings: ["dau_hu_pm"], finish: ["lac", "sot_pho_mai"], price: 22, openDay: 34 },
+    { id: "xuc_xich_chien", name: "Xúc xích chiên", short: "Xúc xích chiên", emoji: "🌭", zone: "chien", base: "ro_chien",
+      toppings: ["xuc_xich", "khoai_tay"], finish: ["lac", "tuong_ot"], price: 22, openDay: 35 },
+    { id: "khoai_lac_pho_mai", name: "Khoai tây lắc phô mai", short: "Khoai lắc phô mai", emoji: "🍟", zone: "chien", base: "ro_chien",
+      toppings: ["khoai_tay"], finish: ["lac", "sot_pho_mai"], price: 18, openDay: 37 },
+    { id: "ca_vien_sot_me", name: "Thập cẩm sốt me", short: "Thập cẩm me", emoji: "🍢", zone: "chien", base: "ro_chien",
+      toppings: ["ca_vien", "bo_vien", "dau_hu_pm"], finish: ["lac", "tuong_me"], price: 30, openDay: 38 },
+    { id: "xien_thap_cam", name: "Xiên que thập cẩm", short: "Xiên thập cẩm", emoji: "🍡", zone: "chien", base: "ro_chien",
+      toppings: ["ca_vien", "bo_vien", "tom_vien", "xuc_xich"], finish: ["lac", "tuong_ot"], price: 34, openDay: 39 },
+    { id: "xien_hen_ho", name: "Xiên que hẹn hò", short: "Xiên hẹn hò", emoji: "💕", zone: "chien", base: "ro_chien",
+      toppings: ["ca_vien", "bo_vien", "tom_vien", "dau_hu_pm", "khoai_tay"], finish: ["lac", "sot_pho_mai", "tuong_ot"], price: 42, openDay: 45 },
     // Món theo mùa thật (months = tháng có bán, theo giờ máy)
     { id: "bt_tron_tet", name: "Bánh tráng trộn mứt Tết", short: "Trộn mứt Tết", emoji: "🥗", zone: "tron", base: "bt_soi",
       toppings: ["kho_bo", "xoai", "mut_dua", "dau_phong"], finish: ["tac", "lac"], price: 28, openDay: 1, months: [1, 2], seasonName: "Tết" },
@@ -422,6 +452,10 @@ window.CONFIG = {
       toppings: ["dau_xanh", "nep_cam", "mit", "thach", "tran_chau", "nuoc_cot_dua"], finish: ["dua_nao", "da"], price: 38, openDay: 28 },
     { id: "ly_che_hen_ho", name: "Ly Chè Hẹn Hò", short: "Chè Hẹn Hò", emoji: "🍧", zone: "che", base: "coc_che",
       toppings: ["sua_chua", "mit", "tran_chau", "nuoc_cot_dua"], finish: ["dua_nao"], price: 45, openDay: 30 },
+    { id: "combo_an_vat", name: "Combo Ăn Vặt", short: "Combo Ăn Vặt", emoji: "🍢", zone: "combo", base: null,
+      toppings: [], finish: [], combo: ["ca_vien_chien", "tra_tac"], price: 35, openDay: 36 },
+    { id: "combo_dem_he", name: "Combo Đêm Hè", short: "Combo Đêm Hè", emoji: "🌕", zone: "combo", base: null,
+      toppings: [], finish: [], combo: ["xien_thap_cam", "sua_chua_da"], price: 55, openDay: 41 },
     { id: "combo_mua_he", name: "Combo Mùa Hè", short: "Combo Mùa Hè", emoji: "🌴", zone: "combo", base: null,
       toppings: [], finish: [], combo: ["che_thai", "tra_tac"], price: 40, openDay: 27 }
   ],
@@ -496,7 +530,8 @@ window.CONFIG = {
   // Mùa & mốc: 15 ngày bên dưới là 15 mốc lớn; giữa các mốc lớn có mốc nhỏ (minorPerMajor).
   seasons: [
     { id: 1, name: "Mùa 1 · Tiệm nhỏ đầu hẻm", majorDays: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], minorPerMajor: 1 },
-    { id: 2, name: "Mùa 2 · Quầy chè đầu hẻm", majorDays: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], minorPerMajor: 1 }
+    { id: 2, name: "Mùa 2 · Quầy chè đầu hẻm", majorDays: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], minorPerMajor: 1 },
+    { id: 3, name: "Mùa 3 · Xe cá viên chiên", majorDays: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45], minorPerMajor: 1 }
   ],
   milestones: {
     shiftsBase: 2,            // số "ca chuẩn" cần cho mốc đầu tiên
@@ -547,6 +582,7 @@ window.CONFIG = {
     { id: "endless100", name: "Không biết mệt", desc: "Ca vô tận phục vụ 100 khách", stat: "endlessBest", n: 100, reward: 100 },
     { id: "season1", name: "Tiệm nhỏ đầu hẻm", desc: "Đi hết Mùa 1", stat: "season1", n: 1, reward: 150 },
     { id: "season2", name: "Quầy chè đầu hẻm", desc: "Đi hết Mùa 2", stat: "season2", n: 1, reward: 200 },
+    { id: "season3", name: "Xe cá viên đầu hẻm", desc: "Đi hết Mùa 3", stat: "season3", n: 1, reward: 250 },
     { id: "vip3", name: "Khách sộp", desc: "Phục vụ 3 khách đặc biệt", stat: "vips", n: 3, reward: 60 },
     { id: "custom5", name: "Đầu bếp sáng tạo", desc: "Bán 5 phần món sáng tạo", stat: "customs", n: 5, reward: 60 },
     { id: "rush10", name: "Bình tĩnh giờ cao điểm", desc: "Vượt 10 đợt giờ cao điểm", stat: "rushes", n: 10, reward: 60 },
@@ -571,14 +607,15 @@ window.CONFIG = {
 
   // Màn "Có gì mới": save cũ thấy một lần mỗi khi đổi version. go = nút "Thử ngay" mở đâu.
   whatsNew: {
-    version: "2.0",
+    version: "2.1",
     items: [
-      { icon: "💕", title: "Anh Hiếu sửa món", text: "Lỡ giao sai, anh Hiếu làm lại hoặc bỏ nốt phần thiếu; khách sắp bỏ đi anh tự làm giúp; bấm nút có hình anh trên đầu màn để nhờ làm món cho khách bất kỳ. Khách bớt tip một chút. Tắt trong Cài đặt → Trợ giúp.", go: null },
-      { icon: "📖", title: "Bếp tập", text: "Tập làm bất kỳ món nào: không khách thật, không tính giờ, không tốn nguyên liệu. Nút Bếp tập ở Menu.", go: "practice" },
-      { icon: "✅", title: "Mục tiêu phụ", text: "Mỗi mốc có thêm một mục tiêu nhỏ (không ai bỏ đi, combo 5…). Đạt được thì có dấu ✓ trên Bản đồ và thưởng 20k.", go: "map" },
-      { icon: "🔮", title: "Tarot", text: "Bùa giờ là lá Ẩn chính: qua mốc lớn được lật 3 lá úp rồi chọn một. Mỗi ngày còn có Lá bài hôm nay trong Sổ tay.", go: "perks" },
-      { icon: "🎵", title: "Nhịp lắc & tủ giữ món", text: "Lắc đúng lúc vòng tròn khép lại, hoặc cuốn liền một hơi, được Ngon tuyệt! và thêm tip. Từ cấp 6 có tủ để làm sẵn món trước giờ đông.", go: null },
-      { icon: "📱", title: "Đơn mang về & đơn sỉ", text: "Từ cấp 8 có đơn mang về chờ tài xế, từ cấp 10 có đơn sỉ nhiều phần. Chỉnh mức trong Cài đặt → Sự kiện.", go: "settings" }
+      { icon: "🍢", title: "Mùa 3 · Xe cá viên chiên", text: "Đi hết Mùa 2 là mở xe chiên: bỏ viên vào rổ, lắc rổ cho giòn, rưới tương ớt, tương me hay sốt phô mai. Có 15 thẻ công thức và đoạn kết mới.", go: null },
+      { icon: "🔮", title: "Góc bói bài", text: "Thỉnh thoảng có khách nhờ Bống bói một lá. Lật bài rồi chọn cách giải (khích lệ, thẳng thắn hay vui vẻ) cho hợp tâm trạng khách để được thêm tip.", go: null },
+      { icon: "🔮", title: "Tarot mỗi ngày", text: "Bùa là các lá Ẩn chính, rút úp rồi lật. Mỗi ngày có Lá bài hôm nay trong Sổ tay.", go: "perks" },
+      { icon: "🍹", title: "Món theo mùa", text: "Tết có trộn mứt Tết, hè có trà tắc xí muội, Trung thu có nướng trứng muối, đông có trà gừng nóng.", go: null },
+      { icon: "💕", title: "Anh Hiếu giúp làm món", text: "Giao sai thì anh làm lại hoặc bỏ nốt phần thiếu. Bấm nút có hình anh để nhờ làm món cho khách bất kỳ. Khách sắp bỏ đi thì anh cứu (2 lần mỗi ca, Thư giãn thì 5). Anh làm cũng tốn nguyên liệu nha.", go: null },
+      { icon: "👆", title: "Chạm lại để bỏ", text: "Lỡ chạm nhầm nguyên liệu? Chạm lại đúng nguyên liệu vừa thêm là bỏ nó ra.", go: null },
+      { icon: "📖", title: "Bếp tập, mục tiêu phụ, tủ món, đơn mang về", text: "Tập món thoải mái trong Bếp tập, mỗi mốc có mục tiêu phụ, có tủ giữ món, đơn mang về và đơn sỉ. Lần đầu gặp cái nào game sẽ chỉ cho.", go: "practice" }
     ]
   },
 
@@ -794,6 +831,21 @@ window.CONFIG = {
     { day: 28, customers: 24, target: 1410, spawn: [2.64, 3.46], patienceMult: 0.96, unlock: ["che_dac_biet"], weather: "rain", tipMult: 1, grillWeight: 2 },
     { day: 29, customers: 24, target: 1460, spawn: [2.61, 3.42], patienceMult: 0.95, unlock: [], weather: "festival", tipMult: 1.5 },
     { day: 30, customers: 24, target: 1500, spawn: [2.6, 3.4], patienceMult: 0.95, unlock: ["ly_che_hen_ho"], weather: "sunset", tipMult: 1 },
+    { day: 31, customers: 18, target: 1550, spawn: [3.0, 4.0], patienceMult: 1.0, unlock: ["ca_vien_chien"], weather: "sunny", tipMult: 1, hints: true },
+    { day: 32, customers: 18, target: 1600, spawn: [2.97, 3.95], patienceMult: 1.0, unlock: ["khoai_tay_chien"], weather: "windy", tipMult: 1 },
+    { day: 33, customers: 19, target: 1660, spawn: [2.94, 3.9], patienceMult: 0.99, unlock: ["tom_vien_chien"], weather: "payday", tipMult: 2 },
+    { day: 34, customers: 19, target: 1720, spawn: [2.91, 3.85], patienceMult: 0.99, unlock: ["dau_hu_pho_mai"], weather: "hot", tipMult: 1, drinkWeight: 2 },
+    { day: 35, customers: 20, target: 1780, spawn: [2.88, 3.8], patienceMult: 0.99, unlock: ["xuc_xich_chien"], weather: "sunny", tipMult: 1 },
+    { day: 36, customers: 20, target: 1840, spawn: [2.85, 3.75], patienceMult: 0.98, unlock: ["combo_an_vat"], weather: "reviewer", tipMult: 1, ratingWeight: 3 },
+    { day: 37, customers: 21, target: 1900, spawn: [2.82, 3.7], patienceMult: 0.98, unlock: ["khoai_lac_pho_mai"], weather: "rain", tipMult: 1, grillWeight: 2 },
+    { day: 38, customers: 21, target: 1960, spawn: [2.79, 3.65], patienceMult: 0.97, unlock: ["ca_vien_sot_me"], weather: "windy", tipMult: 1 },
+    { day: 39, customers: 22, target: 2020, spawn: [2.76, 3.6], patienceMult: 0.97, unlock: ["xien_thap_cam"], weather: "school", tipMult: 1, groupOf: 3 },
+    { day: 40, customers: 22, target: 2080, spawn: [2.73, 3.55], patienceMult: 0.97, unlock: [], weather: "payday", tipMult: 2 },
+    { day: 41, customers: 23, target: 2140, spawn: [2.7, 3.5], patienceMult: 0.96, unlock: ["combo_dem_he"], weather: "hot", tipMult: 1, drinkWeight: 2 },
+    { day: 42, customers: 23, target: 2200, spawn: [2.67, 3.45], patienceMult: 0.96, unlock: [], weather: "sunny", tipMult: 1 },
+    { day: 43, customers: 24, target: 2260, spawn: [2.64, 3.4], patienceMult: 0.95, unlock: [], weather: "rain", tipMult: 1, grillWeight: 2 },
+    { day: 44, customers: 25, target: 2320, spawn: [2.61, 3.35], patienceMult: 0.95, unlock: [], weather: "festival", tipMult: 1.5 },
+    { day: 45, customers: 25, target: 2400, spawn: [2.6, 3.3], patienceMult: 0.95, unlock: ["xien_hen_ho"], weather: "sunset", tipMult: 1 },
     { day: "secret", customers: 15, target: 0, spawn: [3, 4], patienceMult: 1.00, unlock: [], weather: "secret", tipMult: 1, cannotLose: true }
   ],
 
@@ -1067,7 +1119,11 @@ window.CONFIG = {
       cuon_toppings: "Thêm nhân đúng như khách gọi rồi bấm \"Cuốn!\"",
       cuon_roll: "Bấm \"Cuốn!\" rồi vuốt từ dưới lên để cuốn bánh",
       cuon_sauce: "Chạm Nước chấm me 🫙",
-      cuon_deliver: "Chạm thớt rồi chạm khách để giao"
+      cuon_deliver: "Chạm thớt rồi chạm khách để giao",
+      chien_start: "👆 Chạm Rổ chiên 🧺 để bắt đầu",
+      chien_balls: "Bỏ các loại viên đúng như khách gọi rồi bấm \"Lắc rổ!\"",
+      chien_sauce: "Rưới tương lên rổ vừa chiên",
+      chien_deliver: "Chạm rổ rồi chạm khách để giao"
     },
 
     // Phản hồi của khách ({Self} = tự xưng viết hoa, {call} = gọi bà chủ)
@@ -1369,6 +1425,20 @@ window.CONFIG = {
     seasonModalTitle: "Thư của anh",
     btnStartSeason: "Mở Mùa 2",
     season3Soon: "Mùa 3 đang được chuẩn bị 💕",
+    seasonSoonNext: "Mùa sau đang được chuẩn bị 💕",
+    seasonCardTitle3: "Mùa 3 mở rồi! 🍢",
+    seasonCardSub3: "Xe cá viên chiên đang chờ bà chủ",
+    goldHearts3: "Mùa 3 · 💛 {a}/{b}",
+    cards3Title: "Sổ công thức Mùa 3",
+    cards3Count: "Sổ công thức Mùa 3 · {a}/{b}",
+    shakeTitleFry: "Lắc rổ chiên cho giòn nào!",
+    needFry: "Lắc rổ chiên trước rồi mới rưới tương nha",
+    alreadyFried: "Rổ này chiên xong rồi, giờ rưới tương thôi",
+    cards3Locked: "Qua mốc lớn Mùa 3 để mở",
+    memories3Title: "Kỷ niệm Mùa 3",
+    bonusCard3: "Lời nhắn Mùa 3 💛",
+    bonusLocked3: "Đủ 15 Tim vàng Mùa 3 để mở",
+    tip_chien: "Xe cá viên chiên: chạm Rổ chiên, bỏ các loại viên vào, bấm Lắc rổ, rồi rưới tương lên. Xong thì giao cho khách!",
     seasonTab: "Mùa {s}",
     seasonDoneCard: "Mùa {s} · đã đi hết 🎉",
     cards2Title: "Sổ công thức Mùa 2",

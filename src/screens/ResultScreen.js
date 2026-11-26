@@ -54,7 +54,7 @@ window.BT = window.BT || { Screens: {} };
         body.appendChild(dbox);
       }
 
-      const goldNow = s.goldSeason === 2 ? S.s2.goldHearts : S.goldHearts;
+      const goldNow = (s.goldSeason || 1) === 1 ? S.goldHearts : (S["s" + s.goldSeason] || {}).goldHearts || 0;
       if (s.newGold) body.appendChild(UI.el("div", "gold-get", UI.t("goldHeartGet") + " · " + UI.t("goldHearts", { a: goldNow, b: CONFIG.build.maxPlayableDay })));
       if (!s.passed) {
         body.appendChild(UI.el("div", "result-cheer", UI.t("loseLines")));
@@ -147,17 +147,18 @@ window.BT = window.BT || { Screens: {} };
           : UI.t("msProgress", { a: UI.num1(p.after.progress), b: UI.num1(s.need) })));
         if (p.cleared) box.classList.add("cleared");
         if (s.card2 !== null && s.card2 !== undefined) {
-          const c2 = (window.PERSONAL.recipeCards2 || [])[s.card2];
+          const cs = s.cardSeason || s.endSeason || 2;
+          const c2 = (window.PERSONAL["recipeCards" + cs] || [])[s.card2];
           if (c2) {
             const cb = UI.el("div", "card2-box");
             cb.appendChild(UI.el("div", "card2-head", UI.t("card2Get")));
-            cb.appendChild(UI.el("div", "card2-title", "🍧 " + c2.title));
+            cb.appendChild(UI.el("div", "card2-title", (cs === 3 ? "🍢 " : "🍧 ") + c2.title));
             cb.appendChild(UI.el("div", "card2-text", UI.fmt(c2.text)));
             box.appendChild(cb);
           }
         }
         if (s.memory2 !== null && s.memory2 !== undefined) {
-          const m2 = UI.button(UI.t("memory2Get"), "btn-purple small", () => UI.openMemory(s.memory2, { mems: window.PERSONAL.memories2 }));
+          const m2 = UI.button(UI.t("memory2Get"), "btn-purple small", () => UI.openMemory(s.memory2, { mems: window.PERSONAL["memories" + (s.cardSeason || s.endSeason || 2)] }));
           box.appendChild(m2);
         }
         if (s.minor) {
@@ -208,13 +209,13 @@ window.BT = window.BT || { Screens: {} };
 
       // Đủ 15 Trái tim vàng → lời nhắn bí mật
       function showBonus(after) {
-        const s2 = s.goldSeason === 2;
-        if (s2) S.s2.bonusSeen = true; else S.bonusSeen = true;
+        const gs = s.goldSeason || 1;
+        if (gs > 1) S["s" + gs].bonusSeen = true; else S.bonusSeen = true;
         BT.Save.persist();
         UI.confetti(80);
         UI.modal({
           title: UI.t("bonusTitle"),
-          body: s2 ? window.PERSONAL.bonusMessage2 : window.PERSONAL.bonusMessage,
+          body: gs > 1 ? window.PERSONAL["bonusMessage" + gs] : window.PERSONAL.bonusMessage,
           className: "modal-welcome",
           buttons: [{ label: UI.t("btnClose"), cls: "btn-pink", onClick: () => { if (after) after(); } }]
         });

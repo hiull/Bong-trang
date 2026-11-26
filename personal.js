@@ -168,6 +168,33 @@ window.PERSONAL = {
   // Kỷ niệm Mùa 2 (tuỳ chọn). Thêm như memories ở trên, phần tử thứ k mở ở mốc lớn thứ k của Mùa 2.
   memories2: [],
 
+  // ---------------- Mùa 3 · Xe cá viên chiên ----------------
+  season3Intro: "Bà chủ ơi, chè với sữa chua bán đắt quá nên anh lén mua thêm cái xe chiên nhỏ đặt đầu hẻm. Tối tối học sinh tan học, ai mà không thèm một bịch cá viên chiên nóng hổi chấm tương ớt. Mình bắt đầu Mùa 3 nha 🍢",
+  // Thư kết Mùa 3 (màn kết sau mốc cuối Mùa 3)
+  ending3: "Ba mùa rồi đó em. Từ một gánh bánh tráng nhỏ, giờ tiệm mình có cả quầy chè lẫn xe cá viên. Anh vẫn nhớ hôm đầu em lóng ngóng lắc bịch bánh tráng, giờ thì lắc rổ chiên điệu nghệ như bà chủ lâu năm. Cảm ơn em đã cho anh đứng bên cạnh suốt chặng đường này 💕",
+  // Đủ 15 Tim vàng Mùa 3
+  bonusMessage3: "15 Trái tim vàng Mùa 3! Bà chủ xứng đáng một buổi đi ăn vặt ngoài đời. Chụp màn hình này gửi anh nha, anh bao cá viên chiên với trà tắc 🍢💛",
+  // Thẻ công thức Mùa 3 (mở khi qua mỗi mốc lớn Mùa 3, theo thứ tự)
+  recipeCards3: [
+    { title: "Cá viên chiên", text: "Cá viên vàng ruộm, bò viên dai dai, chấm tương ớt cay cay. Món của mọi buổi tan trường." },
+    { title: "Khoai tây chiên", text: "Khoai cắt que chiên hai lần cho giòn rụm. Ai nói đồ Tây không hợp hẻm nhỏ?" },
+    { title: "Tôm viên sốt me", text: "Tương me chua ngọt sền sệt, quyện với tôm viên. Ăn một xiên là muốn thêm xiên nữa." },
+    { title: "Đậu hũ phô mai", text: "Cắn một miếng là phô mai chảy ra. Nhớ thổi nguội kẻo bỏng lưỡi nha bà chủ." },
+    { title: "Xúc xích chiên", text: "Xúc xích khứa chéo cho nở hoa trong chảo dầu. Đẹp mắt, ngon miệng." },
+    { title: "Combo Ăn Vặt", text: "Một bịch cá viên, một ly trà tắc. Bộ đôi huyền thoại của tuổi học trò." },
+    { title: "Khoai tây lắc phô mai", text: "Bỏ khoai vào bịch, rắc phô mai, lắc thật đều. Lắc giỏi như lắc bánh tráng là thắng." },
+    { title: "Thập cẩm sốt me", text: "Cá viên, bò viên, đậu hũ phô mai, rưới tương me. Cái gì cũng có một chút." },
+    { title: "Xiên que thập cẩm", text: "Bốn loại viên trên một rổ. Khách đông thì làm nhanh tay, anh Hiếu xiên giùm." },
+    { title: "Rổ chiên của tiệm", text: "Rổ chiên cũ mà bền, lắc cả ngàn lần vẫn chưa móp. Giống tình cảm mình vậy đó." },
+    { title: "Combo Đêm Hè", text: "Xiên que nóng hổi với ly sữa chua đá. Ngồi đầu hẻm hóng gió, đêm hè trôi chậm lại." },
+    { title: "Bí kíp chiên giòn", text: "Dầu đủ nóng, đừng bỏ quá nhiều một lúc, lắc rổ đều tay. Bí kíp đơn giản mà ít ai giữ được." },
+    { title: "Tương nhà làm", text: "Tương ớt, tương me, sốt phô mai, đều tự pha theo khẩu vị bà chủ. Khách quen nhận ra liền." },
+    { title: "Mùi dầu chiên", text: "Tối nào về áo cũng thơm mùi dầu chiên. Anh bảo đó là mùi của sự chăm chỉ." },
+    { title: "Xiên que hẹn hò", text: "Đủ mọi loại viên, hai loại sốt, một rổ cho hai người. Món dành riêng cho buổi hẹn sau ca." }
+  ],
+  // Ảnh kỷ niệm Mùa 3 (anh tự thêm nếu muốn, giống memories2)
+  memories3: [],
+
   // ---------------- Anh Hiếu phụ tiệm (Mùa 2) ----------------
   // Câu anh nói khi đang phụ tiệm (bong bóng thoại)
   helperLines: [

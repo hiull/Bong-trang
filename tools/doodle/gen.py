@@ -1337,6 +1337,60 @@ def _(ic):
     ic.line([(20, 38), (30, 34)], C["tan2"], 1.6).line([(40, 26), (46, 30)], C["tan2"], 1.6)
 
 
+
+@icon("basket", "🧺")
+def _(ic):
+    ic.rrect(10, 24, 44, 28, 8, C["tan2"])
+    for x in (20, 30, 40):
+        ic.line([(x, 26), (x, 50)], C["brown"], 1.4)
+    ic.line([(12, 36), (52, 36)], C["brown"], 1.4)
+    ic.line([(16, 24), (22, 10), (42, 10), (48, 24)], OUT, 2.2)
+
+@icon("oden", "🍢")
+def _(ic):
+    ic.line([(32, 4), (32, 60)], C["tan2"], 2.4)
+    ic.circle(32, 16, 8, C["orange"]).circle(32, 32, 8, C["tan2"]).circle(32, 47, 7, C["dred"])
+    ic.dot(29, 13, 1.4, C["white"]).dot(29, 29, 1.4, C["white"])
+
+@icon("meatballs", "🍡")
+def _(ic):
+    ic.line([(32, 4), (32, 60)], C["tan2"], 2.4)
+    ic.circle(32, 16, 8, C["brown"]).circle(32, 32, 8, C["brown"]).circle(32, 48, 8, C["brown"])
+    ic.dot(29, 13, 1.4, C["tan"]).dot(29, 29, 1.4, C["tan"]).dot(29, 45, 1.4, C["tan"])
+
+@icon("fries", "🍟")
+def _(ic):
+    for k, x in enumerate((20, 26, 32, 38, 44)):
+        ic.rrect(x - 3, 8 + (k % 2) * 4, 6, 30, 2, C["yel"])
+    ic.poly([(14, 28), (50, 28), (46, 58), (18, 58)], C["red"])
+    ic.heart(32, 42, 6, C["white"])
+
+@icon("shrimp_ball", "🍤")
+def _(ic):
+    ic.ellipse(32, 36, 20, 14, C["orange"], rot=-20)
+    ic.ellipse(48, 22, 7, 5, C["dred"], rot=40)
+    ic.line([(22, 34), (40, 28)], C["tan"], 1.6).line([(22, 42), (42, 36)], C["tan"], 1.6)
+
+@icon("tamarind", "🌰")
+def _(ic):
+    ic.rrect(16, 20, 32, 34, 8, C["brown"])
+    ic.rrect(20, 12, 24, 10, 3, C["tan"])
+    ic.ellipse(32, 36, 10, 7, C["dred"])
+
+@icon("tofu_cheese", "🍘")
+def _(ic):
+    ic.rrect(12, 16, 40, 34, 6, C["yel"])
+    ic.ellipse(32, 52, 9, 6, C["lyel"])
+    ic.dot(22, 26, 2, C["tan2"]).dot(40, 24, 2, C["tan2"]).dot(30, 34, 2, C["tan2"])
+
+@icon("cheese_sauce", "🫕")
+def _(ic):
+    ic.ellipse(32, 40, 24, 14, C["dgrey"])
+    ic.ellipse(32, 34, 22, 9, C["yel"])
+    ic.ellipse(26, 32, 6, 3, C["lyel"])
+    ic.line([(14, 50), (8, 58)], OUT, 2).line([(50, 50), (56, 58)], OUT, 2)
+
+
 if __name__ == "__main__":
     import sys
     out = sys.argv[1]

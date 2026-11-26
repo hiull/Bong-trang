@@ -504,6 +504,7 @@ window.BT = window.BT || { Screens: {} };
         if (this.practice) this.practiceSpawn();
         if (this.heroOn) this.firstTip("hero");
         if (this.holdOn) this.firstTip("hold");
+        if (this.openZones.some((z) => z.id === "chien")) this.firstTip("chien");
         if (this.helped) UI.toast(UI.t("retryHelp"), 2600);
       }, steps.length * ms);
     }
@@ -1265,7 +1266,8 @@ window.BT = window.BT || { Screens: {} };
         hero: () => this.heroBtn,
         hold: () => this.el.querySelector(".hold-box"),
         takeout: () => this.el.querySelector(".takeout-card"),
-        bulk: () => this.lastBulk && this.lastBulk.el
+        bulk: () => this.lastBulk && this.lastBulk.el,
+        chien: () => this.el.querySelector('.tab[data-zone="chien"]')
       };
       this.pauseReasons.add("tip");
       UI.coach.show({
@@ -2152,7 +2154,7 @@ window.BT = window.BT || { Screens: {} };
       const roll = mode === "roll";
       const need = this.shakeNeed();
       const layer = UI.el("div", "shake-layer" + (roll ? " roll" : ""));
-      layer.appendChild(UI.el("div", "shake-title", UI.t(roll ? "rollTitle" : "shakeTitle")));
+      layer.appendChild(UI.el("div", "shake-title", UI.t(roll ? "rollTitle" : tray.zone === "chien" ? "shakeTitleFry" : "shakeTitle")));
       const zone = UI.el("div", "shake-zone");
       const bag = UI.el("div", roll ? "big-paper" : "big-bag");
       const items = tray.el.querySelector(".bag-items");
@@ -2396,6 +2398,8 @@ window.BT = window.BT || { Screens: {} };
         key = !has ? "nuoc_start" : !t.poured ? "nuoc_pour" : t.finish.includes("da") ? "nuoc_deliver" : "nuoc_ice";
       } else if (z === "nuong") {
         key = !has ? "nuong_start" : !t.cracked ? "nuong_egg" : !t.folded ? "nuong_cook" : Object.keys(t.sauces).length ? "nuong_deliver" : "nuong_sauce";
+      } else if (z === "chien") {
+        key = !has ? "chien_start" : t.tied ? (t.finish.length ? "chien_deliver" : "chien_sauce") : "chien_balls";
       } else {
         key = !has ? "cuon_start" : !t.rolled ? (Object.keys(t.items).length >= 2 ? "cuon_roll" : "cuon_toppings") : t.finish.length ? "cuon_deliver" : "cuon_sauce";
       }
@@ -2493,9 +2497,10 @@ window.BT = window.BT || { Screens: {} };
           if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
         } else if (m.major) {
           // Mùa 2: thẻ công thức (+ kỷ niệm Mùa 2 nếu người tặng đã thêm)
-          const ci = m.day - MS.season(2).majorDays[0];
-          if (!S.s2.cards.includes(ci)) { S.s2.cards.push(ci); card2 = ci; }
-          if ((window.PERSONAL.memories2 || [])[ci] && !S.s2.memories.includes(ci)) { S.s2.memories.push(ci); newMemory2 = ci; }
+          const sx = S["s" + sid];
+          const ci = m.day - MS.season(sid).majorDays[0];
+          if (!sx.cards.includes(ci)) { sx.cards.push(ci); card2 = ci; }
+          if ((window.PERSONAL["memories" + sid] || [])[ci] && !sx.memories.includes(ci)) { sx.memories.push(ci); newMemory2 = ci; }
         } else {
           const MC = CONFIG.milestones;
           const coins = MC.minorCoinsBase + MC.minorCoinsPerLevel * m.level;
@@ -2505,7 +2510,7 @@ window.BT = window.BT || { Screens: {} };
           if (tales.length) { const ti = S.talesSeen.length % tales.length; tale = tales[ti]; S.talesSeen.push(ti); }
           minor = { coins, tale };
         }
-        ending = progress.cleared === MS.count() && !(sid === 1 ? S.endingSeen : S.s2.endingSeen);
+        ending = progress.cleared === MS.count() && !(sid === 1 ? S.endingSeen : S["s" + sid].endingSeen);
         if (sid >= CONFIG.helper.fromSeason && progress.cleared === CONFIG.helper.fromMilestone - 1 && !S.helper.unlocked) {
           S.helper.unlocked = true;
           S.helper.chapters = Math.max(S.helper.chapters, 1);
@@ -2590,7 +2595,8 @@ window.BT = window.BT || { Screens: {} };
       const run = this.run;
       // Tiến độ mốc (ca bí mật không tính)
       let units = 0, progress = null, newMemory = null, minor = null, ending = false, daily = null, card2 = null, newMemory2 = null, helperChapter = null;
-      const goldBefore = [S.goldHearts, S.s2.goldHearts];
+      const goldOf = (sid) => (sid === 1 ? S.goldHearts : (S["s" + sid] || {}).goldHearts || 0);
+      const goldBefore = goldOf(run.season || 1);
       S.ms.shifts++;
       if (run.mode === "daily") {
         daily = BT.Daily.complete(run.date, { income, target: d.target });
@@ -2632,10 +2638,10 @@ window.BT = window.BT || { Screens: {} };
       const petCoins = this.hamsterCoins();
       const newRecord = !!(this.recordIncome && income > this.recordIncome);
       S.goldHearts = MS.goldHearts(1);
-      S.s2.goldHearts = MS.goldHearts(2);
+      CONFIG.seasons.forEach((x) => { if (x.id > 1 && S["s" + x.id]) S["s" + x.id].goldHearts = MS.goldHearts(x.id); });
       const goldSeason = run.season || 1;
-      const newGold = goldSeason === 1 ? S.goldHearts > goldBefore[0] : S.s2.goldHearts > goldBefore[1];
-      const allGold = goldSeason === 1 ? S.goldHearts >= CONFIG.build.maxPlayableDay && !S.bonusSeen : S.s2.goldHearts >= CONFIG.build.maxPlayableDay && !S.s2.bonusSeen;
+      const newGold = goldOf(goldSeason) > goldBefore;
+      const allGold = goldOf(goldSeason) >= CONFIG.build.maxPlayableDay && !(goldSeason === 1 ? S.bonusSeen : S["s" + goldSeason].bonusSeen);
       // Khách thêm từ cốt truyện: dùng cho ngày kế tiếp
       this.S.bonusCustomers = this.S.bonusNext || 0;
       this.S.bonusNext = 0;
@@ -2659,7 +2665,7 @@ window.BT = window.BT || { Screens: {} };
       const majorCleared = !!(progress && progress.cleared && (MS.get(progress.cleared) || {}).major);
       const dateOffer = passed && !this.secret && BT.ev("date") > 0 && (majorCleared || Math.random() < CONFIG.dateGame.rate * BT.ev("date"));
       const summary = {
-        badges, dateOffer, side,
+        badges, dateOffer, side, cardSeason: S.season || 1,
         day: this.dayId, run, title: UI.runTitle(run), endSeason: S.season || 1, passed, lostHearts, stars, secret: this.secret,
         units, progress, need: progress ? MS.need(progress.before.index) : 0, minor, daily, card2, memory2: newMemory2, goldSeason, helperChapter, petCoins, newRecord,
         memory: newMemory, newGold, allGold, ending, levelUp,

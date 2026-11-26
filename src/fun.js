@@ -96,6 +96,7 @@ window.BT = window.BT || { Screens: {} };
       case "endlessBest": return S.endless.best;
       case "season1": return S.endingSeen ? 1 : 0;
       case "season2": return S.s2 && S.s2.endingSeen ? 1 : 0;
+      case "season3": return S.s3 && S.s3.endingSeen ? 1 : 0;
       case "vips": return S.life.vips;
       case "customs": return S.life.customsSold;
       case "rushes": return S.life.rushes;

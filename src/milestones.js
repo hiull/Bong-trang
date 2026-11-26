@@ -68,7 +68,7 @@ window.BT = window.BT || { Screens: {} };
     nextSeasonReady() {
       const S = BT.Save.state;
       const sid = S.season || 1;
-      const ended = sid === 1 ? S.endingSeen : !!(S.s2 && S.s2.endingSeen);
+      const ended = sid === 1 ? S.endingSeen : !!(S["s" + sid] && S["s" + sid].endingSeen);
       return S.ms.cleared >= this.count(sid) && ended && CONFIG.seasons.some((x) => x.id === sid + 1);
     },
     startSeason(sid) {
@@ -82,7 +82,7 @@ window.BT = window.BT || { Screens: {} };
       S.season = sid;
       // Hẹn truyện khách quen đang tính theo số ca của mùa cũ → tính lại từ đầu mùa mới
       S.regularNext = {};
-      if (sid === 2 && S.s2) S.s2.started = true;
+      if (sid > 1 && S["s" + sid]) S["s" + sid].started = true;
       BT.Save.persist();
     },
     need(i) { const C = CONFIG.milestones; return round2(C.shiftsBase + C.shiftsGrowth * (i - 1)); },
