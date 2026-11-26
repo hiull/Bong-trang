@@ -1979,3 +1979,4 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .rd-tone { display: flex; flex-direction: column; gap: 2px; text-align: left; border: 2px solid #CDB8F0; border-radius: 12px; background: #F6F0FF; padding: 8px 10px; font: inherit; color: inherit; cursor: pointer; }
 .rd-tone b { color: #4B2C82; }
 .rd-tone-text { font-size: 13px; line-height: 1.35; }
+.season-dish { margin-top: 6px; padding: 6px 10px; border-radius: 10px; background: #FFF1E0; color: #8a4b00; font-weight: 700; font-size: 13px; }

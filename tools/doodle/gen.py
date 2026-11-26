@@ -1309,6 +1309,34 @@ def _(ic):
         ic.dot(32 + 21 * math.cos(a), 32 + 21 * math.sin(a), 1.6, C["dred"])
 
 
+
+@icon("candy", "🍬")
+def _(ic):
+    ic.poly([(8, 24), (18, 32), (8, 40)], C["lpink"]).poly([(56, 24), (46, 32), (56, 40)], C["lpink"])
+    ic.ellipse(32, 32, 15, 11, C["hot"])
+    ic.line([(24, 26), (28, 38)], C["white"], 2.4).line([(32, 24), (36, 40)], C["white"], 2.4)
+
+@icon("plum", "🍒")
+def _(ic):
+    ic.line([(32, 8), (22, 30)], OUT, 2).line([(32, 8), (42, 32)], OUT, 2)
+    ic.ellipse(36, 10, 7, 3.5, C["green"], rot=-20)
+    ic.circle(22, 40, 11, C["dred"]).circle(42, 42, 11, C["red"])
+    ic.dot(18, 36, 2, C["white"]).dot(38, 38, 2, C["white"])
+
+@icon("salted_yolk", "🌝")
+def _(ic):
+    ic.ellipse(32, 34, 24, 20, C["white"])
+    ic.circle(32, 34, 13, C["orange"])
+    ic.dot(28, 30, 2.4, C["lyel"])
+
+@icon("ginger", "🫚")
+def _(ic):
+    ic.ellipse(26, 36, 14, 10, C["tan"], rot=-15)
+    ic.ellipse(42, 28, 9, 7, C["tan"], rot=25)
+    ic.ellipse(18, 24, 7, 6, C["tan"], rot=-40)
+    ic.line([(20, 38), (30, 34)], C["tan2"], 1.6).line([(40, 26), (46, 30)], C["tan2"], 1.6)
+
+
 if __name__ == "__main__":
     import sys
     out = sys.argv[1]

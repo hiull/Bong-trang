@@ -22,7 +22,7 @@ window.BT = window.BT || { Screens: {} };
 
       const ids = Object.keys(CONFIG.ingredients).filter((id) => {
         const ing = CONFIG.ingredients[id];
-        return ing.openDay <= lv && ing.zones.some((z) => CONFIG.build.playableZones.includes(z));
+        return ing.openDay <= lv && BT.inSeason(ing) && ing.zones.some((z) => CONFIG.build.playableZones.includes(z));
       });
       const gift = run.mode === "story" && run.ms === 1 && S.ms.shifts === 0;
       // Quà khai trương: Mùa 1 tặng mọi nguyên liệu; mùa sau chỉ tặng nguyên liệu mới của mùa đó
@@ -54,6 +54,9 @@ window.BT = window.BT || { Screens: {} };
       card.appendChild(BT.MapHelpers.dayInfo(dc));
       if (gift) card.appendChild(UI.el("div", "gift", UI.t("prepGift", { q: M.freeStockQty })));
       if (rescued && !gift) card.appendChild(UI.el("div", "gift", UI.t("prepRescue")));
+      // Món theo mùa đang bán
+      CONFIG.recipes.filter((r) => r.months && BT.inSeason(r) && r.openDay <= run.level && CONFIG.zones.some((z) => z.id === r.zone && z.openDay <= run.level && CONFIG.build.playableZones.includes(z.id)))
+        .forEach((r) => card.appendChild(UI.el("div", "season-dish", r.emoji + " " + UI.t("seasonDish", { season: r.seasonName, name: r.name }))));
       // Lá bài hôm nay
       {
         const tt = BT.Fun.tarotToday();

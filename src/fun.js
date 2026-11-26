@@ -558,7 +558,7 @@ window.BT = window.BT || { Screens: {} };
     const zones = CONFIG.zones.filter((z) => z.openDay <= lv && CONFIG.build.playableZones.includes(z.id)).map((z) => z.id);
     const opened = (id) => !CONFIG.ingredients[id] || CONFIG.ingredients[id].openDay <= lv;
     BT.recipeLevel = lv;
-    const base = CONFIG.recipes.filter((r) => !r.combo && r.openDay <= lv && zones.includes(r.zone)).map((r) => UI.recipe(r.id));
+    const base = CONFIG.recipes.filter((r) => !r.combo && r.openDay <= lv && BT.inSeason(r) && zones.includes(r.zone)).map((r) => UI.recipe(r.id));
     const customs = this.customRecipes().filter((r) => zones.includes(r.zone) && [r.base, ...r.toppings, ...r.finish].every(opened));
     return base.concat(customs);
   };

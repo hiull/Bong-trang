@@ -10,7 +10,7 @@ window.BT = window.BT || { Screens: {} };
     const roles = CONFIG.zoneRoles[zone];
     const ids = Object.keys(CONFIG.ingredients).filter((id) => {
       const ing = CONFIG.ingredients[id];
-      return ing.zones.includes(zone) && ing.openDay <= day;
+      return ing.zones.includes(zone) && ing.openDay <= day && BT.inSeason(ing);
     });
     const rank = (id) => (roles.base.includes(id) ? 0 : roles.finish.includes(id) ? 2 : 1);
     return ids.sort((a, b) => rank(a) - rank(b));

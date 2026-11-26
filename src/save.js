@@ -272,6 +272,8 @@ window.BT = window.BT || { Screens: {} };
     app.classList.add("ts-" + v);
   };
   // Có bùa này chưa?
+  // Đang đúng mùa của món/nguyên liệu (months theo giờ máy)?
+  BT.inSeason = function (x) { return !x || !x.months || x.months.includes(new Date().getMonth() + 1); };
   BT.perk = function (id) { const S = BT.Save.state; return !!(S && S.perks && S.perks.includes(id)); };
   BT.ev = function (key) {
     const e = BT.Save.state && BT.Save.state.settings.events;

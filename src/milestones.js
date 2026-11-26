@@ -276,7 +276,7 @@ window.BT = window.BT || { Screens: {} };
       const rng = mulberry32(Number(key.replace(/-/g, "")) * 7919 + 17);
       rng(); rng();
       const event = MS.pickEvent(level, null, rng);
-      const dishes = CONFIG.recipes.filter((r) => r.openDay <= level && !r.combo);
+      const dishes = CONFIG.recipes.filter((r) => r.openDay <= level && !r.combo && !r.months);
       const focus = dishes[Math.floor(rng() * dishes.length)].id;
       const rules = CONFIG.daily.rules.filter((x) => (x.fromLevel || 0) <= level);
       const rule = rules[Math.floor(rng() * rules.length)];

@@ -328,6 +328,10 @@ window.CONFIG = {
     nuoc_cham:     { name: "Nước chấm me",            short: "nước chấm",      emoji: "🫙", zones: ["cuon"], openDay: 7, price: 5 },
     nuoc_mia:      { name: "Nước mía",                short: "nước mía",       emoji: "🎋", zones: ["nuoc"], openDay: 8, price: 8 },
     pho_mai:       { name: "Phô mai",                 short: "phô mai",        emoji: "🧀", zones: ["nuong"], openDay: 9, price: 15 },
+    mut_dua:       { name: "Mứt dừa",                 short: "mứt dừa",        emoji: "🍬", zones: ["tron"], openDay: 1, price: 6, months: [1, 2] },
+    xi_muoi:       { name: "Xí muội",                 short: "xí muội",        emoji: "🍒", zones: ["nuoc"], openDay: 2, price: 4, months: [5, 6, 7, 8] },
+    trung_muoi:    { name: "Trứng muối",              short: "trứng muối",     emoji: "🌝", zones: ["nuong"], openDay: 4, price: 8, months: [9, 10] },
+    gung:          { name: "Gừng tươi",               short: "gừng",           emoji: "🫚", zones: ["nuoc"], openDay: 2, price: 3, months: [11, 12] },
     tom_kho:       { name: "Tép (tôm khô)",           short: "tép",            emoji: "🦐", zones: ["tron"], openDay: 10, price: 12 },
     tran_chau:     { name: "Trân châu",               short: "trân châu",      emoji: "⚫", zones: ["nuoc", "che"], openDay: 11, price: 6 },
     // Quầy chè (Mùa 2). color = màu dải lớp trong cốc.
@@ -378,6 +382,15 @@ window.CONFIG = {
       toppings: ["kho_bo", "kho_muc", "tom_kho", "trung_cut", "xoai", "rau_ram", "dau_phong", "hanh_phi"], finish: ["tac", "lac"], price: 40, openDay: 10 },
     { id: "tra_sua_tran_chau", name: "Trà sữa trân châu", short: "Trà sữa", emoji: "🧋", zone: "nuoc", base: "ly",
       toppings: ["tran_chau"], finish: ["rot:tra", "da"], price: 20, openDay: 11 },
+    // Món theo mùa thật (months = tháng có bán, theo giờ máy)
+    { id: "bt_tron_tet", name: "Bánh tráng trộn mứt Tết", short: "Trộn mứt Tết", emoji: "🥗", zone: "tron", base: "bt_soi",
+      toppings: ["kho_bo", "xoai", "mut_dua", "dau_phong"], finish: ["tac", "lac"], price: 28, openDay: 1, months: [1, 2], seasonName: "Tết" },
+    { id: "tra_tac_xi_muoi", name: "Trà tắc xí muội", short: "Trà xí muội", emoji: "🍹", zone: "nuoc", base: "ly",
+      toppings: ["tac", "xi_muoi"], finish: ["rot:tra", "da"], price: 15, openDay: 2, months: [5, 6, 7, 8], seasonName: "Hè" },
+    { id: "bt_nuong_trung_muoi", name: "Bánh tráng nướng trứng muối", short: "Nướng trứng muối", emoji: "🍕", zone: "nuong", base: "bt_tron",
+      toppings: ["trung_cut", "trung_muoi", "hanh_la"], finish: ["nuong", "gap", "mayo"], price: 30, openDay: 4, months: [9, 10], seasonName: "Trung thu" },
+    { id: "tra_gung", name: "Trà gừng nóng", short: "Trà gừng", emoji: "🍵", zone: "nuoc", base: "ly",
+      toppings: ["gung"], finish: ["rot:tra"], price: 12, openDay: 2, months: [11, 12], seasonName: "Đông" },
     { id: "combo_tinh_yeu", name: "Combo Tình Yêu", short: "Combo Tình Yêu", emoji: "💕", zone: "combo", base: null,
       toppings: [], finish: [], combo: ["bt_tron_kho_bo", "tra_tac"], price: 60, openDay: 14 },
     // Quầy chè (Mùa 2): toppings = các LỚP theo đúng thứ tự từ dưới lên; finish = lớp phủ.
@@ -577,6 +590,9 @@ window.CONFIG = {
   takeout: { fromLevel: 8, moreFromLevel: 12, window: [0.2, 0.75], sec: [60, 80], items: [2, 3], fee: 10 },
   // Đơn sỉ: từ cấp fromLevel, xác suất rate mỗi ca; qty phần cùng một món trộn/chè; tiền ×qty×mult; khách chờ lâu gấp patienceMult
   bulk: { fromLevel: 10, rate: 0.6, qty: [4, 6], mult: 1.15, at: [0.35, 0.7], patienceMult: 2, zones: ["tron", "che"] },
+
+  // Món theo mùa: khách gọi món mùa nhiều hơn weight lần
+  seasonal: { weight: 2.5 },
 
   // Góc bói bài: từ cấp fromLevel, xác suất rate mỗi ca có một khách xin bói (xuất hiện ở tiến độ window).
   // Giải hợp tâm trạng khách: +tipGood (k); không hợp: +tipOk
@@ -1169,6 +1185,7 @@ window.CONFIG = {
     ev_takeout: "Đơn mang về (từ cấp 8)",
     ev_bulk: "Đơn sỉ (từ cấp 10)",
     ev_reading: "Khách xin bói bài (từ cấp 3)",
+    seasonDish: "Món mùa {season}: {name}",
     readerTag: "Xin bói 🔮",
     rdTitle: "Góc bói bài 🔮",
     rdPick: "Lật một lá cho khách",

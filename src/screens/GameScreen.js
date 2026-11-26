@@ -114,7 +114,7 @@ window.BT = window.BT || { Screens: {} };
       this.openZones = C.zones.filter((z) => z.openDay <= this.dayNum && C.build.playableZones.includes(z.id));
       this.zone = this.openZones[0].id;
       const zoneIds = this.openZones.map((z) => z.id);
-      this.dishPool = this.dishPoolAll = C.recipes.filter((r) => r.openDay <= this.dayNum && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))))
+      this.dishPool = this.dishPoolAll = C.recipes.filter((r) => r.openDay <= this.dayNum && BT.inSeason(r) && (zoneIds.includes(r.zone) || (r.combo && r.combo.every((id) => zoneIds.includes(UI.recipe(id).zone)))))
         .map((r) => UI.recipe(r.id))
         .concat(BT.Fun.customRecipes().filter((r) => zoneIds.includes(r.zone)
           && [r.base, ...r.toppings, ...r.finish].every((id) => !C.ingredients[id] || C.ingredients[id].openDay <= this.dayNum)));   // món sáng tạo của Bống
@@ -517,6 +517,7 @@ window.BT = window.BT || { Screens: {} };
       if (d.focus === r.id) w *= d.focusWeight || 1;
       if (d.cheWeight && r.zone === "che") w *= d.cheWeight;
       if (r.custom) w *= CONFIG.customDish.weight;
+      if (r.months) w *= CONFIG.seasonal.weight;   // món theo mùa
       return w;
     }
 
