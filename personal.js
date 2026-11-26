@@ -270,6 +270,22 @@ window.PERSONAL = {
     { up: "Phán Xét: được ghi nhận. Những cố gắng của em ai cũng thấy.", rev: "Phán Xét ngược: đừng tự chấm điểm mình khắt khe quá." },
     { up: "Thế Giới: một vòng trọn vẹn. Tiệm nhỏ mà đủ đầy.", rev: "Thế Giới ngược: còn một bước nữa thôi là trọn, cứ từ từ." }
   ],
+  // Góc bói bài: câu hỏi của khách. tone = cách giải khách mong (cheer: khích lệ, honest: thẳng thắn, fun: vui vẻ);
+  // câu hỏi đã gợi ý tâm trạng. Nháp, Bống sửa theo kinh nghiệm đọc bài của mình nha.
+  readingQuestions: [
+    { q: "Dạo này em hơi buồn, công việc mãi chưa ổn… chị bói giùm em một lá được không?", tone: "cheer" },
+    { q: "Em sắp thi rồi mà lo quá, chị xem giùm em có qua không?", tone: "cheer" },
+    { q: "Em vừa chia tay, chị bói xem em có nên buồn tiếp không…", tone: "cheer" },
+    { q: "Em mới chuyển nhà, lạ nước lạ cái, chị xem giùm em tháng này sao?", tone: "cheer" },
+    { q: "Chị nói thẳng giùm em nha: em có nên nghỉ việc không?", tone: "honest" },
+    { q: "Em muốn nghe sự thật thôi: người ta có thật lòng với em không?", tone: "honest" },
+    { q: "Đừng nói vòng vo nha chị, dự định kinh doanh của em có ổn không?", tone: "honest" },
+    { q: "Em hay trì hoãn lắm, chị cứ nói thật xem em nên sửa gì?", tone: "honest" },
+    { q: "Bói vui thôi chị ơi: tuần này em có được ai bao ăn không?", tone: "fun" },
+    { q: "Chị xem giùm con mèo nhà em có thương em không, hihi.", tone: "fun" },
+    { q: "Hỏi chơi thôi: em có trúng số không chị?", tone: "fun" },
+    { q: "Chị bói xem tối nay em nên ăn bánh tráng trộn hay bánh tráng nướng?", tone: "fun" }
+  ],
   // Anh Hiếu tự sửa món khi Bống làm sai (chọn ngẫu nhiên). Nháp, anh sửa thoải mái.
   heroFixLines: [
     "Để anh làm lại cho, em chăm khách tiếp đi!",

@@ -578,6 +578,10 @@ window.CONFIG = {
   // Đơn sỉ: từ cấp fromLevel, xác suất rate mỗi ca; qty phần cùng một món trộn/chè; tiền ×qty×mult; khách chờ lâu gấp patienceMult
   bulk: { fromLevel: 10, rate: 0.6, qty: [4, 6], mult: 1.15, at: [0.35, 0.7], patienceMult: 2, zones: ["tron", "che"] },
 
+  // Góc bói bài: từ cấp fromLevel, xác suất rate mỗi ca có một khách xin bói (xuất hiện ở tiến độ window).
+  // Giải hợp tâm trạng khách: +tipGood (k); không hợp: +tipOk
+  reading: { fromLevel: 3, rate: 0.5, window: [0.3, 0.8], tipGood: 15, tipOk: 5 },
+
   // Tủ giữ món: từ cấp fromLevel, slots ô; để quá staleSec giây thì nguội (trừ 1 sao)
   hold: { fromLevel: 6, slots: 2, staleSec: 40 },
   // Nhịp lắc/cuốn: vòng nhịp chu kỳ period giây; chạm trong ±window (tỉ lệ chu kỳ) là trúng; trúng ≥ needRatio số lần lắc → Ngon tuyệt! (+tip k)
@@ -646,17 +650,17 @@ window.CONFIG = {
     relax: {
       settings: { relaxMode: true, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
         bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0.5, heroFix: true },
-      events: { shiftEvent: 0.5, rush: 0.5, vip: 1, rival: 0, spill: 0, cat: 1, flirt: 1, helperMishap: 0, rent: 0.5, date: 2, takeout: 0.5, bulk: 0.5 }
+      events: { shiftEvent: 0.5, rush: 0.5, vip: 1, rival: 0, spill: 0, cat: 1, flirt: 1, helperMishap: 0, rent: 0.5, date: 2, takeout: 0.5, bulk: 0.5, reading: 1 }
     },
     normal: {
       settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
         bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0, heroFix: true },
-      events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1, takeout: 1, bulk: 1 }
+      events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1, takeout: 1, bulk: 1, reading: 1 }
     },
     hard: {
       settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
         bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: false, showRecipe: false, realRecipes: true, patienceBoost: 0, heroFix: false },
-      events: { shiftEvent: 2, rush: 2, vip: 2, rival: 2, spill: 2, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1, takeout: 2, bulk: 2 }
+      events: { shiftEvent: 2, rush: 2, vip: 2, rival: 2, spill: 2, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1, takeout: 2, bulk: 2, reading: 1 }
     }
   },
 
@@ -1164,6 +1168,17 @@ window.CONFIG = {
     ev_date: "Hẹn hò sau ca",
     ev_takeout: "Đơn mang về (từ cấp 8)",
     ev_bulk: "Đơn sỉ (từ cấp 10)",
+    ev_reading: "Khách xin bói bài (từ cấp 3)",
+    readerTag: "Xin bói 🔮",
+    rdTitle: "Góc bói bài 🔮",
+    rdPick: "Lật một lá cho khách",
+    rdHow: "Chọn cách giải cho hợp tâm trạng khách:",
+    tone_cheer: "Khích lệ",
+    tone_honest: "Thẳng thắn",
+    tone_fun: "Vui vẻ",
+    rdFun: "{name} bảo: ăn thêm bịch bánh tráng nữa là mọi chuyện đâu vào đó!",
+    rdGood: "Khách gật gù: “Trúng phóc luôn!” +{x}",
+    rdOk: "Khách cười: “Cảm ơn em nha” +{x}",
     takeoutTitle: "Đơn mang về",
     takeoutNew: "Có đơn mang về! Tài xế tới trong {n} giây",
     takeoutHow: "Chọn món đã làm xong rồi chạm vào đơn mang về",

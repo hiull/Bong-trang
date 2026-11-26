@@ -50,7 +50,11 @@ window.BT = window.BT || { Screens: {} };
       this.takeouts = [];
       const BK = CONFIG.bulk;
       this.bulkPlan = normalRun && run.level >= BK.fromLevel && Math.random() < BK.rate * BT.ev("bulk") ? UI.rand(BK.at[0], BK.at[1]) : false;
-      this.bulkDone = false;   // anh Hiếu phụ tiệm ca này
+      this.bulkDone = false;
+      // Góc bói bài
+      const RD = CONFIG.reading;
+      this.readingPlan = normalRun && run.level >= RD.fromLevel && BT.ev("reading") > 0 && Math.random() < RD.rate * BT.ev("reading") ? UI.rand(RD.window[0], RD.window[1]) : false;
+      this.readingDone = false;   // anh Hiếu phụ tiệm ca này
       // Giờ cao điểm, khách đặc biệt, thú cưng, kỷ lục
       this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel
         && BT.ev("rush") > 0 && (BT.ev("rush") >= 1 || Math.random() < BT.ev("rush"));
@@ -459,6 +463,10 @@ window.BT = window.BT || { Screens: {} };
         if (this.bulkPlan !== false && !this.bulkDone && pr >= this.bulkPlan) {
           const seat = this.seats.findIndex((s) => s === null);
           if (seat >= 0) { this.bulkDone = true; this.spawnBulk(null, null, seat); }   // khách thêm, không đếm vào lượt
+        }
+        if (this.readingPlan !== false && !this.readingDone && pr >= this.readingPlan) {
+          const seat = this.seats.findIndex((s) => s === null);
+          if (seat >= 0) { this.readingDone = true; this.spawnReader(seat); }   // khách thêm
         }
       }
       this.tickTakeouts(dt);
@@ -1349,6 +1357,74 @@ window.BT = window.BT || { Screens: {} };
       this.updateHint();
     }
 
+    // ---------------- Góc bói bài ----------------
+    spawnReader(seat, qi) {
+      const Q = window.PERSONAL.readingQuestions || [];
+      if (!Q.length) return null;
+      const q = Q[qi !== undefined ? qi % Q.length : Math.floor(Math.random() * Q.length)];
+      const c = this.spawn(seat, "hoc_sinh", this.makeOrder(), { tag: UI.t("readerTag"), speech: q.q });
+      c.reading = q;
+      return c;
+    }
+    openReading(c) {
+      if (document.querySelector(".modal-reading")) return;
+      const RD = CONFIG.reading;
+      const S = this.S;
+      this.pauseReasons.add("reading");
+      const body = UI.el("div", "reading");
+      body.appendChild(UI.el("div", "rd-q", "“" + c.reading.q + "”"));
+      body.appendChild(UI.el("div", "info-note", UI.t("rdPick")));
+      const row = UI.el("div", "tarot-row");
+      body.appendChild(row);
+      const tones = UI.el("div", "rd-tones");
+      body.appendChild(tones);
+      let api = null;
+      let picked = false;
+      for (let k = 0; k < 3; k++) {
+        const back = BT.Fun.tarotCard({ num: "", name: "", en: "", icon: "" });
+        back.addEventListener("click", () => {
+          if (picked) return;
+          picked = true;
+          const idx = Math.floor(Math.random() * CONFIG.tarot.cards.length);
+          const card = CONFIG.tarot.cards[idx];
+          const R = (window.PERSONAL.tarotReadings || [])[idx] || {};
+          const real = BT.Fun.tarotCard(card);
+          row.replaceChild(real, back);
+          row.querySelectorAll(".tarot-card").forEach((x) => { if (x !== real) x.classList.add("gone"); });
+          void real.offsetWidth;
+          real.classList.add("up");
+          BT.Audio.play("letter");
+          tones.appendChild(UI.el("div", "info-note", UI.t("rdHow")));
+          const body2 = (t) => card.name + ": " + String(t || "").replace(/^[^:]+:\s*/, "");
+          const texts = { cheer: body2(R.up), honest: body2(R.rev), fun: UI.t("rdFun", { name: card.name }) };
+          ["cheer", "honest", "fun"].forEach((tone) => {
+            const b = UI.el("button", "rd-tone");
+            b.type = "button";
+            b.dataset.tone = tone;
+            b.appendChild(UI.el("b", "", UI.t("tone_" + tone)));
+            b.appendChild(UI.el("span", "rd-tone-text", texts[tone]));
+            b.addEventListener("click", () => {
+              const good = tone === c.reading.tone;
+              const x = good ? RD.tipGood : RD.tipOk;
+              S.wallet += x;
+              this.stats.tips += x;
+              S.life.readings = (S.life.readings || 0) + 1;
+              BT.Save.persist();
+              api.close(true);
+              this.pauseReasons.delete("reading");
+              BT.Audio.play(good ? "star" : "coin");
+              if (good) UI.confetti(30);
+              UI.toast(UI.t(good ? "rdGood" : "rdOk", { x: UI.money(x) }), 2600);
+              this.updateHud();
+            });
+            tones.appendChild(b);
+          });
+        });
+        row.appendChild(back);
+      }
+      api = UI.modal({ title: UI.t("rdTitle"), body, className: "modal-reading", dismissable: false, buttons: [] });
+    }
+
     // ---------------- Đơn sỉ ----------------
     spawnBulk(id, n, seat) {
       const BK = CONFIG.bulk;
@@ -1429,6 +1505,8 @@ window.BT = window.BT || { Screens: {} };
     // Khách nhận đủ món: tính tiền, đánh giá
     complete(c) {
       const G = CONFIG.gameplay;
+      // Khách xin bói: nhận món xong thì nhờ Bống bói một lá
+      if (c.reading && !c.readDone && !this.over) { c.readDone = true; this.scope.timeout(() => { if (!this.over) this.openReading(c); }, 0); }
       if (c.vip && !c.vipPaid) {
         c.vipPaid = true;
         const v = c.vip;
