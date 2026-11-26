@@ -34,7 +34,7 @@ window.BT = window.BT || { Screens: {} };
       dailyQuests: { date: "", list: [] },
       settings: { music: true, sfx: true, vibrate: true, fullscreen: true, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, heroFix: true, holdCabinet: true, rhythm: true,
         // Mức từng sự kiện: 0 Tắt · 0.5 Ít · 1 Vừa · 2 Nhiều
-        events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }, patienceBoost: 0,
+        events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1, takeout: 1, bulk: 1 }, patienceBoost: 0,
         relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false,
         fewerRequests: false, bookPause: false, moreHearts: false, softFail: false, threeTrays: false, autoSeasonSkin: true, textScale: 1 },
       tutorialDone: { cards: false, day1: false, day2: false, day4: false, day7: false, day16: false },
@@ -245,7 +245,7 @@ window.BT = window.BT || { Screens: {} };
 
   // Trợ giúp đang bật? (bật riêng, hoặc nằm trong gói "Chế độ thư giãn")
   // Mức của một sự kiện (Cài đặt → Sự kiện): 0 Tắt, 0.5 Ít, 1 Vừa (mặc định), 2 Nhiều
-  BT.EVENT_KEYS = ["shiftEvent", "rush", "vip", "rival", "spill", "cat", "flirt", "helperMishap", "rent", "date"];
+  BT.EVENT_KEYS = ["shiftEvent", "rush", "vip", "rival", "spill", "cat", "flirt", "helperMishap", "rent", "date", "takeout", "bulk"];
   // Chế độ nhanh: ghi đè các khoá trong CONFIG.presets[id] (không đụng âm thanh, màn hình, cỡ chữ)
   BT.applyPreset = function (id) {
     const P = CONFIG.presets[id];

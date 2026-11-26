@@ -558,20 +558,25 @@ window.CONFIG = {
 
   // Màn "Có gì mới": save cũ thấy một lần mỗi khi đổi version. go = nút "Thử ngay" mở đâu.
   whatsNew: {
-    version: "1.7",
+    version: "1.8",
     items: [
-      { icon: "💾", title: "Giữ tiến trình an toàn", text: "Thêm game vào màn hình chính và thỉnh thoảng Lưu ra file (Cài đặt → Sao lưu) để không bao giờ mất tiệm.", go: "backup" },
-      { icon: "🍽️", title: "Bếp sáng tạo", text: "Tự nghĩ tối đa 3 món của riêng tiệm: chọn quầy, chọn nguyên liệu, đặt tên. Khách sẽ gọi thử!", go: "kitchen" },
-      { icon: "💕", title: "Hẹn hò sau ca", text: "Qua mốc lớn hoặc thỉnh thoảng sau ca thắng có trò lật thẻ. Thắng thì mở một trang Sổ hẹn hò.", go: null },
-      { icon: "⭐", title: "Huy hiệu", text: "14 huy hiệu cho những cột mốc của tiệm, mở được là có thưởng. Xem trong Kỷ niệm.", go: "badges" },
-      { icon: "📋", title: "Nhiệm vụ tuần", text: "Mỗi tuần 5 nhiệm vụ (trong Sổ tay ở Menu), xong hết nhận đồ trang trí độc quyền không bán ở cửa hàng.", go: "weekly" },
-      { icon: "✉️", title: "Thư & ngày đặc biệt", text: "Mỗi tuần một lá thư mới trong Sổ tay. Ngày sinh nhật, kỷ niệm có quà bất ngờ.", go: "mail" },
-      { icon: "⚙️", title: "Chơi theo ý mình", text: "Cài đặt có chế độ nhanh Thư giãn / Bình thường / Thử thách, chỉnh từng sự kiện, cỡ chữ và công thức chuẩn ngoài đời.", go: "settings" }
+      { icon: "💕", title: "Anh Hiếu sửa món", text: "Lỡ giao sai món, anh Hiếu tự nhảy vào làm lại giùm (3 lần mỗi ca, khách bớt tip một chút). Tắt được trong Cài đặt → Trợ giúp.", go: null },
+      { icon: "📖", title: "Bếp tập", text: "Tập làm bất kỳ món nào: không khách thật, không tính giờ, không tốn nguyên liệu. Nút Bếp tập ở Menu.", go: "practice" },
+      { icon: "✅", title: "Mục tiêu phụ", text: "Mỗi mốc có thêm một mục tiêu nhỏ (không ai bỏ đi, combo 5…). Đạt được thì có dấu ✓ trên Bản đồ và thưởng 20k.", go: "map" },
+      { icon: "✨", title: "Bùa", text: "Qua mốc lớn được chọn 1 trong 3 bùa, giữ mãi: lắc nhanh, tip cao, khách dễ tính…", go: "perks" },
+      { icon: "🎵", title: "Nhịp lắc & tủ giữ món", text: "Lắc đúng lúc vòng tròn khép lại, hoặc cuốn liền một hơi, được Ngon tuyệt! và thêm tip. Từ cấp 6 có tủ để làm sẵn món trước giờ đông.", go: null },
+      { icon: "📱", title: "Đơn mang về & đơn sỉ", text: "Từ cấp 8 có đơn mang về chờ tài xế, từ cấp 10 có đơn sỉ nhiều phần. Chỉnh mức trong Cài đặt → Sự kiện.", go: "settings" }
     ]
   },
 
   // Anh Hiếu tự sửa món làm sai: số lượt mỗi ca, thời gian làm lại, tip còn lại, kiên nhẫn giữ tối thiểu
   heroFix: { perShift: 3, sec: 2.5, tipMult: 0.5, keepPatience: 0.3 },
+  // Đơn mang về (kiểu đặt qua app): từ cấp fromLevel; số đơn mỗi ca (cấp ≥ moreFromLevel thì 2); xuất hiện ở tiến độ window;
+  // chờ tài xế sec giây; giao đủ được tiền món + fee (k); trễ thì mất đơn, không mất tim
+  takeout: { fromLevel: 8, moreFromLevel: 12, window: [0.2, 0.75], sec: [60, 80], items: [2, 3], fee: 10 },
+  // Đơn sỉ: từ cấp fromLevel, xác suất rate mỗi ca; qty phần cùng một món trộn/chè; tiền ×qty×mult; khách chờ lâu gấp patienceMult
+  bulk: { fromLevel: 10, rate: 0.6, qty: [4, 6], mult: 1.15, at: [0.35, 0.7], patienceMult: 2, zones: ["tron", "che"] },
+
   // Tủ giữ món: từ cấp fromLevel, slots ô; để quá staleSec giây thì nguội (trừ 1 sao)
   hold: { fromLevel: 6, slots: 2, staleSec: 40 },
   // Nhịp lắc/cuốn: vòng nhịp chu kỳ period giây; chạm trong ±window (tỉ lệ chu kỳ) là trúng; trúng ≥ needRatio số lần lắc → Ngon tuyệt! (+tip k)
@@ -611,17 +616,17 @@ window.CONFIG = {
     relax: {
       settings: { relaxMode: true, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
         bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0.5, heroFix: true },
-      events: { shiftEvent: 0.5, rush: 0.5, vip: 1, rival: 0, spill: 0, cat: 1, flirt: 1, helperMishap: 0, rent: 0.5, date: 2 }
+      events: { shiftEvent: 0.5, rush: 0.5, vip: 1, rival: 0, spill: 0, cat: 1, flirt: 1, helperMishap: 0, rent: 0.5, date: 2, takeout: 0.5, bulk: 0.5 }
     },
     normal: {
       settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
         bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: true, showRecipe: true, realRecipes: false, patienceBoost: 0, heroFix: true },
-      events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }
+      events: { shiftEvent: 1, rush: 1, vip: 1, rival: 1, spill: 1, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1, takeout: 1, bulk: 1 }
     },
     hard: {
       settings: { relaxMode: false, oneTapDeliver: false, oneTapAction: false, tapPour: false, easyGrill: false, slowCustomers: false, fewerRequests: false,
         bookPause: false, moreHearts: false, softFail: false, threeTrays: false, easyHints: false, lateAdd: false, showRecipe: false, realRecipes: true, patienceBoost: 0, heroFix: false },
-      events: { shiftEvent: 2, rush: 2, vip: 2, rival: 2, spill: 2, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1 }
+      events: { shiftEvent: 2, rush: 2, vip: 2, rival: 2, spill: 2, cat: 1, flirt: 1, helperMishap: 1, rent: 1, date: 1, takeout: 2, bulk: 2 }
     }
   },
 
@@ -1127,6 +1132,18 @@ window.CONFIG = {
     ev_helperMishap: "Anh Hiếu đến trễ, làm đổ",
     ev_rent: "Tiền thuê nhà",
     ev_date: "Hẹn hò sau ca",
+    ev_takeout: "Đơn mang về (từ cấp 8)",
+    ev_bulk: "Đơn sỉ (từ cấp 10)",
+    takeoutTitle: "Đơn mang về",
+    takeoutNew: "Có đơn mang về! Tài xế tới trong {n} giây",
+    takeoutHow: "Chọn món đã làm xong rồi chạm vào đơn mang về",
+    takeoutNotIn: "Đơn này không có món đó",
+    takeoutDone: "Giao đơn mang về: +{x}",
+    takeoutLate: "Tài xế chờ lâu quá nên đi mất rồi",
+    bulkTag: "Đơn sỉ ×{n}",
+    bulkLine: "Cho chị {n} phần {dish} nha, lớp chị đông lắm!",
+    bulkLacking: "Thiếu nguyên liệu cho {n} phần (còn thiếu {ing})",
+    bulkDone: "Đơn sỉ {n} phần xong!",
     perkTitle: "Chọn một bùa cho tiệm",
     perkIntro: "Qua mốc lớn rồi! Chọn một bùa, tiệm giữ mãi.",
     perkBtn: "Chọn bùa mới ✨",

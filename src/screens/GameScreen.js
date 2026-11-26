@@ -30,7 +30,19 @@ window.BT = window.BT || { Screens: {} };
       this.heroUsed = 0;
       // Tủ giữ món (từ cấp 6, bật trong Trợ giúp)
       this.holdOn = !this.practice && run.level >= CONFIG.hold.fromLevel && this.S.settings.holdCabinet !== false;
-      this.rhythmOn = this.S.settings.rhythm !== false && !this.S.settings.relaxMode;   // anh Hiếu phụ tiệm ca này
+      this.rhythmOn = this.S.settings.rhythm !== false && !this.S.settings.relaxMode;
+      // Đơn mang về & đơn sỉ (ca thường, Thử thách)
+      const normalRun = ["story", "replay", "daily"].includes(run.mode);
+      const TK = CONFIG.takeout;
+      const nT = normalRun && run.level >= TK.fromLevel ? (run.level >= TK.moreFromLevel ? 2 : 1) : 0;
+      const kT = Math.min(4, Math.floor(nT * BT.ev("takeout") + Math.random()));
+      this.takeoutPlan = [];
+      for (let k = 0; k < (nT ? kT : 0); k++) this.takeoutPlan.push(UI.rand(TK.window[0], TK.window[1]));
+      this.takeoutPlan.sort((a, b) => a - b);
+      this.takeouts = [];
+      const BK = CONFIG.bulk;
+      this.bulkPlan = normalRun && run.level >= BK.fromLevel && Math.random() < BK.rate * BT.ev("bulk") ? UI.rand(BK.at[0], BK.at[1]) : false;
+      this.bulkDone = false;   // anh Hiếu phụ tiệm ca này
       // Giờ cao điểm, khách đặc biệt, thú cưng, kỷ lục
       this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel
         && BT.ev("rush") > 0 && (BT.ev("rush") >= 1 || Math.random() < BT.ev("rush"));
@@ -411,6 +423,16 @@ window.BT = window.BT || { Screens: {} };
         if (pr >= CONFIG.rush.window[0] && pr < CONFIG.rush.window[1]) this.rushOn();
       }
       this.tickRush(dt);
+      // Đơn mang về & đơn sỉ theo tiến độ ca
+      if (this.total !== Infinity && this.total > 0) {
+        const pr = this.done / this.total;
+        if (this.takeoutPlan.length && pr >= this.takeoutPlan[0]) { this.takeoutPlan.shift(); this.spawnTakeout(); }
+        if (this.bulkPlan !== false && !this.bulkDone && pr >= this.bulkPlan) {
+          const seat = this.seats.findIndex((s) => s === null);
+          if (seat >= 0) { this.bulkDone = true; const c = this.spawnBulk(null, null, seat); if (c) this.spawned++; }
+        }
+      }
+      this.tickTakeouts(dt);
       this.petsTick(dt);
       this.checkRecord();
       let cdt = this.helper && this.helper.role === "waiter" ? dt * (1 - CONFIG.helper.patienceSlow) : dt;
@@ -983,6 +1005,12 @@ window.BT = window.BT || { Screens: {} };
       }
 
       // Đúng một món
+      // Đơn sỉ: một khay lớn đủ mọi phần — trừ nguyên liệu cho các phần còn lại
+      if (c.bulk > 1) {
+        const lack = this.bulkLack(match.id, c.bulk - 1);
+        if (lack) { UI.toast(UI.t("bulkLacking", { n: c.bulk, ing: UI.ing(lack).name }), 2600); UI.shake(tray.el); return; }
+        this.bulkUse(match.id, c.bulk - 1);
+      }
       match.crispy = res.crispy;
       if (tray.perfect) match.perfect = true;
       const heldE = (this.held || []).find((h) => h && h.tray === tray);
@@ -1081,6 +1109,113 @@ window.BT = window.BT || { Screens: {} };
       this.router.backTo("Menu");
     }
 
+    // ---------------- Đơn mang về ----------------
+    spawnTakeout(ids) {
+      const TK = CONFIG.takeout;
+      if (!ids) {
+        const pool = this.dishPool.filter((r) => !r.combo);
+        const n = UI.randInt(TK.items[0], TK.items[1]);
+        ids = [];
+        for (let k = 0; k < n && pool.length; k++) ids.push(UI.weighted(pool, (x) => this.dishWeight(x)).id);
+      }
+      if (!ids.length) return null;
+      if (!this.takeoutBox) {
+        this.takeoutBox = UI.el("div", "takeout-box");
+        (this.front || this.el).appendChild(this.takeoutBox);
+      }
+      const sec = UI.randInt(TK.sec[0], TK.sec[1]);
+      const o = { items: ids.map((id) => ({ id, done: false })), left: sec, max: sec };
+      const card = UI.el("button", "takeout-card");
+      card.type = "button";
+      card.addEventListener("click", () => this.tapTakeout(o));
+      o.el = card;
+      this.takeouts.push(o);
+      this.takeoutBox.appendChild(card);
+      this.drawTakeout(o);
+      BT.Audio.play("pop");
+      UI.toast(UI.t("takeoutNew", { n: sec }), 2400);
+      return o;
+    }
+    drawTakeout(o) {
+      const card = o.el;
+      card.innerHTML = "";
+      card.appendChild(UI.el("div", "tk-title", "📱 " + UI.t("takeoutTitle")));
+      const row = UI.el("div", "tk-items");
+      o.items.forEach((it) => row.appendChild(UI.el("span", "tk-item" + (it.done ? " done" : ""), UI.recipe(it.id).emoji)));
+      card.appendChild(row);
+      const bar = UI.el("div", "tk-bar");
+      o.barFill = UI.el("div", "tk-fill");
+      o.barFill.style.width = Math.max(0, (o.left / o.max) * 100) + "%";
+      bar.appendChild(o.barFill);
+      card.appendChild(bar);
+    }
+    tickTakeouts(dt) {
+      if (!this.takeouts || !this.takeouts.length) return;
+      this.takeouts.slice().forEach((o) => {
+        o.left -= dt;
+        if (o.barFill) { o.barFill.style.width = Math.max(0, (o.left / o.max) * 100) + "%"; o.el.classList.toggle("hurry", o.left / o.max < 0.25); }
+        if (o.left <= 0) { this.removeTakeout(o); UI.toast(UI.t("takeoutLate"), 2400); BT.Audio.play("wrong"); }
+      });
+    }
+    removeTakeout(o) {
+      this.takeouts = this.takeouts.filter((x) => x !== o);
+      if (o.el) o.el.remove();
+    }
+    tapTakeout(o) {
+      if (this.isPaused() || !this.takeouts.includes(o)) return;
+      const tray = this.selected;
+      if (!tray || tray.isEmpty()) { UI.toast(UI.t("takeoutHow")); return; }
+      const it = o.items.find((x) => !x.done && BT.Tray.evaluate(tray, { id: x.id, reqs: [] }).ok);
+      if (!it) { UI.toast(UI.t("takeoutNotIn")); UI.shake(o.el); BT.Audio.play("wrong"); return; }
+      it.done = true;
+      tray.clear();
+      tray.render();
+      this.select(null);
+      if (this.holdOn) this.syncHeld();
+      BT.Audio.play("add");
+      if (o.items.every((x) => x.done)) {
+        const pay = o.items.reduce((s, x) => s + UI.recipePrice(x.id), 0) + CONFIG.takeout.fee;
+        this.stats.revenue += pay;
+        this.S.wallet += pay;
+        this.removeTakeout(o);
+        BT.Audio.play("coin");
+        UI.toast(UI.t("takeoutDone", { x: UI.money(pay) }), 2200);
+        this.updateHud();
+      } else this.drawTakeout(o);
+      this.updateHint();
+    }
+
+    // ---------------- Đơn sỉ ----------------
+    spawnBulk(id, n, seat) {
+      const BK = CONFIG.bulk;
+      if (!id) {
+        const pool = this.dishPool.filter((r) => !r.combo && BK.zones.includes(r.zone));
+        if (!pool.length) return null;
+        id = UI.pick(pool).id;
+      }
+      n = n || UI.randInt(BK.qty[0], BK.qty[1]);
+      if (seat === undefined || seat === null) { seat = this.seats.findIndex((s) => s === null); if (seat < 0) seat = 0; }
+      const c = this.spawn(seat, "hoc_sinh", { items: [{ id, reqs: [] }] },
+        { tag: UI.t("bulkTag", { n }), speech: UI.t("bulkLine", { n, dish: UI.recipe(id).name.toLowerCase() }) });
+      c.bulk = n;
+      c.max *= BK.patienceMult;
+      c.patience = c.max;
+      return c;
+    }
+    bulkIngs(id) {
+      const r = UI.recipe(id);
+      return [r.base].concat(r.toppings, (r.finish || []).filter((f) => CONFIG.ingredients[f])).filter((x) => CONFIG.ingredients[x]);
+    }
+    bulkLack(id, extra) {
+      const need = {};
+      this.bulkIngs(id).forEach((x) => { need[x] = (need[x] || 0) + extra; });
+      return Object.keys(need).find((x) => BT.Save.stock(x) < need[x]) || null;
+    }
+    bulkUse(id, extra) {
+      this.bulkIngs(id).forEach((x) => { this.S.inventory[x] = BT.Save.stock(x) - extra; });
+      if (this.grid && this.grid.refresh) this.grid.refresh();
+    }
+
     // ---------------- Tủ giữ món ----------------
     tapHold(i) {
       if (this.isPaused() || !this.holdOn) return;
@@ -1148,6 +1283,7 @@ window.BT = window.BT || { Screens: {} };
       let base = 0;
       if (c.combo) base = UI.recipe("combo_tinh_yeu").price;
       else c.items.forEach((it) => { base += UI.recipePrice(it.id) * (it.crispy ? 1 + G.crispyBonus : 1); });
+      if (c.bulk > 1) base = base * c.bulk * CONFIG.bulk.mult;   // đơn sỉ
       c.items.forEach((it) => { if (UI.recipe(it.id) && UI.recipe(it.id).custom) this.lifeAdd.customsSold++; });
       const pay = Math.round(base * speed);
       let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1) * (this.rush ? (BT.perk("rushTip") ? 2.5 : CONFIG.rush.tipMult) : 1);

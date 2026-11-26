@@ -1919,3 +1919,15 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .shake-zone { position: relative; }
 .shake-zone.hit .big-bag { filter: drop-shadow(0 0 10px #FFD54F); }
 .perfect-pop { position: absolute; left: 50%; top: 8%; transform: translateX(-50%); font-family: var(--font-title); font-size: 26px; color: #FF5C8A; text-shadow: 0 2px 0 #fff; animation: pop-in 0.3s ease-out; white-space: nowrap; }
+
+/* Đơn mang về */
+.takeout-box { position: absolute; right: 8px; top: 9%; z-index: 12; display: flex; flex-direction: column; gap: 6px; }
+.takeout-card { width: 92px; border: 2px solid var(--brown); border-radius: 14px; background: #fff; padding: 4px 6px 6px; font: inherit; cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,0.12); }
+.takeout-card.hurry { border-color: #E0485F; animation: wobble 0.6s ease-in-out infinite; }
+@keyframes wobble { 50% { transform: rotate(-3deg); } }
+.tk-title { font-size: 10px; font-weight: 800; color: #00A35C; white-space: nowrap; }
+.tk-items { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; font-size: 20px; margin: 2px 0; }
+.tk-item.done { opacity: 0.3; }
+.tk-bar { height: 5px; border-radius: 3px; background: #EADDE2; overflow: hidden; }
+.tk-fill { height: 100%; background: #00B964; }
+.takeout-card.hurry .tk-fill { background: #E0485F; }

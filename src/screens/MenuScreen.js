@@ -169,7 +169,10 @@ window.BT = window.BT || { Screens: {} };
           badges: () => BT.Fun.openBadges(),
           weekly: () => BT.Fun.openWeekly(refreshDots),
           mail: () => { BT.Fun.openMail(); refreshDots(); },
-          settings: () => openSettings()
+          settings: () => openSettings(),
+          practice: () => BT.openPractice(router),
+          perks: () => BT.Fun.openPerks(),
+          map: () => router.go("Map")
         };
         let api = null;
         const draw = () => {

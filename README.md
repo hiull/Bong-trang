@@ -278,3 +278,14 @@ Chữ trong `personal.js` và `config.js` vẫn viết emoji bình thường (v�
 - **Có gì mới:** khi anh cập nhật game, người đã chơi sẽ thấy các thẻ giới thiệu một lần. Sửa nội dung trong `whatsNew` ở `config.js`; muốn Bống xem lại thẻ mới thì đổi `version`.
 - Font chữ tải song song: mạng chậm vẫn vào game ngay bằng font của máy.
 
+## 18. Gameplay mới
+- **Anh Hiếu sửa món làm sai:** giao nhầm/thiếu/thừa/cháy thì anh tự làm lại trong vài giây. Mỗi ca 3 lần, khách bớt nửa tip. Tắt trong Cài đặt → Trợ giúp. Lời thoại: `heroFixLines` trong `personal.js`.
+- **Bếp tập** (nút ở Menu): tập bất kỳ món nào đã mở, không khách thật, không giờ, không tốn tiền hay nguyên liệu.
+- **Mục tiêu phụ:** mỗi mốc (từ Mốc 2) có một mục tiêu nhỏ, hiện ở màn Chuẩn bị. Đạt thì có dấu ✓ trên Bản đồ, lần đầu thưởng 20k. Sửa trong `sideGoals` ở `config.js`.
+- **Bùa:** qua mốc lớn lần đầu chọn 1 trong 3 bùa, giữ mãi. Xem trong Kỷ niệm → Bùa. Có 12 bùa trong `perks` ở `config.js`.
+- **Tủ giữ món** (từ cấp 6): chọn bịch/ly đã làm xong rồi chạm ô Tủ để cất; chạm ô tủ rồi chạm khách để giao. Để quá 40 giây thì nguội, trừ 1 sao.
+- **Nhịp lắc/cuốn:** lắc đúng lúc vòng tròn khép lại, hoặc cuốn liền một hơi, được *Ngon tuyệt!* và +3k tip. Tắt trong Trợ giúp; Chế độ thư giãn tự tắt.
+- **Đơn mang về** (từ cấp 8): đơn 2–3 món hiện trên điện thoại ở quầy. Chọn món xong rồi chạm vào đơn; đủ món trước khi tài xế đi thì được tiền món + 10k.
+- **Đơn sỉ** (từ cấp 10): một khách gọi 4–6 phần cùng một món trộn hoặc chè. Làm một khay là đủ, game tự trừ nguyên liệu cho các phần còn lại.
+- Đơn mang về và đơn sỉ chỉnh mức trong Cài đặt → Sự kiện.
+
