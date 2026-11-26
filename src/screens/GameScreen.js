@@ -1117,7 +1117,7 @@ window.BT = window.BT || { Screens: {} };
     heroTask(c, item, kind, use) {
       if (!this.heroOn || !c || !item || c.heroFixing || item.done || c.state !== "waiting") return false;
       if (c.type && c.type.kind === "tomortle") return false;   // món của chính anh Hiếu
-      if (kind === "rescue" && this.rescueUsed >= CONFIG.heroFix.rescuePerShift) return false;
+      if (kind === "rescue" && this.rescueUsed >= (this.S.settings.relaxMode ? CONFIG.heroFix.relaxRescuePerShift : CONFIG.heroFix.rescuePerShift)) return false;
       if (this.heroLeft !== Infinity && this.heroLeft <= 0) return false;
       use = use || this.heroUse(item, c.bulk > 1 ? c.bulk : 1);
       const lack = this.heroLack(use);

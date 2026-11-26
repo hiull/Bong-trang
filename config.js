@@ -571,7 +571,7 @@ window.CONFIG = {
 
   // Anh Hiếu tự sửa món làm sai: số lượt mỗi ca, thời gian làm lại, tip còn lại, kiên nhẫn giữ tối thiểu
   // perShift 0 = không giới hạn (anh làm lần lượt). topUp = bỏ thêm 1–2 phần còn thiếu (nhanh hơn, bớt ít tip hơn). rescueAt = khách dưới mức kiên nhẫn này thì anh tự làm giúp
-  heroFix: { perShift: 0, sec: 2.5, tipMult: 0.5, topUpSec: 1.2, topUpTipMult: 0.75, keepPatience: 0.3, rescueAt: 0.15, rescuePerShift: 2 },
+  heroFix: { perShift: 0, sec: 2.5, tipMult: 0.5, topUpSec: 1.2, topUpTipMult: 0.75, keepPatience: 0.3, rescueAt: 0.15, rescuePerShift: 2, relaxRescuePerShift: 5 },
   // Đơn mang về (kiểu đặt qua app): từ cấp fromLevel; số đơn mỗi ca (cấp ≥ moreFromLevel thì 2); xuất hiện ở tiến độ window;
   // chờ tài xế sec giây; giao đủ được tiền món + fee (k); trễ thì mất đơn, không mất tim
   takeout: { fromLevel: 8, moreFromLevel: 12, window: [0.2, 0.75], sec: [60, 80], items: [2, 3], fee: 10 },
