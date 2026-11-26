@@ -58,6 +58,8 @@ window.BT = window.BT || { Screens: {} };
       lettersRead: 0,     // số thư hằng tuần đã đọc
       life: { served: 0, rushes: 0, vips: 0, perfect: 0, crispy: 0, customsSold: 0, datesWon: 0 }, // bộ đếm trọn đời (huy hiệu)
       badges: {},
+      perks: [],          // bùa đã chọn (giữ mãi)
+      perkPending: null,  // 3 bùa đang chờ chọn
       whatsNewSeen: (window.CONFIG && CONFIG.whatsNew) ? CONFIG.whatsNew.version : "", // người mới coi như đã xem
       lastFileBackup: "", // ngày lưu ra file gần nhất (yyyy-mm-dd)
       tips: {},           // lời nhắc đã tắt: { install: "yyyy-mm-dd" }
@@ -268,6 +270,8 @@ window.BT = window.BT || { Screens: {} };
     app.classList.remove("ts-1", "ts-2", "ts-3");
     app.classList.add("ts-" + v);
   };
+  // Có bùa này chưa?
+  BT.perk = function (id) { const S = BT.Save.state; return !!(S && S.perks && S.perks.includes(id)); };
   BT.ev = function (key) {
     const e = BT.Save.state && BT.Save.state.settings.events;
     const v = e ? e[key] : undefined;

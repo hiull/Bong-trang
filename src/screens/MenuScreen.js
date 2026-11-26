@@ -146,6 +146,8 @@ window.BT = window.BT || { Screens: {} };
 
       // Quà của anh Hiếu ngày đặc biệt (mỗi ngày một lần)
       const gift = S.welcomeSeen ? BT.Fun.giftDue() : null;
+      // Còn bùa chưa chọn (qua mốc lớn rồi tắt game) → chọn trước
+      if (S.welcomeSeen && !gift && S.perkPending && S.perkPending.length) scope.timeout(() => { if (!UI.modals.length) BT.Fun.openPerkPick(); }, 300);
       // Có gì mới: save cũ xem một lần mỗi khi có bản mới (nhường quà ngày đặc biệt)
       if (S.welcomeSeen && !gift && S.whatsNewSeen !== CONFIG.whatsNew.version) scope.timeout(() => { if (!UI.modals.length) openWhatsNew(); }, 400);
 

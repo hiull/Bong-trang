@@ -572,6 +572,23 @@ window.CONFIG = {
 
   // Anh Hiếu tự sửa món làm sai: số lượt mỗi ca, thời gian làm lại, tip còn lại, kiên nhẫn giữ tối thiểu
   heroFix: { perShift: 3, sec: 2.5, tipMult: 0.5, keepPatience: 0.3 },
+  // Bùa: qua mốc lớn lần đầu chọn 1 trong 3 bùa chưa có; giữ mãi
+  perks: [
+    { id: "shakeFast", name: "Tay lắc dẻo", icon: "💪", desc: "Lắc bịch, cuốn bánh bớt 2 lần" },
+    { id: "crispyWide", name: "Lửa đều", icon: "🔥", desc: "Vùng nướng giòn rộng hơn" },
+    { id: "rushTip", name: "Đông mà vui", icon: "🎉", desc: "Giờ cao điểm tip ×2,5 (thay vì ×2)" },
+    { id: "firstPatience", name: "Chào khách", icon: "😉", desc: "2 khách đầu ca kiên nhẫn gấp đôi" },
+    { id: "heroPlus", name: "Anh Hiếu siêng", icon: "💕", desc: "Anh Hiếu sửa món thêm 1 lượt mỗi ca" },
+    { id: "comboKeep", name: "Bền bỉ", icon: "⭐", desc: "Lần làm sai đầu tiên mỗi ca không mất combo" },
+    { id: "loveFast", name: "Tim đầy nhanh", icon: "💖", desc: "Thanh tim sạc nhanh hơn 30%" },
+    { id: "drinkTip", name: "Nước mát", icon: "🧋", desc: "Mỗi món nước thêm 3k tip" },
+    { id: "rollTip", name: "Cuốn khéo", icon: "🌯", desc: "Mỗi món cuốn thêm 5k tip" },
+    { id: "tipAll", name: "Duyên bán hàng", icon: "🥰", desc: "Tip của mọi khách +10%" },
+    { id: "softWalk", name: "Khách dễ tính", icon: "🙂", desc: "Khách bỏ đi lần đầu mỗi ca không mất tim" },
+    { id: "sideBonus", name: "Săn mục tiêu", icon: "✅", desc: "Thưởng mục tiêu phụ ×2" }
+  ],
+  perkOffer: 3,
+
   // Mục tiêu phụ mỗi mốc (từ Mốc 2): cố định theo số mốc; đạt lần đầu thưởng sideGoalReward (k)
   sideGoalReward: 20,
   sideGoals: [
@@ -1105,6 +1122,13 @@ window.CONFIG = {
     ev_helperMishap: "Anh Hiếu đến trễ, làm đổ",
     ev_rent: "Tiền thuê nhà",
     ev_date: "Hẹn hò sau ca",
+    perkTitle: "Chọn một bùa cho tiệm",
+    perkIntro: "Qua mốc lớn rồi! Chọn một bùa, tiệm giữ mãi.",
+    perkBtn: "Chọn bùa mới ✨",
+    perkGot: "Tiệm có bùa mới: {name}",
+    perksTitle: "Bùa của tiệm",
+    perksCount: "Bùa · {a}/{b}",
+    perkNone: "Qua mốc lớn để chọn bùa đầu tiên",
     setHeroFix: "Anh Hiếu sửa món làm sai (3 lần mỗi ca)",
     heroFixLeft: "còn {n} lần",
     sideGoalTitle: "Mục tiêu phụ",

@@ -17,7 +17,7 @@ window.BT = window.BT || { Screens: {} };
     const G = CONFIG.gameplay;
     const up = BT.Save.state.upgrades;
     const z = Object.assign({}, G.cookZones);
-    const widen = G.goodWidenPerLevel * (up.bep_nhanh || 0);
+    const widen = G.goodWidenPerLevel * (up.bep_nhanh || 0) + (BT.perk && BT.perk("crispyWide") ? 0.05 : 0);
     z.good += widen;
     z.raw -= widen;
     if (BT.assist && BT.assist("easyGrill")) {

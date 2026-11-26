@@ -90,6 +90,10 @@ window.BT = window.BT || { Screens: {} };
 
       if (s.side) body.appendChild(UI.el("div", "side-goal " + (s.side.done ? "done" : "fail"),
         s.side.done ? UI.t("sideGoalDone", { text: s.side.text }) + (s.side.first ? UI.t("sideGoalFirst", { x: UI.money(CONFIG.sideGoalReward) }) : "") : UI.t("sideGoalFail", { text: s.side.text })));
+      if (BT.Save.state.perkPending && BT.Save.state.perkPending.length) {
+        const pb = UI.button(UI.t("perkBtn"), "btn-orange small perk-btn pulse", () => BT.Fun.openPerkPick(() => pb.remove()));
+        body.appendChild(pb);
+      }
       if (s.dateOffer) {
         const db = UI.button(UI.t("dateBtn"), "btn-purple small date-btn", () => { if (db.disabled) return; db.disabled = true; BT.Fun.dateGame(); });
         body.appendChild(db);

@@ -398,6 +398,65 @@ window.BT = window.BT || { Screens: {} };
     UI.modal({ title: UI.t("dateBookTitle"), body: list, className: "modal-flirt-book modal-dates", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
   };
 
+  // ---------------- Bùa ----------------
+  // Qua mốc lớn: chuẩn bị 3 bùa chưa có để chọn (lưu lại, tắt game vẫn còn)
+  Fun.perkOffer = function () {
+    const S = BT.Save.state;
+    if (S.perkPending && S.perkPending.length) return S.perkPending;
+    const pool = CONFIG.perks.filter((p) => !S.perks.includes(p.id)).map((p) => p.id);
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    S.perkPending = pool.length ? pool.slice(0, CONFIG.perkOffer) : null;
+    BT.Save.persist();
+    return S.perkPending;
+  };
+  Fun.openPerkPick = function (onDone) {
+    const S = BT.Save.state;
+    if (!S.perkPending || !S.perkPending.length || document.querySelector(".modal-perk")) return;
+    const body = UI.el("div", "perk-pick");
+    body.appendChild(UI.el("div", "info-note", UI.t("perkIntro")));
+    let api = null;
+    S.perkPending.forEach((id) => {
+      const p = CONFIG.perks.find((x) => x.id === id);
+      if (!p) return;
+      const b = UI.el("button", "perk-opt");
+      b.type = "button";
+      b.dataset.id = id;
+      b.appendChild(UI.el("span", "perk-icon", p.icon));
+      const t = UI.el("span", "perk-txt");
+      t.appendChild(UI.el("b", "", p.name));
+      t.appendChild(UI.el("span", "perk-desc", p.desc));
+      b.appendChild(t);
+      b.addEventListener("click", () => {
+        if (!S.perks.includes(id)) S.perks.push(id);
+        S.perkPending = null;
+        BT.Save.persist();
+        api.close(true);
+        UI.confetti(50);
+        BT.Audio.play("coin");
+        UI.toast(UI.t("perkGot", { name: p.name }), 2600);
+        if (onDone) onDone();
+      });
+      body.appendChild(b);
+    });
+    api = UI.modal({ title: UI.t("perkTitle"), body, className: "modal-perk", dismissable: false, buttons: [] });
+  };
+  Fun.openPerks = function () {
+    const S = BT.Save.state;
+    const list = UI.el("div", "perk-list");
+    if (!S.perks.length) list.appendChild(UI.el("div", "info-note", UI.t("perkNone")));
+    CONFIG.perks.forEach((p) => {
+      const on = S.perks.includes(p.id);
+      const it = UI.el("div", "perk-item" + (on ? " on" : ""));
+      it.appendChild(UI.el("span", "perk-icon", on ? p.icon : "🔒"));
+      const t = UI.el("span", "perk-txt");
+      t.appendChild(UI.el("b", "", on ? p.name : "???"));
+      t.appendChild(UI.el("span", "perk-desc", on ? p.desc : ""));
+      it.appendChild(t);
+      list.appendChild(it);
+    });
+    UI.modal({ title: UI.t("perksTitle"), body: list, className: "modal-perks", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+  };
+
   // ---------------- Bếp tập ----------------
   // Món tập được: đã mở ở cấp hiện tại (kể cả món sáng tạo đủ nguyên liệu)
   Fun.practiceDishes = function () {

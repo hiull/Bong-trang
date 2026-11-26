@@ -1890,3 +1890,14 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 .side-goal.fail { background: #F4EEF0; color: #7a6a70; }
 .node-side { position: absolute; right: -4px; top: -4px; font-size: 12px; color: #2f9e55; font-weight: 900; }
 .hero-fix > .dd svg { width: 100%; height: 100%; }
+
+/* Bùa */
+.perk-pick, .perk-list { display: flex; flex-direction: column; gap: 8px; max-height: 62vh; overflow-y: auto; }
+.perk-opt, .perk-item { display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; border-radius: 14px; border: 2px solid var(--brown); background: #fff; font: inherit; color: inherit; }
+.perk-opt { cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,0.12); }
+.perk-opt:active { transform: translateY(2px); box-shadow: none; }
+.perk-icon { font-size: 28px; flex: none; }
+.perk-txt { display: flex; flex-direction: column; gap: 2px; }
+.perk-desc { font-size: 13px; color: #7a6a70; }
+.perk-item { opacity: 0.55; }
+.perk-item.on { opacity: 1; background: #FFF6E0; }

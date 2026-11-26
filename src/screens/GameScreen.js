@@ -24,7 +24,9 @@ window.BT = window.BT || { Screens: {} };
       this.practice = run.mode === "practice";   // Bếp tập: không khách thật, không tính tiền
       this.helperOn = !this.practice && BT.Helper.working(run);
       // Anh Hiếu tự sửa món làm sai (giới hạn mỗi ca)
-      this.heroLeft = !this.practice && this.S.settings.heroFix !== false ? CONFIG.heroFix.perShift : 0;
+      this.heroLeft = !this.practice && this.S.settings.heroFix !== false ? CONFIG.heroFix.perShift + (BT.perk("heroPlus") ? 1 : 0) : 0;
+      this.comboKept = false;   // bùa Bền bỉ
+      this.walkSoftUsed = false; // bùa Khách dễ tính
       this.heroUsed = 0;   // anh Hiếu phụ tiệm ca này
       // Giờ cao điểm, khách đặc biệt, thú cưng, kỷ lục
       this.rushPlan = !this.secret && !this.endless && ["story", "replay", "daily"].includes(run.mode) && run.level >= CONFIG.rush.fromLevel
@@ -836,7 +838,7 @@ window.BT = window.BT || { Screens: {} };
         reviewer: order.reviewer,
         seat,
         centerPct: CONFIG.gameplay.seatCenters[this.seatCount][seat],
-        patienceMult: this.patienceMult,
+        patienceMult: this.patienceMult * (BT.perk("firstPatience") && (this.greeted = (this.greeted || 0) + 1) <= 2 ? 2 : 1),
         area: this.custArea,
         scope: this.scope,
         onWalkout: (cc) => this.onWalkout(cc),
@@ -866,7 +868,8 @@ window.BT = window.BT || { Screens: {} };
       this.addRating(G.ratingWalkout, c);
       this.done++;
       this.combo = 0;
-      if (!this.dayCfg.cannotLose) this.hearts = Math.max(0, this.hearts - 1);
+      if (BT.perk("softWalk") && !this.walkSoftUsed) this.walkSoftUsed = true;   // bùa Khách dễ tính
+      else if (!this.dayCfg.cannotLose) this.hearts = Math.max(0, this.hearts - 1);
       BT.Audio.play("angry");
       BT.Audio.vibrate(G.vibrateBad);
       UI.shake(this.hudHearts);
@@ -947,9 +950,9 @@ window.BT = window.BT || { Screens: {} };
         }[bad.reason];
         if (bad.reason === "order") UI.toast(UI.t("badOrder", { ing: UI.ing(bad.ing).name }));
         c.react(UI.t(key, vars), "😕", G.reactionShowSec);
-        c.penalize(G.wrongPatiencePenalty);
         c.wrongOnce = true;
-        this.combo = 0;
+        if (BT.perk("comboKeep") && !this.comboKept) this.comboKept = true;   // bùa Bền bỉ: lần sai đầu không mất combo
+        else { c.penalize(G.wrongPatiencePenalty); this.combo = 0; }
         UI.shake(tray.el);
         UI.shake(c.bubble);
         BT.Audio.play("wrong");
@@ -964,7 +967,7 @@ window.BT = window.BT || { Screens: {} };
       this.q.comboMax = Math.max(this.q.comboMax, this.combo);
       if (res.crispy) this.q.crispy++;
       if (match.id === window.PERSONAL.favoriteDish) this.q.fav++;
-      if (this.dayNum >= G.loveOpenDay) this.love = Math.min(1, this.love + G.loveChargePerDish);
+      if (this.dayNum >= G.loveOpenDay) this.love = Math.min(1, this.love + G.loveChargePerDish * (BT.perk("loveFast") ? 1.3 : 1));
       tray.clear();
       tray.render();
       this.select(null);
@@ -994,7 +997,7 @@ window.BT = window.BT || { Screens: {} };
       tray.clear();
       tray.render();
       this.select(null);
-      this.combo = 0;
+      if (BT.perk("comboKeep") && !this.comboKept) this.comboKept = true; else this.combo = 0;
       c.heroFixing = true;
       c.patience = Math.max(c.patience, c.max * H.keepPatience);
       BT.Audio.play("pop");
@@ -1052,6 +1055,13 @@ window.BT = window.BT || { Screens: {} };
       this.router.backTo("Menu");
     }
 
+    // Số lần lắc/cuốn cần (nâng cấp, bùa Tay lắc dẻo)
+    shakeNeed() {
+      const G = CONFIG.gameplay;
+      const n = this.S.upgrades.lac_nhanh > 0 ? G.shakeNeededUpgraded : G.shakeNeeded;
+      return Math.max(2, n - (BT.perk("shakeFast") ? 2 : 0));
+    }
+
     // Khách nhận đủ món: tính tiền, đánh giá
     complete(c) {
       const G = CONFIG.gameplay;
@@ -1077,10 +1087,13 @@ window.BT = window.BT || { Screens: {} };
       else c.items.forEach((it) => { base += UI.recipePrice(it.id) * (it.crispy ? 1 + G.crispyBonus : 1); });
       c.items.forEach((it) => { if (UI.recipe(it.id) && UI.recipe(it.id).custom) this.lifeAdd.customsSold++; });
       const pay = Math.round(base * speed);
-      let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1) * (this.rush ? CONFIG.rush.tipMult : 1);
+      let tip = UI.randInt(c.type.tip[0], c.type.tip[1]) * (this.dayCfg.tipMult || 1) * (this.rush ? (BT.perk("rushTip") ? 2.5 : CONFIG.rush.tipMult) : 1);
       if (up.nhac > 0) tip *= 1 + CONFIG.upgrades.nhac.tipBonus;
       const reqTip = c.hasRequests() ? M.specialRequestTip : 0;
+      if (BT.perk("tipAll")) tip *= 1.1;
       tip = Math.round(tip + reqTip);
+      // Bùa: tip cộng thêm theo món
+      c.items.forEach((it) => { const z = (UI.recipe(it.id) || {}).zone; if (z === "nuoc" && BT.perk("drinkTip")) tip += 3; if (z === "cuon" && BT.perk("rollTip")) tip += 5; });
       if (c.items.some((it) => it.heroFixed)) tip = Math.round(tip * CONFIG.heroFix.tipMult);   // anh Hiếu làm lại giùm
       const comboBonus = Math.round(pay * G.comboStepBonus * Math.max(0, this.combo - 1));
       const fiveMin = G.ratingSteps[0].min - (up.quat > 0 ? CONFIG.upgrades.quat.fiveStarDrop : 0);
@@ -1665,7 +1678,7 @@ window.BT = window.BT || { Screens: {} };
       if (this.shakeLayer) this.shakeLayer.close();
       const G = CONFIG.gameplay;
       const roll = mode === "roll";
-      const need = this.S.upgrades.lac_nhanh > 0 ? G.shakeNeededUpgraded : G.shakeNeeded;
+      const need = this.shakeNeed();
       const layer = UI.el("div", "shake-layer" + (roll ? " roll" : ""));
       layer.appendChild(UI.el("div", "shake-title", UI.t(roll ? "rollTitle" : "shakeTitle")));
       const zone = UI.el("div", "shake-zone");
@@ -1965,6 +1978,7 @@ window.BT = window.BT || { Screens: {} };
       const sid = S.season || 1;
       if (progress && progress.cleared) {
         const m = MS.get(progress.cleared);
+        if (m.major) BT.Fun.perkOffer();   // qua mốc lớn: chọn một bùa
         if (m.major && sid === 1) {
           const mi = m.day - 1;
           if (window.PERSONAL.memories[mi] && !S.memoriesUnlocked.includes(mi)) { S.memoriesUnlocked.push(mi); newMemory = mi; }
@@ -2095,7 +2109,7 @@ window.BT = window.BT || { Screens: {} };
           rs2.side = rs2.side || {};
           const first = done && !rs2.side[run.ms];
           if (done) rs2.side[run.ms] = true;
-          if (first) S.wallet += CONFIG.sideGoalReward;
+          if (first) S.wallet += CONFIG.sideGoalReward * (BT.perk("sideBonus") ? 2 : 1);
           side = { text: sg.text, done, first };
         }
       }
