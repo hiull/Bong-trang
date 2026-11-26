@@ -103,17 +103,27 @@ window.BT = window.BT || { Screens: {} };
       modes.appendChild(kitchenBtn);
       el.appendChild(modes);
 
+      // Sổ tay: gom Điểm danh, Nhiệm vụ, Tuần này, Thư, Đánh giá vào một nút (chấm đỏ tổng)
+      const NB = [
+        { id: "checkin", cls: "checkin-tile", label: "btnCheckin", dot: () => !Pr.checkinInfo().claimedToday, go: () => openCheckin() },
+        { id: "quests", cls: "quests-tile", label: "btnQuests", dot: () => Pr.questsClaimable() > 0, go: () => openQuests() },
+        { id: "week", cls: "week-btn", label: "weekBtn", dot: () => !BT.Fun.weekly().claimed && BT.Fun.weeklyDone(), go: () => BT.Fun.openWeekly(refreshDots) },
+        { id: "mail", cls: "mail-btn", label: "mailBtn", dot: () => BT.Fun.unreadLetters() > 0, go: () => { BT.Fun.openMail(); refreshDots(); } },
+        { id: "review", cls: "review-tile", label: "btnReviews", dot: () => false, go: () => router.go("Review") }
+      ];
       const small = UI.el("div", "menu-small");
-      small.appendChild(UI.button(UI.t("btnReviews"), "btn-white small", () => router.go("Review")));
-      const checkBtn = UI.button(UI.t("btnCheckin"), "btn-white small", () => openCheckin());
-      const questBtn = UI.button(UI.t("btnQuests"), "btn-white small", () => openQuests());
-      small.appendChild(checkBtn);
-      small.appendChild(questBtn);
-      const mailBtn = UI.button(UI.t("mailBtn"), "btn-white small mail-btn", () => { BT.Fun.openMail(); refreshDots(); });
-      small.appendChild(mailBtn);
-      const weekBtn = UI.button(UI.t("weekBtn"), "btn-white small week-btn", () => BT.Fun.openWeekly(refreshDots));
-      small.appendChild(weekBtn);
+      const nbBtn = UI.button(UI.t("notebookBtn"), "btn-white notebook-btn", () => openNotebook());
+      small.appendChild(nbBtn);
       el.appendChild(small);
+      function openNotebook() {
+        const grid = UI.el("div", "nb-grid");
+        let api = null;
+        NB.forEach((t) => {
+          const tile = UI.button(UI.t(t.label), "btn-white nb-tile " + t.cls + (t.dot() ? " has-dot" : ""), () => { api.close(true); t.go(); });
+          grid.appendChild(tile);
+        });
+        api = UI.modal({ title: UI.t("notebookTitle"), body: grid, className: "modal-notebook", dismissable: true, buttons: [{ label: UI.t("btnClose"), cls: "btn-pink" }] });
+      }
 
       // Lời nhắc chống mất tiến trình nằm chỗ dòng chữ cuối (không che nút nào)
       const footBox = UI.el("div", "menu-foot");
@@ -127,11 +137,8 @@ window.BT = window.BT || { Screens: {} };
       root.appendChild(el);
 
       function refreshDots() {
-        checkBtn.classList.toggle("has-dot", !Pr.checkinInfo().claimedToday);
-        questBtn.classList.toggle("has-dot", Pr.questsClaimable() > 0);
         dailyBtn.classList.toggle("has-dot", BT.Daily.unlocked() && !BT.Daily.playedToday());
-        mailBtn.classList.toggle("has-dot", BT.Fun.unreadLetters() > 0);
-        weekBtn.classList.toggle("has-dot", !BT.Fun.weekly().claimed && BT.Fun.weeklyDone());
+        nbBtn.classList.toggle("has-dot", NB.some((t) => t.dot()));
       }
       refreshDots();
 

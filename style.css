@@ -1858,3 +1858,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
 
 /* Không cho khung game cuộn ngang (hoa trang trí tràn mép làm lệch màn khi mở hộp thoại) */
 #app { overflow: hidden; overflow: clip; }
+
+/* Sổ tay */
+.menu-small .notebook-btn { flex: 0 1 260px; padding: 10px 16px; }
+.nb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nb-grid .nb-tile { padding: 14px 8px; min-height: 64px; }
+.nb-grid .nb-tile:last-child:nth-child(odd) { grid-column: span 2; }

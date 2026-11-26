@@ -564,8 +564,8 @@ window.CONFIG = {
       { icon: "🍽️", title: "Bếp sáng tạo", text: "Tự nghĩ tối đa 3 món của riêng tiệm: chọn quầy, chọn nguyên liệu, đặt tên. Khách sẽ gọi thử!", go: "kitchen" },
       { icon: "💕", title: "Hẹn hò sau ca", text: "Qua mốc lớn hoặc thỉnh thoảng sau ca thắng có trò lật thẻ. Thắng thì mở một trang Sổ hẹn hò.", go: null },
       { icon: "⭐", title: "Huy hiệu", text: "14 huy hiệu cho những cột mốc của tiệm, mở được là có thưởng. Xem trong Kỷ niệm.", go: "badges" },
-      { icon: "📋", title: "Nhiệm vụ tuần", text: "Mỗi tuần 5 nhiệm vụ, xong hết nhận đồ trang trí độc quyền không bán ở cửa hàng.", go: "weekly" },
-      { icon: "✉️", title: "Thư & ngày đặc biệt", text: "Mỗi tuần một lá thư mới. Ngày sinh nhật, kỷ niệm có quà bất ngờ.", go: "mail" },
+      { icon: "📋", title: "Nhiệm vụ tuần", text: "Mỗi tuần 5 nhiệm vụ (trong Sổ tay ở Menu), xong hết nhận đồ trang trí độc quyền không bán ở cửa hàng.", go: "weekly" },
+      { icon: "✉️", title: "Thư & ngày đặc biệt", text: "Mỗi tuần một lá thư mới trong Sổ tay. Ngày sinh nhật, kỷ niệm có quà bất ngờ.", go: "mail" },
       { icon: "⚙️", title: "Chơi theo ý mình", text: "Cài đặt có chế độ nhanh Thư giãn / Bình thường / Thử thách, chỉnh từng sự kiện, cỡ chữ và công thức chuẩn ngoài đời.", go: "settings" }
     ]
   },
@@ -1100,6 +1100,8 @@ window.CONFIG = {
     badgesCount: "Huy hiệu · {a}/{b}",
     badgeGet: "Huy hiệu mới: {name} (+{x})",
     weekBtn: "Tuần này",
+    notebookBtn: "Sổ tay 📋",
+    notebookTitle: "Sổ tay",
     kitchenBtn: "Bếp sáng tạo",
     kitchenTitle: "Bếp sáng tạo",
     kitchenIntro: "Tự nghĩ món của tiệm mình (tối đa {n} món). Khách sẽ thỉnh thoảng gọi, khách quen thích gọi hơn.",
